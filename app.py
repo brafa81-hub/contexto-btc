@@ -116,7 +116,17 @@ c = calcular_ciclo(df)
 # ---------------------------------------------------------------
 st.markdown('<div class="eyebrow">Sistema de contexto · no es una recomendación</div>', unsafe_allow_html=True)
 st.title("¿Dónde está Bitcoin?")
-st.caption(f"Datos a {df.index[-1].strftime('%d de %B de %Y')}")
+
+_MESES_ES = {
+    "January": "enero", "February": "febrero", "March": "marzo", "April": "abril",
+    "May": "mayo", "June": "junio", "July": "julio", "August": "agosto",
+    "September": "septiembre", "October": "octubre", "November": "noviembre", "December": "diciembre",
+}
+_fecha_en = df.index[-1].strftime("%d de %B de %Y")
+_fecha_es = _fecha_en
+for _en, _es in _MESES_ES.items():
+    _fecha_es = _fecha_es.replace(_en, _es)
+st.caption(f"Datos a {_fecha_es}")
 
 col1, col2, col3, col4 = st.columns(4)
 col1.metric("Precio", f"${s['precio']:,.0f}")
