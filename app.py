@@ -11,6 +11,8 @@ Para correrla en local:
 Para desplegarla, ver DEPLOY.md
 """
 
+import os
+
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -100,11 +102,35 @@ def cargar_datos(path_csv):
 
 
 @st.cache_data(ttl=3600, show_spinner="Cargando datos on-chain...")
-def cargar_onchain(path_csv):
+def cargar_onchain(path_csv, _firma):
+    """
+    _firma: (tamaño, fecha de modificación) del archivo. No se usa dentro,
+    pero al formar parte de la clave de caché hace que Streamlit recargue
+    solo cuando el archivo cambia de verdad.
+
+    POR QUÉ (28/08/2026): antes, si se abría la app sin el CSV, se cacheaba
+    None durante una hora. Al generar luego el archivo, la app seguía diciendo
+    "no se encontró" hasta reiniciar el servidor. Con la firma, en cuanto el
+    CSV aparece o cambia, la caché se invalida sola.
+    """
     from onchain import cargar_onchain as _cargar
     try:
         return _cargar(path_csv)
     except FileNotFoundError:
+        return None
+    except Exception as e:
+        # El archivo existe pero no se puede leer: eso es un error real,
+        # no un "aún no lo has descargado". Se muestra tal cual.
+        st.error(f"**{path_csv}** existe pero no se pudo leer: {type(e).__name__} — {e}")
+        return None
+
+
+def _firma_archivo(path):
+    """(tamaño, mtime) del archivo, o None si no existe."""
+    try:
+        st_info = os.stat(path)
+        return (st_info.st_size, st_info.st_mtime)
+    except OSError:
         return None
 
 
@@ -148,7 +174,7 @@ except Exception as e:
     st.error(f"Error cargando los datos: {e}")
     st.stop()
 
-df_onchain = cargar_onchain(archivo_onchain)
+df_onchain = cargar_onchain(archivo_onchain, _firma_archivo(archivo_onchain))
 
 s = calcular_situacion(df)
 v = calcular_valoracion(df)

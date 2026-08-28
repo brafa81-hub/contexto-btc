@@ -82,13 +82,39 @@ def fetch_onchain(out="btc_onchain.csv"):
         return
 
     # Unificar todas las métricas por fecha
+    #
+    # PARSEO (corregido 28/08/2026): la versión anterior adivinaba el nombre
+    # del campo con columna.replace("_", "") y, si fallaba, cogía "la última
+    # clave del diccionario". Eso podía meter el valor equivocado en la
+    # columna sin dar ningún aviso. Ahora: se descartan las claves de fecha
+    # y se toma el único campo restante, que es lo que devuelve cada endpoint
+    # de BGeometrics (una métrica por llamada). Si aparece más de un campo,
+    # se avisa en vez de elegir a ciegas.
+    CLAVES_FECHA = {"d", "date", "day", "theDay", "unixTs", "timestamp"}
+
     por_fecha = {}
     for columna, data in resultados.items():
+        avisado = False
         for item in data:
-            fecha = item.get("d") or item.get("date")
-            valor = item.get(columna.replace("_", "")) or item.get(list(item.keys())[-1])
-            if fecha:
-                por_fecha.setdefault(fecha, {})[columna] = valor
+            if not isinstance(item, dict):
+                continue
+
+            fecha = None
+            for k in ("d", "date", "day", "theDay"):
+                if item.get(k):
+                    fecha = str(item[k])[:10]
+                    break
+            if not fecha:
+                continue
+
+            campos_valor = [k for k in item.keys() if k not in CLAVES_FECHA]
+            if not campos_valor:
+                continue
+            if len(campos_valor) > 1 and not avisado:
+                print(f"  Aviso: '{columna}' trae varios campos {campos_valor}; se usa '{campos_valor[0]}'")
+                avisado = True
+
+            por_fecha.setdefault(fecha, {})[columna] = item[campos_valor[0]]
 
     campos = ["date"] + list(resultados.keys())
     with open(out, "w", newline="") as f:
@@ -101,6 +127,17 @@ def fetch_onchain(out="btc_onchain.csv"):
     print(f"\nGuardado {len(por_fecha)} filas en {out}")
     print(f"Métricas incluidas: {', '.join(resultados.keys())}")
     print("Fuente: BGeometrics (bitcoin-data.com), plan Free — ~4 años de histórico")
+
+    # Comprobación de sanidad: avisar si alguna columna salió mayormente vacía.
+    # Es la red de seguridad que faltaba: antes un CSV podía generarse con
+    # buen tamaño pero con una columna inservible y nadie se enteraba.
+    total = len(por_fecha)
+    print("\nComprobación de columnas:")
+    for c in resultados.keys():
+        con_valor = sum(1 for f in por_fecha.values() if f.get(c) not in (None, ""))
+        pct = (con_valor / total * 100) if total else 0
+        marca = "ok " if pct >= 90 else "AVISO"
+        print(f"  [{marca}] {c}: {con_valor}/{total} filas con dato ({pct:.0f}%)")
 
 
 if __name__ == "__main__":

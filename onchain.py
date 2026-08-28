@@ -26,28 +26,38 @@ def cargar_onchain(path: str) -> pd.DataFrame:
 
 
 def calcular_metricas(df: pd.DataFrame) -> pd.DataFrame:
-    """Calcula MVRV, Z-Score y Realized Price a partir de los datos crudos."""
+    """
+    Prepara las métricas para su uso.
+
+    NOTA (28/08/2026): con la fuente anterior (CoinMetrics) calculábamos MVRV
+    y Z-Score nosotros mismos a partir de Market Cap y Realized Cap. Con la
+    fuente actual (BGeometrics/bitcoin-data.com) estas métricas ya vienen
+    calculadas directamente por ellos — tienen su propio nodo Bitcoin y
+    calculan MVRV desde datos on-chain crudos. Aquí solo las preparamos
+    (tipos numéricos, medias móviles de salud de red).
+    """
     out = df.copy()
 
-    # MVRV = Market Cap / Realized Cap
-    out["mvrv"] = out["CapMrktCurUSD"] / out["CapRealUSD"]
+    # Si por lo que sea faltan mvrv o mvrv_zscore pero SÍ tenemos market_cap
+    # y realized_cap (columnas antiguas, por si se vuelve a otra fuente),
+    # se calculan como fallback.
+    if "mvrv" not in out.columns and "CapMrktCurUSD" in out.columns and "CapRealUSD" in out.columns:
+        out["mvrv"] = out["CapMrktCurUSD"] / out["CapRealUSD"]
+    if "mvrv_zscore" not in out.columns and "mvrv" in out.columns:
+        diff = out.get("CapMrktCurUSD", pd.Series(dtype=float)) - out.get("CapRealUSD", pd.Series(dtype=float))
+        std_expanding = out.get("CapMrktCurUSD", pd.Series(dtype=float)).expanding(min_periods=365).std()
+        if not diff.empty:
+            out["mvrv_zscore"] = diff / std_expanding
 
-    # Realized Price = Realized Cap / Supply
-    out["realized_price"] = out["CapRealUSD"] / out["SplyCur"]
+    # Hashrate: media de 30 días y su variación (si está disponible)
+    if "hashrate" in out.columns:
+        out["hashrate_ma30"] = out["hashrate"].rolling(30).mean()
+        out["hashrate_change_60d"] = out["hashrate_ma30"].pct_change(60) * 100
 
-    # MVRV Z-Score = (MarketCap - RealizedCap) / std(MarketCap)
-    # Se usa desviación estándar expansiva (todo el histórico hasta ese punto)
-    diff = out["CapMrktCurUSD"] - out["CapRealUSD"]
-    std_expanding = out["CapMrktCurUSD"].expanding(min_periods=365).std()
-    out["mvrv_zscore"] = diff / std_expanding
-
-    # Hashrate: media de 30 días y su variación
-    out["hashrate_ma30"] = out["HashRate"].rolling(30).mean()
-    out["hashrate_change_60d"] = out["hashrate_ma30"].pct_change(60) * 100
-
-    # Direcciones activas: media 30d y variación
-    out["adr_ma30"] = out["AdrActCnt"].rolling(30).mean()
-    out["adr_change_60d"] = out["adr_ma30"].pct_change(60) * 100
+    # Direcciones activas: media 30d y variación (si está disponible)
+    if "active_addresses" in out.columns:
+        out["adr_ma30"] = out["active_addresses"].rolling(30).mean()
+        out["adr_change_60d"] = out["adr_ma30"].pct_change(60) * 100
 
     return out
 
@@ -153,26 +163,32 @@ def interpretar_zscore(z: float) -> tuple[str, str]:
         return "EXTREMO BAJO", "Históricamente asociado a suelos de ciclo"
 
 
-def generar_bloque_onchain(df_onchain: pd.DataFrame) -> str:
-    """Genera el bloque de texto con el análisis on-chain actual."""
+def generar_bloque_onchain(df_onchain: pd.DataFrame, precio_actual: float = None) -> str:
+    """
+    Genera el bloque de texto con el análisis on-chain actual.
+    precio_actual: si se pasa (recomendado), se usa el precio de Bitstamp del
+    resto del sistema en vez de depender de una columna de precio propia del
+    CSV on-chain, que la fuente actual (BGeometrics) no siempre incluye igual.
+    """
     df = calcular_metricas(df_onchain)
     ultimo = df.iloc[-1]
     fecha = df.index[-1]
 
-    mvrv = ultimo["mvrv"]
-    z = ultimo["mvrv_zscore"]
-    rp = ultimo["realized_price"]
-    precio = ultimo["PriceUSD"]
+    mvrv = ultimo.get("mvrv", np.nan)
+    z = ultimo.get("mvrv_zscore", np.nan)
+    rp = ultimo.get("realized_price", np.nan)
+    precio = precio_actual if precio_actual is not None else ultimo.get("PriceUSD", np.nan)
 
-    pct_mvrv = percentil_historico(df["mvrv"], mvrv)
-    pct_z = percentil_historico(df["mvrv_zscore"], z)
+    _vacia = pd.Series(dtype=float)
+    pct_mvrv = percentil_historico(df["mvrv"] if "mvrv" in df.columns else _vacia, mvrv)
+    pct_z = percentil_historico(df["mvrv_zscore"] if "mvrv_zscore" in df.columns else _vacia, z)
 
     # Etiqueta basada en NUESTRO percentil (método principal, ver docstring)
     etiq_mvrv, nota_mvrv = interpretar_mvrv_por_percentil(pct_mvrv)
 
     L = []
     L.append("┌─ FUNDAMENTAL ON-CHAIN " + "─" * 43)
-    L.append(f"│  (datos a {fecha.strftime('%d/%m/%Y')} — CoinMetrics)")
+    L.append(f"│  (datos a {fecha.strftime('%d/%m/%Y')} — BGeometrics/bitcoin-data.com)")
     L.append("│")
     L.append(f"│  MVRV:                 {mvrv:>8.2f}   percentil {pct_mvrv:>3.0f}%")
     L.append(f"│    → {etiq_mvrv}")
@@ -195,8 +211,14 @@ def generar_bloque_onchain(df_onchain: pd.DataFrame) -> str:
     L.append("│")
 
     # Salud de la red
-    hr_chg = ultimo["hashrate_change_60d"]
-    adr_chg = ultimo["adr_change_60d"]
+    #
+    # CORREGIDO (28/08/2026): antes se accedía con ultimo["adr_change_60d"],
+    # que revienta con KeyError si el CSV no trae 'active_addresses' — que es
+    # justo el caso con la fuente actual (BGeometrics no expone ese endpoint
+    # con nombre confirmado, ver nota en fetch_onchain.py). Con .get() el
+    # bloque simplemente omite esa línea en vez de tumbar el script.
+    hr_chg = ultimo.get("hashrate_change_60d", np.nan)
+    adr_chg = ultimo.get("adr_change_60d", np.nan)
     if pd.notna(hr_chg):
         estado_hr = "creciendo" if hr_chg > 2 else ("estable" if hr_chg > -2 else "cayendo")
         L.append(f"│  Hashrate (60d):       {hr_chg:>+7.1f}%   ({estado_hr})")
