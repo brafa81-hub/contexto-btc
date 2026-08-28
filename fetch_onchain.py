@@ -1,28 +1,24 @@
 """
-DATOS ON-CHAIN DE BITCOIN — CoinMetrics Community API
+DATOS ON-CHAIN DE BITCOIN — BGeometrics (bitcoin-data.com)
 
-API pública y gratuita, sin API key, con historial desde 2010-2014 según métrica.
-Documentación: https://docs.coinmetrics.io/api/v4
+HISTORIAL DE ESTA FUENTE (para que quede constancia de por qué cambiamos):
+  1. Empezamos con CoinMetrics Community API (community-api.coinmetrics.io)
+     → dejó de funcionar (403), la documentación actual apunta a otro dominio
+  2. Probamos api.coinmetrics.io (URL "nueva" según su documentación)
+     → responde, pero exige API key ahora (401) — ya no es de verdad gratis
+  3. Se consultó a Grok, ChatGPT y Copilot por separado. Grok y Copilot
+     coincidieron, de forma independiente, en BGeometrics/bitcoin-data.com.
+     Verificado el 28/08/2026 contra la documentación oficial de bgeometrics.com:
+     es un servicio real, con nodo Bitcoin propio, que calcula MVRV desde
+     datos on-chain crudos (no reexporta otra fuente).
 
-MÉTRICAS QUE USAMOS:
-  CapMrktCurUSD  → Market Cap (valor de mercado actual)
-  CapRealUSD     → Realized Cap (valor "realizado": cada BTC valorado al precio
-                   de su última transacción, no al precio actual)
-  SplyCur        → Supply circulante
-  HashRate       → Hashrate de la red
-  AdrActCnt      → Direcciones activas
+Plan gratuito de BGeometrics (según su documentación, sujeto a cambios):
+  - Sin registro, sin API key para el plan Free
+  - Últimos ~4 años de histórico diario (no desde 2011 como con CoinMetrics)
+  - Límite aproximado de 15 peticiones/día — este script pide pocas
+    llamadas (una por métrica), así que no debería acercarse al límite
 
-DE AHÍ CALCULAMOS:
-  MVRV = Market Cap / Realized Cap
-     > 3.5  históricamente zona de euforia/techo
-     < 1.0  históricamente zona de suelo/capitulación
-
-  MVRV Z-Score = (Market Cap - Realized Cap) / desviación estándar del Market Cap
-     Versión normalizada, mejor para comparar entre ciclos.
-
-  Realized Price = Realized Cap / Supply
-     "Precio medio al que el mercado compró sus BTC". Actúa como soporte
-     psicológico importante en mercados bajistas.
+Documentación: https://bitcoin-data.com/  ·  https://bgeometrics.com/api/
 
 EJECUTAR EN TU ORDENADOR:
     python fetch_onchain.py --out btc_onchain.csv
@@ -30,7 +26,7 @@ EJECUTAR EN TU ORDENADOR:
 
 import argparse
 import csv
-import datetime as dt
+import time
 
 try:
     import requests
@@ -38,77 +34,78 @@ except ImportError:
     raise SystemExit("Falta 'requests'. Instala con: pip install requests")
 
 
-BASE_URL = "https://community-api.coinmetrics.io/v4/timeseries/asset-metrics"
+BASE_URL = "https://bitcoin-data.com/v1"
 
-METRICAS = [
-    "CapMrktCurUSD",   # Market cap
-    "CapRealUSD",      # Realized cap
-    "SplyCur",         # Supply circulante
-    "HashRate",        # Hashrate
-    "AdrActCnt",       # Direcciones activas
-    "PriceUSD",        # Precio de referencia de CoinMetrics
-]
+# Métricas del plan Free que nos interesan. Si alguna no existe con ese
+# nombre exacto, el script avisa y sigue con las demás en vez de fallar del todo.
+#
+# NOTA: 'active-address-count' se probó y da 404 — el nombre correcto del
+# endpoint de BGeometrics para direcciones activas no está confirmado.
+# Se deja fuera para no generar un aviso de error en cada ejecución; si en
+# el futuro se confirma el nombre correcto (ver bitcoin-data.com/api/redoc.html),
+# se puede añadir de nuevo aquí.
+METRICAS = {
+    "mvrv": "mvrv",
+    "mvrv-zscore": "mvrv_zscore",
+    "realized-price": "realized_price",
+    "hashrate": "hashrate",
+}
 
 
-def fetch_onchain(out="btc_onchain.csv", start="2011-01-01"):
-    """Descarga métricas on-chain de BTC paginando hasta el presente."""
-    all_rows = []
-    next_page_token = None
-    page = 0
+def fetch_metrica(nombre_endpoint):
+    """Descarga el histórico completo (dentro del límite del plan Free) de una métrica."""
+    url = f"{BASE_URL}/{nombre_endpoint}"
+    try:
+        r = requests.get(url, timeout=30)
+        r.raise_for_status()
+        return r.json()
+    except requests.exceptions.HTTPError as e:
+        print(f"  Aviso: no se pudo descargar '{nombre_endpoint}' ({e})")
+        return None
+    except Exception as e:
+        print(f"  Aviso: error con '{nombre_endpoint}' ({e})")
+        return None
 
-    while True:
-        params = {
-            "assets": "btc",
-            "metrics": ",".join(METRICAS),
-            "frequency": "1d",
-            "start_time": start,
-            "page_size": 10000,
-        }
-        if next_page_token:
-            params["next_page_token"] = next_page_token
 
-        try:
-            r = requests.get(BASE_URL, params=params, timeout=60)
-            r.raise_for_status()
-            payload = r.json()
-        except Exception as e:
-            print(f"\nError descargando datos: {e}")
-            break
+def fetch_onchain(out="btc_onchain.csv"):
+    resultados = {}
+    for endpoint, columna in METRICAS.items():
+        print(f"Descargando {endpoint}...")
+        data = fetch_metrica(endpoint)
+        if data:
+            resultados[columna] = data
+        time.sleep(1.5)  # el plan Free tiene un límite diario bajo, vamos con calma
 
-        data = payload.get("data", [])
-        if not data:
-            break
-
-        all_rows.extend(data)
-        page += 1
-        print(f"  ...página {page}, {len(all_rows)} registros acumulados", end="\r")
-
-        next_page_token = payload.get("next_page_token")
-        if not next_page_token:
-            break
-
-    if not all_rows:
-        print("\nNo se descargó ningún dato.")
+    if not resultados:
+        print("\nNo se descargó ninguna métrica. Revisa si bitcoin-data.com sigue activo:")
+        print("  https://bitcoin-data.com/v1/mvrv/last")
         return
 
-    # Escribir CSV
-    campos = ["date"] + METRICAS
+    # Unificar todas las métricas por fecha
+    por_fecha = {}
+    for columna, data in resultados.items():
+        for item in data:
+            fecha = item.get("d") or item.get("date")
+            valor = item.get(columna.replace("_", "")) or item.get(list(item.keys())[-1])
+            if fecha:
+                por_fecha.setdefault(fecha, {})[columna] = valor
+
+    campos = ["date"] + list(resultados.keys())
     with open(out, "w", newline="") as f:
         w = csv.writer(f)
         w.writerow(campos)
-        for row in all_rows:
-            fecha = row.get("time", "")[:10]
-            valores = [row.get(m, "") for m in METRICAS]
-            w.writerow([fecha] + valores)
+        for fecha in sorted(por_fecha.keys()):
+            fila = [fecha] + [por_fecha[fecha].get(c, "") for c in resultados.keys()]
+            w.writerow(fila)
 
-    print(f"\nGuardado {len(all_rows)} filas en {out}")
-    print(f"Rango: {all_rows[0].get('time','')[:10]} a {all_rows[-1].get('time','')[:10]}")
-    print("Fuente: CoinMetrics Community API (gratuita)")
+    print(f"\nGuardado {len(por_fecha)} filas en {out}")
+    print(f"Métricas incluidas: {', '.join(resultados.keys())}")
+    print("Fuente: BGeometrics (bitcoin-data.com), plan Free — ~4 años de histórico")
 
 
 if __name__ == "__main__":
     p = argparse.ArgumentParser()
     p.add_argument("--out", default="btc_onchain.csv")
-    p.add_argument("--start", default="2011-01-01")
     args = p.parse_args()
-    fetch_onchain(out=args.out, start=args.start)
+    fetch_onchain(out=args.out)
+
