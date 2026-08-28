@@ -35,15 +35,58 @@ st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=IBM+Plex+Mono:wght@400;500&display=swap');
 
-    html, body, [class*="css"] { font-family: 'IBM Plex Sans', sans-serif; }
-    .stApp { background-color: #e8e4d9; }
-    h1, h2, h3 { font-family: 'Fraunces', serif !important; letter-spacing: -0.01em; }
+    :root {
+        --ink: #14150f;
+        --paper: #e8e4d9;
+        --dim: #6a6558;
+    }
+
+    html, body, [class*="css"] { font-family: 'IBM Plex Sans', sans-serif; color: var(--ink); }
+
+    /* Fondo general y del contenedor principal */
+    .stApp, [data-testid="stAppViewContainer"], [data-testid="stMain"] {
+        background-color: var(--paper);
+        color: var(--ink);
+    }
+
+    /* Texto de cabeceras */
+    h1, h2, h3, h4, h5, h6 {
+        font-family: 'Fraunces', serif !important;
+        letter-spacing: -0.01em;
+        color: var(--ink) !important;
+    }
+
+    /* Párrafos, listas, spans y texto general (cubre st.caption, st.markdown, etc.) */
+    p, span, li, label, .stMarkdown, [data-testid="stMarkdownContainer"] {
+        color: var(--ink) !important;
+    }
+
     .eyebrow {
         font-family: 'IBM Plex Mono', monospace; font-size: 11px;
-        letter-spacing: .18em; text-transform: uppercase; color: #6a6558;
+        letter-spacing: .18em; text-transform: uppercase; color: var(--dim) !important;
     }
-    div[data-testid="stMetricValue"] { font-family: 'Fraunces', serif; }
-    .stAlert { font-family: 'IBM Plex Sans', sans-serif; }
+
+    /* Métricas (st.metric): valor, etiqueta y delta */
+    div[data-testid="stMetricValue"] {
+        font-family: 'Fraunces', serif;
+        color: var(--ink) !important;
+    }
+    div[data-testid="stMetricLabel"] { color: var(--dim) !important; }
+    div[data-testid="stMetricDelta"] { color: var(--ink) !important; }
+
+    /* Barra lateral: fondo oscuro propio, así que su texto se queda claro a propósito */
+    [data-testid="stSidebar"] { background-color: #1c1d17; }
+    [data-testid="stSidebar"] * { color: #e8e4d9 !important; }
+    [data-testid="stSidebar"] .eyebrow { color: #9a9488 !important; }
+
+    /* Tablas (st.table) */
+    [data-testid="stTable"] * { color: var(--ink) !important; }
+    table { color: var(--ink) !important; }
+
+    /* Inputs de texto y number_input dentro del área principal (no aplica, están en sidebar) */
+    input { color: var(--ink); }
+
+    /* Los mensajes de alerta (info/warning) ya traen su propio contraste, no se tocan */
 </style>
 """, unsafe_allow_html=True)
 
@@ -149,7 +192,9 @@ fig.add_trace(go.Scatter(
 fig.update_layout(
     height=320, margin=dict(l=0, r=0, t=10, b=0),
     plot_bgcolor="#e8e4d9", paper_bgcolor="#e8e4d9",
-    xaxis=dict(showgrid=False), yaxis=dict(showgrid=True, gridcolor="#d5d0c2", type="log"),
+    font=dict(color="#14150f"),
+    xaxis=dict(showgrid=False, color="#14150f"),
+    yaxis=dict(showgrid=True, gridcolor="#d5d0c2", type="log", color="#14150f"),
     hovermode="x unified", showlegend=True,
     legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
 )
@@ -251,7 +296,7 @@ if df_onchain is not None:
     g = REFERENCIA_EXTERNA_MVRV["glassnode_bandas_frecuencia"]
     cq = REFERENCIA_EXTERNA_MVRV["cryptoquant"]
     st.caption(
-        f"La etiqueta sale del percentil sobre nuestra serie (CoinMetrics), no de umbrales "
+        f"La etiqueta sale del percentil sobre nuestra serie (BGeometrics), no de umbrales "
         f"fijos de un proveedor. Referencia externa citada: Glassnode marca extremos en "
         f"<{g['extreme_lows']} y >{g['extremely_high']}; CryptoQuant en <{cq['posible_fondo']} y >{cq['posible_techo']}."
     )
@@ -291,5 +336,5 @@ st.warning("¿Podrías ver esos números durante uno o dos años sin vender? Si 
 st.divider()
 st.caption(
     f"Generado el {datetime.now().strftime('%d/%m/%Y a las %H:%M')} · "
-    "Precio: Bitstamp · On-chain: CoinMetrics Community API"
+    "Precio: Bitstamp · On-chain: BGeometrics (bitcoin-data.com)"
 )
