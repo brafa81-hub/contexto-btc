@@ -22,6 +22,7 @@ from datetime import datetime
 from data_loader import load_price_csv
 from contexto_btc import calcular_situacion, calcular_valoracion, calcular_ciclo, calcular_riesgo, calcular_caidas_historicas
 from niveles import analizar_niveles
+from rango import calcular_rango_esperado, dimensionar
 
 st.set_page_config(
     page_title="Contexto BTC",
@@ -253,6 +254,13 @@ with col2:
     st.progress(int(pct))
     st.caption(f"En el {pct:.0f}% de su historia, BTC estuvo más barato que ahora en términos relativos.")
 st.info(v["nota"], icon="ℹ️")
+st.caption(
+    "⚠ Medido sobre 2011-2026: este percentil ordenaba bien el retorno del año "
+    "siguiente hasta 2020, pero ese orden se rompió a partir de 2021 (la franja "
+    "20-40 pasó a rendir peor que la 0-20 y que la 60-80). Lo único que ha "
+    "mantenido el mismo signo en ambas épocas es que el 20% más caro va seguido "
+    "de peores retornos. Léelo como contexto histórico, no como señal actual."
+)
 
 st.divider()
 
@@ -336,9 +344,96 @@ else:
     st.divider()
 
 # ---------------------------------------------------------------
-# 06 — Riesgo real (interactivo: cambia con el capital de la sidebar)
+# 06 — Rango esperado y dimensionamiento
+#
+# Este bloque es el único que se apoya en una relación validada por épocas
+# (persistencia de volatilidad a 30 días: Spearman 0.53 / 0.45 / 0.49 en
+# 2011-2015, 2016-2020 y 2021-2026, con ventanas no solapadas). Ver rango.py
+# para el detalle de por qué el horizonte es 30 días y no 90.
 # ---------------------------------------------------------------
-st.subheader("06 · Tu riesgo real")
+st.subheader("06 · Cuánto puede moverse")
+
+rg = calcular_rango_esperado(df)
+
+col1, col2 = st.columns([1, 2])
+with col1:
+    st.metric(
+        f"Volatilidad {rg['cuartil']}",
+        f"{rg['vol']*100:.0f}%",
+        f"percentil {rg['vol_pct']:.0f}",
+        delta_color="off",
+    )
+with col2:
+    st.caption(
+        f"Con volatilidad **{rg['cuartil']}**, esto es cuánto osciló el precio "
+        f"en un mes a lo largo de {rg['n_historico']} meses históricos comparables. "
+        "No indica dirección — solo cuánto terreno suele cubrir el precio."
+    )
+
+tabla_rango = pd.DataFrame([
+    {
+        "Frecuencia": nombre,
+        "Oscilación": f"menos de {rg['bandas'][k]['amplitud']*100:.0f}%",
+        "Banda de precio": f"${rg['bandas'][k]['suelo']:,.0f} – ${rg['bandas'][k]['techo']:,.0f}",
+    }
+    for k, nombre in [
+        ("p50", "La mitad de los meses"),
+        ("p75", "3 de cada 4 meses"),
+        ("p95", "1 de cada 20 meses"),
+    ]
+])
+st.table(tabla_rango.set_index("Frecuencia"))
+
+st.caption(
+    "Por qué 30 días y no 90: la volatilidad se predice a sí misma de forma "
+    "estable a un mes en las tres épocas medidas. A 90 días la relación es muy "
+    "fuerte desde 2021 pero era casi nula antes de 2016 — aparece y desaparece "
+    "según la época, así que no se usa."
+)
+
+st.divider()
+
+# ---------------------------------------------------------------
+# 07 — Dimensionamiento (parte de la pérdida tolerable, no del capital)
+# ---------------------------------------------------------------
+st.subheader("07 · Cuánto exponer")
+st.markdown(
+    "En vez de partir de cuánto quieres invertir, esto parte de **cuánto puedes "
+    "perder sin que te cambie los planes** — y calcula hacia atrás."
+)
+
+perdida_tol = st.slider(
+    "Pérdida que podrías asumir sin que te afecte (€)",
+    min_value=50, max_value=int(max(capital, 100)),
+    value=int(max(capital * 0.15, 50)), step=50,
+)
+
+dim = dimensionar(capital, perdida_tol, rg)
+tabla_dim = pd.DataFrame([
+    {
+        "Escenario": nombre.capitalize(),
+        "Caída asumida": f"−{e['caida_pct']:.0f}%",
+        "Capital a exponer": (
+            f"{e['capital_max']:,.0f} €" +
+            (" (todo el disponible)" if e["supera_disponible"] else "")
+        ),
+    }
+    for nombre, e in dim.items()
+])
+st.table(tabla_dim.set_index("Escenario"))
+
+st.caption(
+    "El escenario adverso usa el percentil 95 de oscilación histórica: no es el "
+    "peor caso imaginable, es el peor caso *habitual*. Que el cálculo permita "
+    "exponer una cantidad no significa que debas hacerlo."
+)
+
+st.divider()
+
+# ---------------------------------------------------------------
+# 08 — Riesgo real (interactivo: cambia con el capital de la sidebar)
+# ---------------------------------------------------------------
+st.subheader("08 · Tu riesgo real")
 st.markdown(f"Si inviertes **{capital:,.0f} €** hoy, esto es lo que verías en pantalla:")
 
 r = calcular_riesgo(capital, s["precio"])
