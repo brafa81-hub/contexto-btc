@@ -24,6 +24,7 @@ from contexto_btc import calcular_situacion, calcular_valoracion, calcular_ciclo
 from niveles import analizar_niveles
 from rango import calcular_rango_esperado, dimensionar
 import diario as dj
+from regimen import informe as informe_regimen
 
 st.set_page_config(
     page_title="Contexto BTC",
@@ -373,6 +374,16 @@ else:
 st.subheader("06 · Cuánto puede moverse")
 
 rg = calcular_rango_esperado(df)
+
+# Auditoría del propio panel: comprueba si esta calibración sigue siendo
+# válida. Se muestra ANTES de los números para que se lean con el contexto
+# correcto, no después de haberlos tomado por buenos.
+_aud = informe_regimen(df)
+for _a in _aud["avisos"]:
+    if _a["nivel"] == "alto":
+        st.warning(_a["texto"], icon="⚠️")
+    else:
+        st.info(_a["texto"], icon="ℹ️")
 
 col1, col2 = st.columns([1, 2])
 with col1:
