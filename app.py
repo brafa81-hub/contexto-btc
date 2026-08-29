@@ -25,6 +25,7 @@ from niveles import analizar_niveles
 from rango import calcular_rango_esperado, dimensionar
 import diario as dj
 from regimen import informe as informe_regimen
+from correlacion import cargar_macro, calcular_correlacion, texto_lectura
 
 st.set_page_config(
     page_title="Contexto BTC",
@@ -128,6 +129,15 @@ def cargar_onchain(path_csv, _firma):
         return None
 
 
+@st.cache_data(ttl=3600, show_spinner=False)
+def cargar_macro_cache(path_csv, _firma):
+    """Series macro. Opcional: si falta el archivo, el panel funciona igual."""
+    try:
+        return cargar_macro(path_csv)
+    except Exception:
+        return None
+
+
 def _firma_archivo(path):
     """(tamaño, mtime) del archivo, o None si no existe."""
     try:
@@ -154,6 +164,7 @@ with st.sidebar:
     st.markdown("### Datos")
     archivo_precio = st.text_input("Archivo de precio", value="btc_long.csv")
     archivo_onchain = st.text_input("Archivo on-chain (opcional)", value="btc_onchain.csv")
+    archivo_macro = st.text_input("Archivo macro (opcional)", value="macro.csv")
 
     st.markdown("---")
     st.markdown("### Diario")
@@ -196,6 +207,7 @@ except Exception as e:
     st.stop()
 
 df_onchain = cargar_onchain(archivo_onchain, _firma_archivo(archivo_onchain))
+df_macro = cargar_macro_cache(archivo_macro, _firma_archivo(archivo_macro))
 
 s = calcular_situacion(df)
 v = calcular_valoracion(df)
@@ -457,6 +469,21 @@ st.caption(
     "peor caso imaginable, es el peor caso *habitual*. Que el cálculo permita "
     "exponer una cantidad no significa que debas hacerlo."
 )
+
+# Correlación con bolsa: no es una señal, es contexto de diversificación.
+# Se mide y se muestra aquí porque afecta a CUÁNTO exponer, no a cuándo.
+if df_macro is not None:
+    _corr = calcular_correlacion(df, df_macro)
+    if _corr.get("disponible"):
+        st.markdown("**¿Diversifica BTC frente a tus otras inversiones?**")
+        st.markdown(texto_lectura(_corr))
+        st.caption(
+            "Se midieron cinco series macro (Nasdaq, dólar, bono 10 años, VIX, "
+            "tipo Fed) contra 15 años de BTC. Ninguna anticipa el precio: la "
+            "correlación con el Nasdaq es 0,23 el mismo día y −0,05 al siguiente. "
+            "Esto no dice cuándo entrar — dice que si ya tienes bolsa, BTC suma "
+            "riesgo parecido en vez de compensarlo."
+        )
 
 st.divider()
 
