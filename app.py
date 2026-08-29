@@ -26,6 +26,7 @@ from rango import calcular_rango_esperado, dimensionar
 import diario as dj
 from regimen import informe as informe_regimen
 from correlacion import cargar_macro, calcular_correlacion, texto_lectura
+from calendario import eventos_proximos, estado_calendario
 
 st.set_page_config(
     page_title="Contexto BTC",
@@ -258,6 +259,31 @@ fig.update_layout(
     legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
 )
 st.plotly_chart(fig, use_container_width=True)
+
+# ---------------------------------------------------------------
+# Calendario — lo único del panel que no necesita demostrar poder
+# predictivo, porque no predice: solo dice qué está programado.
+# BTC correlaciona 0,33 con el Nasdaq, así que lo que mueve la bolsa
+# estadounidense lo mueve con ella.
+# ---------------------------------------------------------------
+_cal = estado_calendario()
+if not _cal["ok"]:
+    st.warning(_cal["mensaje"], icon="📅")
+
+_ev = eventos_proximos(dias=45, limite=4)
+if _ev:
+    _lineas = []
+    for _e in _ev:
+        _cuando = ("hoy" if _e["dias"] == 0 else
+                   "mañana" if _e["dias"] == 1 else f"en {_e['dias']} días")
+        _marca = "**" if _e["relevancia"] == "alta" else ""
+        _lineas.append(f"{_marca}{_e['nombre']}{_marca} · {_cuando} ({_e['fecha']:%d/%m})")
+    st.info("📅 " + "  ·  ".join(_lineas), icon=None)
+    st.caption(
+        "Eventos programados que mueven la bolsa estadounidense, y con ella a BTC "
+        "(correlación 0,33). No indica dirección ni magnitud: solo que ese día "
+        "suele haber más movimiento del habitual."
+    )
 
 st.divider()
 
