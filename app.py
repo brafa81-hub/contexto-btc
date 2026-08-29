@@ -23,6 +23,7 @@ from data_loader import load_price_csv
 from contexto_btc import calcular_situacion, calcular_valoracion, calcular_ciclo, calcular_riesgo, calcular_caidas_historicas
 from niveles import analizar_niveles
 from rango import calcular_rango_esperado, dimensionar
+import diario as dj
 
 st.set_page_config(
     page_title="Contexto BTC",
@@ -154,10 +155,28 @@ with st.sidebar:
     archivo_onchain = st.text_input("Archivo on-chain (opcional)", value="btc_onchain.csv")
 
     st.markdown("---")
+    st.markdown("### Diario")
+    subido = st.file_uploader(
+        "Cargar diario.csv", type="csv",
+        help="Sube tu diario para continuarlo. Sin esto, empiezas uno nuevo.",
+    )
+
+    st.markdown("---")
     st.caption(
         "Este panel describe la situación actual. No predice el futuro, "
         "no recomienda comprar ni vender, y no es asesoramiento financiero."
     )
+
+# El diario vive en la sesión. En Streamlit Cloud el disco es efímero, así que
+# la persistencia real es el CSV que el usuario descarga y vuelve a subir.
+if "diario" not in st.session_state:
+    st.session_state.diario = dj.diario_vacio()
+if subido is not None and not st.session_state.get("_diario_cargado"):
+    try:
+        st.session_state.diario = dj.cargar(subido)
+        st.session_state._diario_cargado = True
+    except Exception as e:
+        st.sidebar.error(f"No se pudo leer el diario: {e}")
 
 # ---------------------------------------------------------------
 # Carga de datos
@@ -453,6 +472,133 @@ tabla_hist = pd.DataFrame([
 st.table(tabla_hist.set_index("Periodo"))
 
 st.warning("¿Podrías ver esos números durante uno o dos años sin vender? Si la respuesta es no, la cantidad es demasiado alta.", icon="⚠️")
+
+st.divider()
+
+# ---------------------------------------------------------------
+# 09 — Diario de decisiones
+#
+# Razón de existir: el análisis sobre 15 años concluyó que la dirección del
+# precio es impredecible (R² ≈ 0,1%). Si no hay ventaja en la señal, lo único
+# que queda es no cometer errores evitables — y eso exige registrar el porqué
+# ANTES de conocer el resultado, porque la memoria lo reescribe después.
+# ---------------------------------------------------------------
+st.subheader("09 · Diario de decisiones")
+
+d = st.session_state.diario
+ctx = dj.capturar_contexto(s, v, c, rg)
+
+tab_nueva, tab_revision, tab_historial = st.tabs(
+    ["Registrar decisión", "Revisión", f"Historial ({len(d)})"]
+)
+
+with tab_nueva:
+    st.caption(
+        "Se guarda automáticamente el estado del panel de hoy, para que la "
+        "revisión no dependa de lo que recuerdes haber mirado."
+    )
+
+    col1, col2 = st.columns(2)
+    with col1:
+        tipo = st.selectbox("Qué haces", dj.TIPOS)
+        importe = st.number_input("Importe (€)", min_value=0, value=0, step=50,
+                                  disabled=(tipo == "No hacer nada"))
+    with col2:
+        estado = st.selectbox("Cómo estás al decidir", dj.ESTADOS)
+        confianza = st.slider("Confianza en la decisión", 1, 5, 3)
+
+    hipotesis = st.text_area(
+        "Por qué haces esto",
+        placeholder="La razón concreta, hoy. Sin adornos — nadie más lo va a leer.",
+        height=80,
+    )
+
+    st.markdown("**Qué te haría admitir que te equivocaste**")
+    st.caption(
+        "Escribirlo ahora es lo que después distingue «me equivoqué» de "
+        "«todavía no ha pasado». Sin esto, una pérdida no tiene final."
+    )
+    col1, col2 = st.columns(2)
+    with col1:
+        inval_precio = st.number_input(
+            "Por debajo de este precio ($)", min_value=0,
+            value=int(s["precio"] * 0.75), step=500,
+        )
+    with col2:
+        inval_cond = st.text_input(
+            "O si ocurre esto",
+            placeholder="ej. seis meses sin recuperar la media de 200 días",
+        )
+
+    if st.button("Guardar en el diario", type="primary"):
+        if not hipotesis.strip():
+            st.error("Falta el porqué. Es el campo que da sentido al registro.")
+        else:
+            st.session_state.diario = dj.anadir(d, {
+                "fecha": datetime.now().strftime("%Y-%m-%d"),
+                "tipo": tipo,
+                "precio": s["precio"],
+                "importe": importe if tipo != "No hacer nada" else 0,
+                "hipotesis": hipotesis.strip(),
+                "invalidacion_precio": inval_precio or None,
+                "invalidacion_condicion": inval_cond.strip() or None,
+                "estado_animo": estado,
+                "confianza": confianza,
+                **ctx,
+            })
+            st.success("Guardado. Descarga el CSV en la pestaña Historial para no perderlo.")
+            st.rerun()
+
+with tab_revision:
+    rev = dj.revisar(d, precio_actual=s["precio"])
+
+    if not rev["suficientes"]:
+        st.info(
+            f"Llevas {rev['n']} registros. La revisión se activa a partir de "
+            f"{dj.MINIMO_PARA_ANALIZAR} — faltan {rev['faltan']}.\n\n"
+            "No es una restricción arbitraria: buscar patrones en 3 decisiones "
+            "es el mismo error de sobreajuste que rompió el motor de tendencia.",
+            icon="ℹ️",
+        )
+    elif not rev["avisos"]:
+        st.success(
+            f"{rev['n']} registros revisados y ningún patrón problemático detectado. "
+            "Eso no significa que las decisiones fueran acertadas — significa que "
+            "fueron consistentes con tus propias reglas.",
+            icon="✅",
+        )
+    else:
+        st.markdown(f"**{len(rev['avisos'])} patrones detectados en {rev['n']} registros:**")
+        for a in rev["avisos"]:
+            st.warning(a, icon="⚠️")
+
+    if rev["stats"]:
+        st.markdown("**Resumen**")
+        stt = rev["stats"]
+        col1, col2, col3 = st.columns(3)
+        col1.metric("Decisiones", stt.get("total", 0))
+        col2.metric("Con criterio de error", stt.get("con_invalidacion", 0))
+        if "acierto" in stt:
+            col3.metric("Acierto", f"{stt['acierto']:.0f}%",
+                        f"{stt.get('revisadas', 0)} revisadas", delta_color="off")
+
+with tab_historial:
+    if len(d) == 0:
+        st.caption("Todavía no hay registros.")
+    else:
+        st.dataframe(
+            d[["fecha", "tipo", "precio", "importe", "hipotesis",
+               "invalidacion_precio", "estado_animo"]],
+            use_container_width=True, hide_index=True,
+        )
+        st.download_button(
+            "Descargar diario.csv", d.to_csv(index=False).encode("utf-8"),
+            "diario.csv", "text/csv", type="primary",
+        )
+        st.caption(
+            "Descárgalo cada vez que añadas algo. La app no guarda nada entre "
+            "sesiones: el archivo es tuyo y solo tuyo."
+        )
 
 st.divider()
 st.caption(
