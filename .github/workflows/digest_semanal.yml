@@ -1,0 +1,34 @@
+name: Digest semanal de noticias
+
+# Domingo a las 9:00 UTC — antes de que revises el panel, coherente con el
+# resto del sistema (revisión dominical, ver documento base del proyecto).
+on:
+  schedule:
+    - cron: "0 9 * * 0"
+  workflow_dispatch:  # para lanzarlo a mano y probarlo
+
+jobs:
+  digest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Instalar dependencias
+        run: pip install requests
+
+      - name: Generar digest
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python digest_semanal.py
+
+      - name: Guardar cambios si los hay
+        run: |
+          git config user.name "contexto-btc-bot"
+          git config user.email "actions@github.com"
+          git add noticias.json
+          git diff --staged --quiet || git commit -m "Digest semanal de noticias"
+          git push
