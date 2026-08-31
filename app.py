@@ -27,6 +27,7 @@ import diario as dj
 from regimen import informe as informe_regimen
 from correlacion import cargar_macro, calcular_correlacion, texto_lectura
 from calendario import eventos_proximos, estado_calendario
+from halving import texto_aviso as texto_halving
 
 st.set_page_config(
     page_title="Contexto BTC",
@@ -284,6 +285,10 @@ if _ev:
         "(correlación 0,33). No indica dirección ni magnitud: solo que ese día "
         "suele haber más movimiento del habitual."
     )
+
+_hv = texto_halving()
+if _hv:
+    st.info(_hv, icon=None)
 
 st.divider()
 
