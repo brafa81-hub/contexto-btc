@@ -274,3 +274,89 @@ def evaluar(nombre: str, x: pd.Series, y: pd.Series,
 
     return {"variable": nombre, "estado": "PASA", "paso": None,
             "motivo": "supera los pasos aplicados", "detalle": r1}
+
+
+# =====================================================================
+# REGISTRO DE CANDIDATAS EVALUADAS
+# =====================================================================
+# Cada variable que se ha medido para intentar anticipar el precio de BTC,
+# con su veredicto y el motivo. Se mantiene aquí, y no en el historial del
+# chat, para que dentro de un año nadie tenga que volver a medir algo que
+# ya se probó — ni fiarse de la memoria de quién construyó esto.
+#
+# "RECHAZADA": se midió con datos suficientes y no pasó el filtro.
+# "PENDIENTE_REVISION": indicio real pero sin datos suficientes para
+#   concluir. No entra al panel. Se revisa cuando haya más historia.
+
+CANDIDATAS_EVALUADAS = {
+    "mvrv": {
+        "estado": "RECHAZADA",
+        "motivo": "ordenaba bien el retorno a 1 año hasta 2020; se rompió "
+                  "desde 2021 (la franja 20-40% pasó a rendir peor que la "
+                  "0-20% y la 60-80%)",
+    },
+    "funding_rate": {
+        "estado": "RECHAZADA",
+        "motivo": "los extremos parecían preceder caídas mayores, pero solo "
+                  "hay 4 episodios independientes desde 2019; p=0.21, no se "
+                  "distingue del azar",
+    },
+    "dxy": {"estado": "RECHAZADA", "motivo": "correlación débil (-0.17) y no anticipa: cae a 0.03 al día siguiente"},
+    "tipo_fed": {"estado": "RECHAZADA", "motivo": "correlación nula (±0.03) en las 5 épocas medidas"},
+    "vix": {
+        "estado": "RECHAZADA",
+        "motivo": "no anticipa (se solapa -0.67 con nasdaq); sumado a la "
+                  "volatilidad pasada de BTC aporta solo +1.4 puntos de R²",
+    },
+    "nasdaq": {
+        "estado": "ACEPTADA_COMO_CONTEXTO",
+        "motivo": "no anticipa (0.23 mismo día, -0.05 al siguiente), pero la "
+                  "correlación de 180d es información válida de diversificación. "
+                  "En el panel como contexto, no como señal",
+    },
+    "fear_greed_index": {"estado": "RECHAZADA", "motivo": "se calcula con volatilidad y momentum de BTC; es el precio reetiquetado, no un dato independiente"},
+    "hashrate": {
+        "estado": "RECHAZADA",
+        "motivo": "con 4 años parecía coherente (2 épocas positivas); con 17.7 "
+                  "años el signo cambia en 4 de 5 épocas en las 8 formulaciones "
+                  "probadas (variación 30d/60d, vs media 200d, hash ribbon)",
+    },
+    "m2_global": {
+        "estado": "RECHAZADA",
+        "motivo": "la hipótesis de un adelanto de 70-84 días no se sostiene "
+                  "(los valores en esa ventana están entre los más bajos "
+                  "medidos); el único desfase con correlación notable (14d, "
+                  "+0.20) no es estable entre épocas (-0.04 a +0.39)",
+    },
+    "flujos_etf": {
+        "estado": "PENDIENTE_REVISION",
+        "motivo": "3 formulaciones básicas (diario, acum 5d, acum 20d) no "
+                  "anticiparon nada. Al ampliar a 8 formulaciones, el acumulado "
+                  "a 60 días (corr -0.29) y la aceleración 5d-vs-20d (corr "
+                  "+0.15) mantienen el signo fuera de muestra (train "
+                  "2024-2025, test 2026). Pero solo hay ~19-21 observaciones "
+                  "independientes tras corregir el solapamiento, y probar 16 "
+                  "combinaciones exige Bonferroni 0.05/16=0.003, que ninguna "
+                  "alcanza. El test de permutación por episodios no es "
+                  "ejecutable: solo 2-3 episodios extremos independientes "
+                  "desde 2024 (mínimo 8). Revisar de nuevo cuando haya más "
+                  "historia — hacia 2028-2029 debería haber episodios "
+                  "suficientes. El signo negativo del acumulado a 60 días es "
+                  "el dato más intrigante: más entrada institucional "
+                  "precediendo peor retorno, lo contrario de la narrativa "
+                  "habitual — motivo de más, no de menos, para revisarlo con "
+                  "más datos en vez de descartarlo sin más",
+    },
+    "ciclo_halving": {
+        "estado": "ACEPTADA_CON_RESERVAS",
+        "motivo": "única candidata que superó el test de significancia. La "
+                  "fase 18-24 meses post-halving precede retornos negativos "
+                  "en los 4 ciclos existentes (p entre 0.014 y 0.049 según el "
+                  "test; acierta 2 de 3 fuera de muestra). n=4 es la "
+                  "evidencia más débil de todo lo aceptado en este proyecto. "
+                  "No entra como bloque activo del panel — ver halving.py, "
+                  "que solo se activa cuando la fecha real se acerca a esa "
+                  "ventana. Próxima ventana estimada: 2029-2030",
+    },
+}
+
