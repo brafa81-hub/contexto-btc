@@ -36,7 +36,7 @@ import requests
 from data_loader import load_price_csv
 from disparador_precio import evaluar, texto_disparo
 
-MODELO = "claude-sonnet-4-6"
+MODELO = "claude-sonnet-5"
 ARCHIVO_EVENTOS = "eventos.json"
 
 PROMPT_SISTEMA = """Eres el analista de eventos de un panel de contexto de \
