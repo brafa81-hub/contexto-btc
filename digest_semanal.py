@@ -111,33 +111,44 @@ def llamar_api(filings: list) -> str:
         },
         json={
             "model": MODELO,
-            "max_tokens": 3000,
+            # Sonnet 5 razona con "thinking" por defecto, y ese razonamiento
+            # CUENTA dentro de max_tokens. Con 2000-3000 el modelo agotaba
+            # el presupuesto pensando y no le quedaba espacio para escribir
+            # el texto final (visto en la ejecución del 31/08/2026: 15
+            # filings, thinking vacío truncado, stop_reason=max_tokens,
+            # cero texto). 6000 da margen de sobra para pensar y escribir
+            # sobre ~15-20 filings; si algún día llegan semanas con muchos
+            # más filings relevantes, este número es el primer sitio a
+            # revisar si vuelve a pasar.
+            "max_tokens": 6000,
             "system": PROMPT_SISTEMA,
             "messages": [{"role": "user", "content": mensaje}],
         },
-        timeout=90,
+        timeout=120,
     )
     r.raise_for_status()
     data = r.json()
 
-    # Diagnóstico: se registra siempre el motivo de parada y el uso de
-    # tokens, para que un análisis vacío no vuelva a pasar desapercibido
-    # como pasó en la primera ejecución real (stop_reason venía en
-    # 'max_tokens' antes de que el modelo llegara a escribir texto).
+    # Diagnóstico: se registra siempre el motivo de parada, el uso de
+    # tokens y si hubo bloque de razonamiento, para que un análisis vacío
+    # no vuelva a pasar desapercibido ni sea necesario adivinar la causa
+    # leyendo el JSON crudo como hizo falta la primera vez.
     stop = data.get("stop_reason", "?")
     uso = data.get("usage", {})
+    tipos = [b.get("type") for b in data.get("content", [])]
     print(f"  stop_reason={stop}  tokens_entrada={uso.get('input_tokens')}  "
-          f"tokens_salida={uso.get('output_tokens')}")
+          f"tokens_salida={uso.get('output_tokens')}  bloques={tipos}")
 
     bloques = [b["text"] for b in data.get("content", []) if b.get("type") == "text"]
     texto = "\n".join(bloques).strip()
 
     if not texto:
-        # No se guarda un digest vacío en silencio: mejor fallar de forma
-        # visible que dejar un registro sin contenido en noticias.json.
         raise RuntimeError(
-            f"La API respondió sin texto utilizable (stop_reason={stop}). "
-            f"Respuesta completa para depurar: {json.dumps(data)[:2000]}"
+            f"La API respondió sin texto utilizable (stop_reason={stop}, "
+            f"bloques={tipos}). Si stop_reason sigue siendo 'max_tokens' con "
+            f"este límite, el número de filings de la semana probablemente "
+            f"superó el margen — considera subir max_tokens de nuevo o "
+            f"dividir el análisis en dos llamadas."
         )
 
     if stop == "max_tokens":
