@@ -1,0 +1,51 @@
+name: Vigilancia de eventos atípicos
+
+# Se ejecuta cada 4 horas. La mayor parte de estas ejecuciones no hacen
+# nada más que comprobar un número y terminar — el coste real (llamada a
+# la API) solo ocurre cuando disparador_precio.py encuentra un movimiento
+# extremo, lo cual, según el backtest de 15 años, pasa entre 4 y 9 veces
+# al año en el régimen actual.
+on:
+  schedule:
+    - cron: "0 */4 * * *"
+  workflow_dispatch:  # permite lanzarlo a mano desde GitHub para probarlo
+
+jobs:
+  vigilar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Instalar dependencias
+        run: pip install pandas numpy requests
+
+      - name: Actualizar precio
+        run: python fetch_long_history.py --source bitstamp --out btc_long.csv
+
+      - name: Comprobar disparador
+        id: check
+        run: |
+          python disparador_precio.py btc_long.csv
+        continue-on-error: true
+        # El script sale con código 0 si hay disparo, 1 si no. Se captura
+        # aquí para decidir el siguiente paso sin que GitHub marque el
+        # workflow como "fallido" en el caso normal (sin disparo).
+
+      - name: Analizar el evento (solo si hubo disparo)
+        if: steps.check.outcome == 'success'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python analizar_evento.py btc_long.csv
+
+      - name: Guardar cambios si los hay
+        if: steps.check.outcome == 'success'
+        run: |
+          git config user.name "contexto-btc-bot"
+          git config user.email "actions@github.com"
+          git add eventos.json btc_long.csv
+          git diff --staged --quiet || git commit -m "Evento atípico detectado y analizado"
+          git push
