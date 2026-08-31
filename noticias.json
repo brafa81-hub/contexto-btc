@@ -22,5 +22,29 @@
     ],
     "analisis": "",
     "modelo": "claude-sonnet-5"
+  },
+  {
+    "generado": "2026-08-31T16:55:09.520022+00:00",
+    "periodo_dias": 8,
+    "n_filings": 15,
+    "accessions_incluidos": [
+      "0001213900-26-095339",
+      "0001213900-26-095271",
+      "0001213900-26-095293",
+      "0001074828-26-000074",
+      "0001213900-26-095172",
+      "0001213900-26-095339",
+      "0001839882-26-041914",
+      "0001213900-26-094761",
+      "0001213900-26-095233",
+      "0001839882-26-041749",
+      "0001493152-26-040333",
+      "0001213900-26-093966",
+      "0001213900-26-093966",
+      "0001213900-26-095339",
+      "0001493152-26-039964"
+    ],
+    "analisis": "# Análisis semanal — Filings SEC relacionados con Bitcoin\n\n**Nota metodológica importante:** Trabajo sobre esta lista con la información de tipo de formulario, emisor y fecha. Cuando no he podido verificar el contenido textual exacto del filing, lo marco explícitamente como inferencia basada en el patrón histórico de ese emisor/formulario, no como hecho confirmado. Esto es clave para no fabricar precisión que no tengo.\n\n---\n\n## Primero, lo que es RUIDO (no merece análisis de 7 puntos)\n\nLos siguientes son **424B2 de JPMorgan, Morgan Stanley y Bank of Nova Scotia** (7 filings en total):\n\nSon suplementos de prospecto para ofertas continuas de **notas estructuradas** bajo programas shelf ya existentes. Estos tres bancos emiten decenas de estas notas por semana, ligadas a índices, acciones individuales o, en algunos casos, ETFs cripto como subyacente de referencia. Que aparezcan en una búsqueda de \"Bitcoin\" probablemente se debe a que uno de los activos de referencia dentro de la nota es un ETF spot de BTC (ej. IBIT) — es un mecanismo de estructuración financiera rutinario, no una señal de tesis institucional nueva sobre BTC. El notional típico de estas notas individuales es pequeño frente al mercado de BTC (~2 billones USD de cap), y no hay evidencia en los metadatos de que se trate de una emisión de tamaño inusual. **Los clasifico como ruido administrativo** salvo que alguien confirme que el notional o los términos son atípicos.\n\n---\n\n## Filings potencialmente relevantes\n\n### 1. Twenty One Capital, Inc. (XXI) — 8-K, 2026-08-31\n*(Nota: aparece 3 veces en la lista con el mismo número de accession → es un solo filing, no tres eventos distintos)*\n\n1. **VERIFICACIÓN:** Es un 8-K de una empresa de tesorería de Bitcoin (vehículo formado vía fusión con Cantor Equity Partners, respaldado por Tether/SoftBank/Cantor). No puedo confirmar desde los metadatos qué ítem específico se reporta (compra de BTC, financiamiento, cambio ejecutivo).\n2. **MECANISMO:** Si reporta compra adicional de BTC para balance, añade demanda directa al spot; si es financiamiento (deuda/ATM), señala capacidad de apalancamiento futuro tipo \"MicroStrategy\".\n3. **DIRECCIÓN Y MAGNITUD:** Comparado con Strategy (MSTR), las compras de XXI históricamente son de menor escala; impacto directo en precio spot probablemente marginal salvo sorpresa de tamaño.\n4. **HORIZONTE:** Días si es anuncio puntual de compra; semanas si es cambio estructural de financiamiento.\n5. **YA DESCONTADO:** Alto — XXI publica actualizaciones de tenencias con regularidad, el merc\n\n[Aviso: la respuesta se cortó por límite de longitud.]",
+    "modelo": "claude-sonnet-5"
   }
 ]
