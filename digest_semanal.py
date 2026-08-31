@@ -42,32 +42,121 @@ MODELO = "claude-sonnet-5"
 ARCHIVO_NOTICIAS = "noticias.json"
 DIAS_VENTANA = 8  # una semana + margen, por si el workflow se retrasa
 
+# ---------------------------------------------------------------
+# FILTRADO PREVIO — barato, determinista y auto-auditable
+#
+# En la primera ejecución real (31/08/2026) se descubrió que enviar a la
+# API la lista cruda de EDGAR era caro e inútil:
+#
+#   - De 15 resultados, solo 12 eran documentos distintos. EDGAR devuelve
+#     un resultado por EXHIBIT, no por filing.
+#   - 7 de los 12 eran notas estructuradas de bancos que mencionan un ETF
+#     de BTC como subyacente. Ruido rutinario semanal.
+#
+# EL PROBLEMA DE FILTRAR CON UNA LISTA FIJA
+# ------------------------------------------
+# Una lista de emisores escrita a mano, basada en una sola semana de
+# datos, es exactamente el tipo de generalización que este proyecto ha
+# ido descartando (ver filtro.py: el hash ribbon parecía coherente con 4
+# años y se disolvió con 15). Si un emisor "de ruido" presenta algún día
+# un filing que sí importa, una lista fija lo tira en silencio.
+#
+# Y el fallo silencioso es el peor: nadie se entera.
+#
+# CÓMO SE RESUELVE AQUÍ
+# ---------------------
+# El filtro NO decide por sí solo qué es ruido. Descarta únicamente lo que
+# es ruido por CONSTRUCCIÓN (duplicados exactos del mismo documento) y
+# marca el resto con una señal de prioridad. Los de prioridad baja no se
+# eliminan: se agrupan y se mencionan al modelo en una sola línea, para
+# que pueda pedir atención sobre ellos si detecta algo anómalo.
+#
+# Coste: unas pocas decenas de tokens extra. A cambio, nada desaparece
+# sin dejar rastro, y no hace falta que nadie revise listas a mano.
+# ---------------------------------------------------------------
+
+# Patrones que, HISTÓRICAMENTE, corresponden a emisiones rutinarias. No se
+# usan para eliminar, solo para bajar prioridad. Si algún día uno de estos
+# resulta relevante, el modelo lo ve igualmente y puede señalarlo.
+PATRONES_RUTINA = (
+    "jpmorgan", "morgan stanley", "bank of nova scotia", "goldman sachs",
+    "citigroup", "bofa finance", "royal bank of canada", "toronto-dominion",
+    "ubs ag", "barclays bank", "hsbc", "wells fargo finance",
+)
+
+FORMULARIOS_RUTINA = ("424B2", "424B5", "424B3", "FWP")
+
+
+def prioridad(filing: dict) -> str:
+    """
+    'alta' o 'baja'. Baja no significa descartado — significa que va
+    resumido en una línea en vez de con análisis individual.
+    """
+    empresa = (filing.get("empresa") or "").lower()
+    formulario = (filing.get("formulario") or "").upper()
+
+    if any(p in empresa for p in PATRONES_RUTINA) and formulario in FORMULARIOS_RUTINA:
+        return "baja"
+    return "alta"
+
+
+def preparar_filings(crudos: list) -> dict:
+    """
+    Deduplica y clasifica por prioridad. No elimina nada salvo duplicados
+    exactos, que son ruido por construcción de la propia API de EDGAR.
+    """
+    vistos, unicos = set(), []
+    for f in crudos:
+        acc = f.get("accession")
+        if acc and acc not in vistos:
+            vistos.add(acc)
+            unicos.append(f)
+
+    altas = [f for f in unicos if prioridad(f) == "alta"]
+    bajas = [f for f in unicos if prioridad(f) == "baja"]
+
+    return {
+        "altas": altas,
+        "bajas": bajas,
+        "n_crudos": len(crudos),
+        "n_duplicados": len(crudos) - len(unicos),
+    }
+
+
 PROMPT_SISTEMA = """Eres el analista semanal de un panel de contexto de \
-Bitcoin. Se te da una lista de filings recientes de la SEC que mencionan \
-Bitcoin o ETFs spot de Bitcoin. No sabes de antemano si son relevantes — \
-tu primer trabajo es decidir cuáles importan y cuáles son ruido \
-administrativo (renovaciones rutinarias, correcciones menores).
+Bitcoin. La persona que lo lee no tiene tiempo ni conocimiento técnico \
+para verificar filings por su cuenta: confía en tu criterio para decidir \
+qué merece su atención. Sé el filtro que ella no puede ser.
 
-Para cada filing que consideres relevante, da un análisis con esta \
-estructura exacta:
+LO QUE PUEDES Y NO PUEDES VER: solo recibes METADATOS (empresa, tipo de \
+formulario, fecha, enlace). NO has leído el contenido. Por tanto:
 
-1. VERIFICACIÓN: qué dice el filing con certeza (es fuente primaria, así \
-que esto debería ser sólido).
-2. MECANISMO: por qué esto podría importar para el precio o el mercado \
-de BTC.
-3. DIRECCIÓN Y MAGNITUD: compara con precedentes si los conoces. No \
-inventes precisión que no tienes.
-4. HORIZONTE: si el efecto, de haberlo, es de días, semanas o meses.
-5. YA DESCONTADO: si es plausible que el mercado ya lo supiera antes de \
-este filing.
-6. QUÉ LO INVALIDARÍA: qué haría que esta lectura estuviera equivocada.
-7. ALCANCE: específico de una empresa, del sector ETF, o del mercado BTC \
-en general.
+- Di lo que el formulario y el emisor permiten inferir, marcando que es \
+inferencia.
+- NO afirmes qué dice el filing por dentro.
+- Un análisis honesto y corto vale más que uno completo e inventado.
 
-Si ningún filing de la lista es relevante (trámites rutinarios, ruido \
-administrativo), dilo explícitamente en una frase y no fuerces un \
-análisis de siete puntos sobre algo que no lo merece. Sé honesto sobre \
-la incertidumbre en todo momento."""
+Recibirás dos grupos:
+
+**PRIORITARIOS**: analiza cada uno, breve (una o dos frases por punto):
+1. QUÉ ES: qué tipo de evento sugiere este formulario para este emisor.
+2. POR QUÉ PODRÍA IMPORTAR: mecanismo por el que afectaría a BTC.
+3. MAGNITUD PROBABLE: comparado con precedentes. Si no tienes base para \
+estimarla, dilo.
+4. HORIZONTE: días, semanas o meses.
+
+**RUTINARIOS**: emisiones bancarias habituales (notas estructuradas con \
+ETFs de BTC como subyacente). Normalmente son ruido y basta con una línea \
+diciendo cuántos hubo. PERO revísalos: si detectas algo anómalo — un \
+emisor que no suele aparecer, un volumen inusual de filings del mismo \
+banco, un formulario raro para ese emisor — dilo explícitamente. Eres la \
+única salvaguarda contra que algo relevante se pierda en ese grupo.
+
+CIERRE OBLIGATORIO: termina con una sección "QUÉ HACER ESTA SEMANA" de \
+una a tres líneas, en lenguaje llano, sin jerga. Si nada merece atención, \
+dilo claramente: "Nada esta semana requiere tu atención" es una \
+conclusión perfectamente válida y útil. No inventes relevancia para \
+justificar el análisis."""
 
 
 def cargar_analizados() -> set:
@@ -91,16 +180,30 @@ def cargar_analizados() -> set:
         return set()
 
 
-def llamar_api(filings: list) -> str:
+def llamar_api(grupos: dict) -> str:
     api_key = os.environ.get("ANTHROPIC_API_KEY")
     if not api_key:
         raise SystemExit("Falta ANTHROPIC_API_KEY en el entorno.")
 
-    lista = "\n".join(
-        f"- [{f['fecha']}] {f['formulario']} · {f['empresa']} · {f['url'] or 'sin enlace'}"
-        for f in filings
+    def formatear(fs):
+        return "\n".join(
+            f"- [{f['fecha']}] {f['formulario']} · {f['empresa']} · {f['url'] or 'sin enlace'}"
+            for f in fs
+        )
+
+    partes = []
+    if grupos["altas"]:
+        partes.append("**PRIORITARIOS**\n" + formatear(grupos["altas"]))
+    else:
+        partes.append("**PRIORITARIOS**\n(ninguno esta semana)")
+
+    if grupos["bajas"]:
+        partes.append("**RUTINARIOS**\n" + formatear(grupos["bajas"]))
+
+    mensaje = (
+        "Filings de la SEC de esta semana relacionados con Bitcoin:\n\n"
+        + "\n\n".join(partes)
     )
-    mensaje = f"Filings de la SEC de esta semana relacionados con Bitcoin:\n\n{lista}"
 
     r = requests.post(
         "https://api.anthropic.com/v1/messages",
@@ -111,16 +214,12 @@ def llamar_api(filings: list) -> str:
         },
         json={
             "model": MODELO,
-            # Sonnet 5 razona con "thinking" por defecto, y ese razonamiento
-            # CUENTA dentro de max_tokens. Con 2000-3000 el modelo agotaba
-            # el presupuesto pensando y no le quedaba espacio para escribir
-            # el texto final (visto en la ejecución del 31/08/2026: 15
-            # filings, thinking vacío truncado, stop_reason=max_tokens,
-            # cero texto). 6000 da margen de sobra para pensar y escribir
-            # sobre ~15-20 filings; si algún día llegan semanas con muchos
-            # más filings relevantes, este número es el primer sitio a
-            # revisar si vuelve a pasar.
-            "max_tokens": 6000,
+            # Con el filtrado previo (deduplicación + descarte de ruido
+            # bancario), la lista pasó de 15 resultados crudos a ~5 filings
+            # reales. 8000 da margen holgado para analizarlos con la
+            # estructura de 5 puntos, incluyendo el razonamiento interno
+            # de Sonnet 5, que también consume de este presupuesto.
+            "max_tokens": 8000,
             "system": PROMPT_SISTEMA,
             "messages": [{"role": "user", "content": mensaje}],
         },
@@ -157,12 +256,15 @@ def llamar_api(filings: list) -> str:
     return texto
 
 
-def guardar_digest(filings: list, analisis: str) -> None:
+def guardar_digest(grupos: dict, analisis: str) -> None:
+    todos = grupos["altas"] + grupos["bajas"]
     registro = {
         "generado": datetime.now(timezone.utc).isoformat(),
         "periodo_dias": DIAS_VENTANA,
-        "n_filings": len(filings),
-        "accessions_incluidos": [f["accession"] for f in filings],
+        "n_prioritarios": len(grupos["altas"]),
+        "n_rutinarios": len(grupos["bajas"]),
+        "n_duplicados_descartados": grupos["n_duplicados"],
+        "accessions_incluidos": [f["accession"] for f in todos],
         "analisis": analisis,
         "modelo": MODELO,
     }
@@ -195,17 +297,23 @@ if __name__ == "__main__":
         print(f"Error consultando la SEC: {type(e).__name__}: {e}")
         sys.exit(1)
 
+    g = preparar_filings(todos)
     ya_vistos = cargar_analizados()
-    nuevos = [f for f in todos if f["accession"] not in ya_vistos]
 
-    print(f"  {len(todos)} filings totales, {len(nuevos)} nuevos desde la última vez")
+    # El filtro de duplicados se aplica a ambos grupos por igual.
+    g["altas"] = [f for f in g["altas"] if f["accession"] not in ya_vistos]
+    g["bajas"] = [f for f in g["bajas"] if f["accession"] not in ya_vistos]
 
-    if not nuevos:
-        print("Nada nuevo que analizar esta semana.")
+    print(f"  {g['n_crudos']} resultados de EDGAR")
+    print(f"  −{g['n_duplicados']} duplicados (EDGAR devuelve uno por exhibit)")
+    print(f"  {len(g['altas'])} prioritarios · {len(g['bajas'])} rutinarios (nuevos)")
+
+    if not g["altas"] and not g["bajas"]:
+        print("\nNada nuevo que analizar esta semana.")
         sys.exit(0)
 
     print("\nLlamando a la API para el análisis...")
-    analisis = llamar_api(nuevos)
+    analisis = llamar_api(g)
     print("\n" + analisis)
 
-    guardar_digest(nuevos, analisis)
+    guardar_digest(g, analisis)
