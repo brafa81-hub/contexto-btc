@@ -71,7 +71,12 @@ la incertidumbre en todo momento."""
 
 
 def cargar_analizados() -> set:
-    """Accession numbers ya procesados, para no repetir ni facturar de más."""
+    """
+    Accession numbers ya procesados con éxito, para no repetir ni facturar
+    de más. Los digests con 'analisis' vacío (como el fallo del 31/08/2026,
+    causado por max_tokens agotándose antes del texto) NO cuentan como
+    vistos: sus filings deben poder reintentarse.
+    """
     if not os.path.exists(ARCHIVO_NOTICIAS):
         return set()
     try:
@@ -79,7 +84,8 @@ def cargar_analizados() -> set:
             registros = json.load(f)
         vistos = set()
         for r in registros:
-            vistos.update(r.get("accessions_incluidos", []))
+            if r.get("analisis", "").strip():
+                vistos.update(r.get("accessions_incluidos", []))
         return vistos
     except (json.JSONDecodeError, FileNotFoundError):
         return set()
@@ -105,7 +111,7 @@ def llamar_api(filings: list) -> str:
         },
         json={
             "model": MODELO,
-            "max_tokens": 2000,
+            "max_tokens": 3000,
             "system": PROMPT_SISTEMA,
             "messages": [{"role": "user", "content": mensaje}],
         },
@@ -113,8 +119,31 @@ def llamar_api(filings: list) -> str:
     )
     r.raise_for_status()
     data = r.json()
+
+    # Diagnóstico: se registra siempre el motivo de parada y el uso de
+    # tokens, para que un análisis vacío no vuelva a pasar desapercibido
+    # como pasó en la primera ejecución real (stop_reason venía en
+    # 'max_tokens' antes de que el modelo llegara a escribir texto).
+    stop = data.get("stop_reason", "?")
+    uso = data.get("usage", {})
+    print(f"  stop_reason={stop}  tokens_entrada={uso.get('input_tokens')}  "
+          f"tokens_salida={uso.get('output_tokens')}")
+
     bloques = [b["text"] for b in data.get("content", []) if b.get("type") == "text"]
-    return "\n".join(bloques).strip()
+    texto = "\n".join(bloques).strip()
+
+    if not texto:
+        # No se guarda un digest vacío en silencio: mejor fallar de forma
+        # visible que dejar un registro sin contenido en noticias.json.
+        raise RuntimeError(
+            f"La API respondió sin texto utilizable (stop_reason={stop}). "
+            f"Respuesta completa para depurar: {json.dumps(data)[:2000]}"
+        )
+
+    if stop == "max_tokens":
+        texto += "\n\n[Aviso: la respuesta se cortó por límite de longitud.]"
+
+    return texto
 
 
 def guardar_digest(filings: list, analisis: str) -> None:
