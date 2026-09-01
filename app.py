@@ -28,6 +28,7 @@ from regimen import informe as informe_regimen
 from correlacion import cargar_macro, calcular_correlacion, texto_lectura
 from calendario import eventos_proximos, estado_calendario
 from halving import texto_aviso as texto_halving
+from resumen import generar_resumen, generar_subtexto
 import noticias as nt
 
 st.set_page_config(
@@ -216,6 +217,12 @@ s = calcular_situacion(df)
 v = calcular_valoracion(df)
 c = calcular_ciclo(df)
 
+# rg y el informe de régimen se calculan aquí (no solo en el bloque 06)
+# porque el resumen de arriba del todo los necesita antes que nada. El
+# bloque 06 reutiliza estas mismas variables, no las vuelve a calcular.
+rg = calcular_rango_esperado(df)
+_aud = informe_regimen(df)
+
 # ---------------------------------------------------------------
 # Cabecera
 # ---------------------------------------------------------------
@@ -261,6 +268,17 @@ fig.update_layout(
     legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
 )
 st.plotly_chart(fig, use_container_width=True)
+
+# ---------------------------------------------------------------
+# Resumen en una frase — "¿qué quiere decirnos este sistema, ahora
+# mismo?". Va antes que cualquier otro bloque a propósito: es lo primero
+# que se lee, y por eso es la pieza que más fácil sería convertir en una
+# recomendación disfrazada de resumen. No lo es — ver resumen.py para el
+# porqué de esa frontera y por qué esta frase no usa la API.
+# ---------------------------------------------------------------
+st.markdown(f"#### {generar_resumen(s, v, rg, _aud['avisos'])}")
+st.caption(generar_subtexto())
+st.divider()
 
 # ---------------------------------------------------------------
 # Calendario — lo único del panel que no necesita demostrar poder
@@ -417,12 +435,10 @@ else:
 # ---------------------------------------------------------------
 st.subheader("06 · Cuánto puede moverse")
 
-rg = calcular_rango_esperado(df)
-
+# rg y _aud ya se calcularon arriba del todo, para el resumen de síntesis.
 # Auditoría del propio panel: comprueba si esta calibración sigue siendo
 # válida. Se muestra ANTES de los números para que se lean con el contexto
 # correcto, no después de haberlos tomado por buenos.
-_aud = informe_regimen(df)
 for _a in _aud["avisos"]:
     if _a["nivel"] == "alto":
         st.warning(_a["texto"], icon="⚠️")
