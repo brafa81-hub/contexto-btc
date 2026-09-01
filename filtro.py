@@ -289,6 +289,27 @@ def evaluar(nombre: str, x: pd.Series, y: pd.Series,
 #   concluir. No entra al panel. Se revisa cuando haya más historia.
 
 CANDIDATAS_EVALUADAS = {
+    "probabilidad_contexto": {
+        "estado": "SIN_EVIDENCIA",
+        "motivo": "experimento formal con protocolo congelado antes de "
+                  "ejecutar (ver probabilidad_contexto_v1.1.md). Contexto de "
+                  "3 dimensiones ya validadas (tendencia SMA200, valoración "
+                  "Mayer, volatilidad), 8 celdas, ventanas de 28d no "
+                  "solapadas, benchmark por periodo, selección automática "
+                  "con penalización por muestra pequeña (Wilson). Con 103 "
+                  "observaciones de train repartidas en 8 celdas (2 vacías "
+                  "por construcción), ninguna alcanzó simultáneamente n≥20 y "
+                  "diferencia ≥10pp frente al benchmark. Paso 4: no hay "
+                  "candidata, el test no se abrió. Mejor resultado no "
+                  "cualificado: celda [precio>SMA200, valoración alta, vol "
+                  "alta], n=27, 63% positivo, +7pp — registrado como señal "
+                  "exploratoria no validada, no como indicador. Conclusión "
+                  "metodológica: el espacio de 8 celdas es demasiado grande "
+                  "para la muestra que 15 años de datos permiten; seguir "
+                  "subdividiendo el contexto agravaría el problema. Una "
+                  "investigación futura con variables continuas sería un "
+                  "experimento nuevo, no una revisión de este.",
+    },
     "mvrv": {
         "estado": "RECHAZADA",
         "motivo": "ordenaba bien el retorno a 1 año hasta 2020; se rompió "
