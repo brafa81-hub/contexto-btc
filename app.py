@@ -28,6 +28,7 @@ from regimen import informe as informe_regimen
 from correlacion import cargar_macro, calcular_correlacion, texto_lectura
 from calendario import eventos_proximos, estado_calendario
 from halving import texto_aviso as texto_halving
+import noticias as nt
 
 st.set_page_config(
     page_title="Contexto BTC",
@@ -668,6 +669,54 @@ with tab_historial:
             "Descárgalo cada vez que añadas algo. La app no guarda nada entre "
             "sesiones: el archivo es tuyo y solo tuyo."
         )
+
+st.divider()
+
+# ---------------------------------------------------------------
+# 10 — Digest semanal de noticias
+#
+# Lo genera digest_semanal.py cada domingo vía GitHub Actions, leyendo
+# filings de la SEC. Aquí solo se muestra: el resumen accionable visible,
+# el análisis completo plegado. Ver noticias.py para el porqué de esa
+# separación.
+# ---------------------------------------------------------------
+st.subheader("10 · Qué ha pasado esta semana")
+
+_dig = nt.cargar_digest("noticias.json")
+
+if _dig is None:
+    st.caption(
+        "Todavía no hay ningún digest. Lo genera el workflow «Digest semanal "
+        "de noticias» cada domingo; también se puede lanzar a mano desde la "
+        "pestaña Actions del repositorio."
+    )
+else:
+    _est = nt.estado(_dig)
+    _resumen, _cuerpo = nt.separar_secciones(_dig["analisis"])
+
+    if _est["viejo"]:
+        st.warning(
+            f"El último digest es del {_est['fecha']} ({_est['dias']:.0f} días). "
+            f"El workflow debería generar uno cada domingo — si no aparece uno "
+            f"nuevo, conviene revisar la pestaña Actions del repositorio.",
+            icon="⚠️",
+        )
+
+    if _resumen:
+        st.markdown(_resumen)
+        st.caption(
+            f"Filings de la SEC de la semana del {_est['fecha']}: "
+            f"{_est['n_prioritarios']} analizados en detalle, "
+            f"{_est['n_rutinarios']} rutinarios revisados en bloque. "
+            "Análisis generado automáticamente sobre metadatos, no sobre el "
+            "texto de los filings."
+        )
+        with st.expander("Ver el análisis completo"):
+            st.markdown(_cuerpo)
+    else:
+        # El digest no trae sección de cierre: se muestra entero en vez de
+        # dejar el bloque vacío sin explicar por qué.
+        st.markdown(_cuerpo)
 
 st.divider()
 st.caption(
