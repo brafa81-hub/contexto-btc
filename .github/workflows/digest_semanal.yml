@@ -18,17 +18,32 @@ jobs:
           python-version: "3.13"
 
       - name: Instalar dependencias
-        run: pip install requests
+        run: pip install requests pandas numpy
 
-      - name: Generar digest
+      - name: Actualizar precio
+        run: python fetch_long_history.py --source bitstamp --out btc_long.csv
+        continue-on-error: true
+        # Si Bitstamp falla, el juicio se genera con el CSV que ya está en
+        # el repo. Un precio de hace unos días sigue dando contexto útil;
+        # abortar el workflow entero por eso sería peor.
+
+      - name: Generar digest de noticias
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: python digest_semanal.py
+        continue-on-error: true
+        # El digest y el juicio son independientes: si una fuente de
+        # noticias cae, el juicio de contexto debe generarse igualmente.
+
+      - name: Generar juicio de contexto
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python juicio.py
 
       - name: Guardar cambios si los hay
         run: |
           git config user.name "contexto-btc-bot"
           git config user.email "actions@github.com"
-          git add noticias.json
-          git diff --staged --quiet || git commit -m "Digest semanal de noticias"
+          git add noticias.json juicio.json btc_long.csv
+          git diff --staged --quiet || git commit -m "Digest semanal y juicio de contexto"
           git push
