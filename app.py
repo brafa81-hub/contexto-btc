@@ -30,6 +30,7 @@ from calendario import eventos_proximos, estado_calendario
 from halving import texto_aviso as texto_halving
 from resumen import generar_resumen, generar_subtexto
 import noticias as nt
+from juicio import cargar_juicio
 
 st.set_page_config(
     page_title="Contexto BTC",
@@ -278,6 +279,24 @@ st.plotly_chart(fig, use_container_width=True)
 # ---------------------------------------------------------------
 st.markdown(f"#### {generar_resumen(s, v, rg, _aud['avisos'])}")
 st.caption(generar_subtexto())
+
+# ---------------------------------------------------------------
+# Juicio de contexto — lo genera juicio.py cada domingo. Integra los
+# bloques y señala contradicciones entre ellos, que es lo que el código
+# hace mal. No predice dirección: el prompt lleva el registro de
+# CANDIDATAS_EVALUADAS para impedir que atribuya capacidad direccional
+# a variables que se midieron y no la tienen.
+# ---------------------------------------------------------------
+_j = cargar_juicio("juicio.json")
+if _j:
+    with st.expander("Lectura conjunta de los bloques", expanded=False):
+        st.markdown(_j["juicio"])
+        st.caption(
+            f"Generado el {_j['generado'][:10]} a partir de los bloques del "
+            "panel. Señala coincidencias y contradicciones entre ellos; no "
+            "predice dirección ni recomienda operaciones."
+        )
+
 st.divider()
 
 # ---------------------------------------------------------------
