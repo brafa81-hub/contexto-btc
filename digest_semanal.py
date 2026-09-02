@@ -37,6 +37,7 @@ from datetime import datetime, timezone
 import requests
 
 from fuente_sec import buscar_filings
+from fuentes_noticias import recoger_noticias
 
 MODELO = "claude-sonnet-5"
 ARCHIVO_NOTICIAS = "noticias.json"
@@ -152,6 +153,19 @@ emisor que no suele aparecer, un volumen inusual de filings del mismo \
 banco, un formulario raro para ese emisor — dilo explícitamente. Eres la \
 única salvaguarda contra que algo relevante se pierda en ese grupo.
 
+**NOTICIAS NIVEL 1** (fuente oficial: Reserva Federal): son hechos \
+publicados por el propio organismo. Puedes tratarlos como confirmados. \
+Analiza solo los que puedan afectar a BTC.
+
+**NOTICIAS NIVEL 3** (prensa especializada): NO son fuente primaria. \
+Trátalos como no confirmados salvo que el propio titular remita a un \
+organismo oficial. Aquí tu trabajo es sobre todo descartar: la mayoría \
+serán titulares de relleno, precios o especulación, y esos no merecen \
+ni una línea. Menciona solo lo que sea un hecho verificable con impacto \
+plausible — regulación de cualquier país, hackeos, quiebras, decisiones \
+judiciales. Si algo parece importante pero solo lo dice un medio, dilo \
+así: "reportado por [medio], sin confirmación oficial".
+
 CIERRE OBLIGATORIO: termina con una sección "QUÉ HACER ESTA SEMANA" de \
 una a tres líneas, en lenguaje llano, sin jerga. Si nada merece atención, \
 dilo claramente: "Nada esta semana requiere tu atención" es una \
@@ -180,7 +194,7 @@ def cargar_analizados() -> set:
         return set()
 
 
-def llamar_api(grupos: dict) -> str:
+def llamar_api(grupos: dict, noticias: dict = None) -> str:
     api_key = os.environ.get("ANTHROPIC_API_KEY")
     if not api_key:
         raise SystemExit("Falta ANTHROPIC_API_KEY en el entorno.")
@@ -189,6 +203,13 @@ def llamar_api(grupos: dict) -> str:
         return "\n".join(
             f"- [{f['fecha']}] {f['formulario']} · {f['empresa']} · {f['url'] or 'sin enlace'}"
             for f in fs
+        )
+
+    def formatear_noticias(items):
+        return "\n".join(
+            f"- [{i['fecha']}] {i['titulo']} ({i['fuente']})"
+            + (f"\n    {i['resumen']}" if i["resumen"] else "")
+            for i in items
         )
 
     partes = []
@@ -200,8 +221,27 @@ def llamar_api(grupos: dict) -> str:
     if grupos["bajas"]:
         partes.append("**RUTINARIOS**\n" + formatear(grupos["bajas"]))
 
+    if noticias:
+        if noticias.get("nivel_1"):
+            partes.append("**NOTICIAS NIVEL 1**\n"
+                          + formatear_noticias(noticias["nivel_1"]))
+        if noticias.get("nivel_3"):
+            partes.append("**NOTICIAS NIVEL 3**\n"
+                          + formatear_noticias(noticias["nivel_3"]))
+        # Las fuentes caídas se informan al modelo: si una semana falta
+        # cobertura, debe poder decirlo en vez de dar por hecho que no
+        # pasó nada en esa área.
+        caidas = [e["fuente"] for e in noticias.get("estado_fuentes", [])
+                  if not e["ok"]]
+        if caidas:
+            partes.append("**AVISO DE COBERTURA**\nEstas fuentes no "
+                          "respondieron esta semana: " + ", ".join(caidas)
+                          + ". Menciónalo si es relevante para la confianza "
+                            "del análisis.")
+
     mensaje = (
-        "Filings de la SEC de esta semana relacionados con Bitcoin:\n\n"
+        "Información de esta semana relacionada con Bitcoin "
+        "(filings de la SEC y noticias):\n\n"
         + "\n\n".join(partes)
     )
 
@@ -256,7 +296,7 @@ def llamar_api(grupos: dict) -> str:
     return texto
 
 
-def guardar_digest(grupos: dict, analisis: str) -> None:
+def guardar_digest(grupos: dict, analisis: str, noticias: dict = None) -> None:
     todos = grupos["altas"] + grupos["bajas"]
     registro = {
         "generado": datetime.now(timezone.utc).isoformat(),
@@ -265,6 +305,10 @@ def guardar_digest(grupos: dict, analisis: str) -> None:
         "n_rutinarios": len(grupos["bajas"]),
         "n_duplicados_descartados": grupos["n_duplicados"],
         "accessions_incluidos": [f["accession"] for f in todos],
+        "n_noticias_nivel1": len(noticias["nivel_1"]) if noticias else 0,
+        "n_noticias_nivel3": len(noticias["nivel_3"]) if noticias else 0,
+        "fuentes_caidas": [e["fuente"] for e in noticias["estado_fuentes"]
+                           if not e["ok"]] if noticias else [],
         "analisis": analisis,
         "modelo": MODELO,
     }
@@ -290,17 +334,16 @@ def guardar_digest(grupos: dict, analisis: str) -> None:
 
 
 if __name__ == "__main__":
+    # --- 1. Filings de la SEC (nivel 1, fuente primaria) ---
     print(f"Buscando filings de la SEC de los últimos {DIAS_VENTANA} días...")
     try:
         todos = buscar_filings(dias=DIAS_VENTANA)
     except Exception as e:
         print(f"Error consultando la SEC: {type(e).__name__}: {e}")
-        sys.exit(1)
+        todos = []
 
     g = preparar_filings(todos)
     ya_vistos = cargar_analizados()
-
-    # El filtro de duplicados se aplica a ambos grupos por igual.
     g["altas"] = [f for f in g["altas"] if f["accession"] not in ya_vistos]
     g["bajas"] = [f for f in g["bajas"] if f["accession"] not in ya_vistos]
 
@@ -308,12 +351,33 @@ if __name__ == "__main__":
     print(f"  −{g['n_duplicados']} duplicados (EDGAR devuelve uno por exhibit)")
     print(f"  {len(g['altas'])} prioritarios · {len(g['bajas'])} rutinarios (nuevos)")
 
-    if not g["altas"] and not g["bajas"]:
+    # --- 2. Noticias (Fed nivel 1 + prensa nivel 3) ---
+    # El fallo de esta parte NO impide el digest: si las fuentes de noticias
+    # caen, el análisis sigue haciéndose con los filings y el propio modelo
+    # recibe aviso de qué cobertura falta.
+    print(f"\nRecogiendo noticias de los últimos {DIAS_VENTANA} días...")
+    try:
+        noticias = recoger_noticias(dias=DIAS_VENTANA)
+        for e in noticias["estado_fuentes"]:
+            marca = "ok " if e["ok"] else "FALLO"
+            print(f"  [{marca}] {e['fuente']}: {e['n']} items"
+                  + (f"  ({e['error']})" if e["error"] else ""))
+        print(f"  {len(noticias['nivel_1'])} de nivel 1 · "
+              f"{len(noticias['nivel_3'])} de nivel 3 "
+              f"({noticias['n_duplicados']} duplicados entre medios)")
+    except Exception as e:
+        print(f"  Error recogiendo noticias: {type(e).__name__}: {e}")
+        noticias = None
+
+    hay_filings = bool(g["altas"] or g["bajas"])
+    hay_noticias = bool(noticias and (noticias["nivel_1"] or noticias["nivel_3"]))
+
+    if not hay_filings and not hay_noticias:
         print("\nNada nuevo que analizar esta semana.")
         sys.exit(0)
 
     print("\nLlamando a la API para el análisis...")
-    analisis = llamar_api(g)
+    analisis = llamar_api(g, noticias)
     print("\n" + analisis)
 
-    guardar_digest(g, analisis)
+    guardar_digest(g, analisis, noticias)
