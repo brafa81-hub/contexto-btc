@@ -1,0 +1,14 @@
+{
+  "nota": "Indice de versiones de reglas de Nivel 1. Una version sellada NO se edita jamas: el sha256 es la prueba. Abrir una version nueva = fichero nuevo + entrada nueva aqui + cerrar la anterior con vigente_hasta. Nunca se re-evaluan experimentos antiguos con reglas nuevas.",
+  "versiones": [
+    {
+      "id": "v1",
+      "fichero": "v1.json",
+      "sha256": "4efc029de3f7d23108be84519f8d52fd1c05bf052acebe35f813cd48d9af6867",
+      "vigente_desde": "2026-09-03",
+      "vigente_hasta": null,
+      "sellada_por": "brafa81",
+      "motivo": "Version inicial del modulo de auto-mejora."
+    }
+  ]
+}

@@ -1,0 +1,103 @@
+{
+  "id": "v1",
+  "titulo": "Reglas de Nivel 1 — Contexto-BTC",
+  "vigente_desde": "2026-09-03",
+  "vigente_hasta": null,
+  "nota": "Fichero INMUTABLE. Una vez sellado no se edita nunca. Cualquier cambio exige abrir v2.json con decision humana explicita. Los experimentos sellados a v1 se interpretan siempre bajo estas reglas, nunca bajo las de una version posterior.",
+  "significacion": {
+    "metodo": "BATCH_PRDS",
+    "referencia": "Zrnic, Jiang, Ramdas, Jordan (2020) - The Power of Batching in Multiple Hypothesis Testing (AISTATS). Variante PRDS.",
+    "controla": "FDR a lo largo de toda la secuencia de lotes de esta version",
+    "q": 0.1,
+    "n_min_lote": 5,
+    "lambda": 0.5,
+    "w0_fraccion_de_q": 0.5,
+    "justificacion_q": "0.10 y no 0.05 porque esta es la puerta de DESCUBRIMIENTO, no la final. La confirmacion forward posterior es el segundo examen. Exigir 0.05 en ambas deja el sistema sin poder.",
+    "justificacion_metodo": "Los tests llegan en lotes trimestrales; aprovechar esa estructura da mas poder que tratarlos de uno en uno. Se descarta SAFFRON porque su umbral se desploma sin descubrimientos previos (0.0109 en el test 1, 0.00009 en el test 20) y porque su veredicto depende del orden dentro del lote. Se descarta Batch-BH porque exige independencia entre los p-valores del lote, insostenible con variables que comparten factores de mercado.",
+    "supuesto_dependencia": "Dependencia positiva (PRDS) dentro del lote; independencia entre lotes. La independencia entre lotes es defendible: trimestres distintos con conjuntos de variables distintos. La dependencia positiva dentro del lote NO se da por demostrada - correlacion positiva no implica PRDS. Se adopta como supuesto declarado y se compensa con margen: en simulacion con el perfil del sistema el FDR se mantuvo en 0.033-0.069 frente al objetivo 0.10, incluso con correlacion 0.8 y con lotes que mezclan cargas positivas y negativas.",
+    "n_min_lote_justificacion": "Los lotes pequenos degradan el control del FDR. Por debajo de 5 variables se acumula al trimestre siguiente en lugar de testear."
+  },
+  "colas": {
+    "nota": "Dos familias independientes, cada una con su propia secuencia SAFFRON y su propio control de FDR al nivel q. NO existe control conjunto del FDR global entre ambas colas: es la consecuencia asumida de separar presupuestos.",
+    "descubrimiento": {
+      "descripcion": "Variables candidatas nuevas propuestas por el Nivel 2",
+      "presupuesto_tests": 180
+    },
+    "revision": {
+      "descripcion": "Variables en estado PENDIENTE_REVISION que se re-testean al acumular episodios independientes suficientes",
+      "presupuesto_tests": 20
+    }
+  },
+  "presupuesto_version": {
+    "total_tests": 200,
+    "al_agotarse": "CERRAR_VERSION",
+    "nota": "El presupuesto NO es denominador de correccion. Es limite operativo y de auditoria: impide que el sistema pruebe indefinidamente. Al agotarse, la version se cierra y abrir la siguiente requiere decision humana."
+  },
+  "orden_tests": {
+    "criterio": "alfabetico_por_id_candidata",
+    "nota": "CRITICO. Dentro de cada lote trimestral el orden se fija ANTES de calcular ningun p-valor y nunca depende del resultado. Ordenar por p-valor destruye por completo la garantia de SAFFRON."
+  },
+  "gates_previos": {
+    "nota": "Implementados en filtro.py. Son gatekeeping jerarquico: una variable descartada en un gate NO consume presupuesto alfa, porque nunca llega a producir p-valor.",
+    "secuencia": [
+      "estabilidad_entre_epocas",
+      "anticipacion_no_contemporanea",
+      "contribucion_r2_incremental",
+      "permutacion_bloques_no_solapados"
+    ]
+  },
+  "permutacion": {
+    "n_permutaciones": 10000,
+    "bloques_no_solapados": true,
+    "semilla": 20260903,
+    "nota": "Semilla fija y sellada: sin ella, repetir un experimento da otro p-valor y el sellado no verifica nada."
+  },
+  "datos_minimos": {
+    "n_observaciones": 500,
+    "n_episodios_independientes": 8,
+    "nota": "Por debajo de estos minimos el veredicto es PENDIENTE_REVISION, nunca RECHAZADA. Falta de datos no es evidencia de ausencia de senal."
+  },
+  "ventanas": {
+    "in_sample": [
+      "2011-01-01",
+      "2018-12-31"
+    ],
+    "out_of_sample": [
+      "2019-01-01",
+      "2023-12-31"
+    ],
+    "forward": [
+      "2024-01-01",
+      null
+    ],
+    "nota": "forward con fin abierto: avanza con el calendario."
+  },
+  "confirmacion_forward": {
+    "activa": true,
+    "trimestres_requeridos": 4,
+    "criterio_signo": "el signo del efecto debe mantenerse en los 4 trimestres",
+    "criterio_magnitud_min_fraccion": 0.5,
+    "nota": "Segundo examen sobre datos que NO existian cuando el Nivel 2 propuso la variable. Es la unica proteccion real contra la seleccion de hipotesis basada en los datos; ninguna correccion por comparaciones multiples resuelve ese problema.",
+    "al_fallar": "RECHAZADA_EN_CONFIRMACION"
+  },
+  "benchmark": {
+    "definicion": "comprar BTC el primer dia del periodo y mantener sin tocar",
+    "comision_pct": 0.001,
+    "slippage_pct": 0.0005,
+    "impuesto": "IRPF ahorro Espana por tramos, FIFO, aplicado sobre ganancia realizada",
+    "comparacion": "neta de costes e impuestos, nunca bruta"
+  },
+  "estados": {
+    "PROPUESTA": "registrada por el Nivel 2, aun sin testear",
+    "RECHAZADA": "no supero un gate previo o no supero el umbral SAFFRON",
+    "PENDIENTE_REVISION": "no alcanza los minimos de datos; se re-testea por la cola de revision",
+    "CANDIDATA": "supero gates + SAFFRON; se vigila pero NO entra al dashboard",
+    "CONFIRMADA": "supero ademas la confirmacion forward; entra al dashboard",
+    "RECHAZADA_EN_CONFIRMACION": "era CANDIDATA y fallo la confirmacion forward; no se vuelve a testear en esta version"
+  },
+  "exito": {
+    "entrada_al_sistema": "solo CONFIRMADA",
+    "nota": "CANDIDATA no produce ninguna salida visible al usuario. La promocion CANDIDATA->CONFIRMADA es automatica, igual que PROPUESTA->CANDIDATA. Lo unico que exige decision humana es abrir una version nueva de reglas."
+  },
+  "nota_evidencia_v1": "Simulacion previa al sellado, 1500 repeticiones x 12 lotes x 8 variables, tasa base 1 de 11, tests bilaterales: FDR Batch-PRDS 0.033 (indep), 0.045 (corr 0.5), 0.069 (corr 0.8), 0.043 (mixta pos/neg). Batch-BH se fue a 0.150 con corr 0.8. Benjamini-Yekutieli controlo en 0.016-0.023 pero con poder 0.28 frente a 0.36 de Batch-PRDS."
+}

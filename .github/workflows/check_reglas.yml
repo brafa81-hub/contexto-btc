@@ -1,0 +1,27 @@
+# Guardar como .github/workflows/check_reglas.yml
+# Impide que una version de reglas ya sellada se edite en un commit.
+name: check-reglas
+on: [push, pull_request]
+jobs:
+  integridad:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.13'}
+      - name: Ninguna version sellada puede modificarse
+        run: |
+          BASE="${{ github.event.pull_request.base.sha || github.event.before }}"
+          if [ -z "$BASE" ] || [ "$BASE" = "0000000000000000000000000000000000000000" ]; then
+            echo "Sin base de comparacion, se omite."; exit 0
+          fi
+          CAMBIOS=$(git diff --name-only --diff-filter=M "$BASE" HEAD -- 'reglas/v*.json' || true)
+          if [ -n "$CAMBIOS" ]; then
+            echo "BLOQUEADO: se ha modificado una version de reglas ya sellada:"
+            echo "$CAMBIOS"
+            echo "Las reglas selladas no se editan. Abre una version nueva (v2.json)."
+            exit 1
+          fi
+      - name: Verificar hashes y cadena del registro
+        run: python -c "import reglas,sys; r=reglas.verificar_integridad(); print(r); sys.exit(0 if r['ok'] else 1)"
