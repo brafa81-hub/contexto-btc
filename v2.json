@@ -1,7 +1,7 @@
 {
   "meta": {
     "nombre": "Contexto-BTC — Protocolo de validacion v2",
-    "version_esquema": "2.0.0",
+    "version_esquema": "2.1.0",
     "fecha_creacion": "2026-09-03",
     "archivo_registro_asociado": "registro.json",
     "declaracion_obligatoria": "Batch-PRDS actua como cribado de descubrimiento. La garantia real de control de falsos positivos descansa en la confirmacion forward sobre datos que no existian cuando la variable fue propuesta.",
@@ -61,8 +61,70 @@
         "titulo": "alta del estado NULO_V1",
         "fecha": "2026-09-03",
         "motivo": "probabilidad_contexto no encajaba en ninguna casilla existente. Excepcion documentada a estados.cerrado."
+      },
+      {
+        "n": 10,
+        "titulo": "presupuesto derivado del registro",
+        "fecha": "2026-09-03",
+        "motivo": "presupuesto_por_trimestre vive fuera de la cadena de hashes y es editable sin romperla."
+      },
+      {
+        "n": 11,
+        "titulo": "anti-truncamiento por Action",
+        "fecha": "2026-09-03",
+        "motivo": "La cadena detecta modificacion de entradas pasadas pero no borrado de las ultimas."
+      },
+      {
+        "n": 12,
+        "titulo": "pin de version y traza SHA-256",
+        "fecha": "2026-09-03",
+        "motivo": "filtro.py no tenia forma de detectar que la doctrina cambio bajo sus pies."
+      },
+      {
+        "n": 13,
+        "titulo": "resolucion de entradas duplicadas",
+        "fecha": "2026-09-03",
+        "motivo": "El registro usaba dos convenciones contradictorias y filtro.py abortaria ante la entrada 12 de SSR."
+      },
+      {
+        "n": 14,
+        "titulo": "cadena.py como unico modulo de escritura",
+        "fecha": "2026-09-03",
+        "motivo": "build_registro.py reconstruia desde cero y estaba desfasado: 12 entradas frente a 15 reales."
+      },
+      {
+        "n": 15,
+        "titulo": "entorno de ejecucion con persistencia",
+        "fecha": "2026-09-03",
+        "motivo": "En disco efimero una entrada anadida se pierde en el siguiente deploy sin error visible."
+      },
+      {
+        "n": 16,
+        "titulo": "signo_esperado y capa de interpretacion",
+        "fecha": "2026-09-03",
+        "motivo": "La cola del test se elegia tras ver el signo observado. Error tipo I medido 0.095 a nominal 0.05."
+      },
+      {
+        "n": 17,
+        "titulo": "aclaracion del p_valor_rango_v1 de halving_ciclo",
+        "fecha": "2026-09-03",
+        "motivo": "El rango registrado se calculo con la convencion de cola de v1 y no es comparable con p-valores de v2."
       }
-    ]
+    ],
+    "compatibilidad": {
+      "regla": "filtro.py declara una constante DOCTRINA_COMPATIBLE con el valor mayor.menor de version_esquema que sabe interpretar. Si no coincide con este archivo, aborta antes de leer nada mas.",
+      "granularidad": "mayor.menor. El tercer numero (parche) se ignora y queda reservado a correcciones sin efecto semantico: erratas, comentarios, reordenacion de claves.",
+      "traza": "filtro.py imprime el SHA-256 de v2.json en cada salida, junto a la declaracion_obligatoria. Cada informe queda anclado a un estado exacto de la doctrina.",
+      "cierre_del_hueco_de_parche": "La granularidad mayor.menor deja abierto quien decide que es un parche. Lo cierra la traza: un cambio semantico disfrazado de parche produce un SHA-256 distinto en el informe siguiente y queda visible.",
+      "consecuencia_asumida": "Toda enmienda que cambie mayor.menor obliga a tocar filtro.py. Es deliberado: fuerza a que codigo y doctrina no se separen en silencio.",
+      "no_es_politica_nueva": "meta.precedencia ya ordena a filtro.py abortar si discrepa de la doctrina. Esta enmienda solo hace esa orden verificable por maquina."
+    },
+    "entorno_de_ejecucion": {
+      "regla": "filtro.py solo se ejecuta en un entorno con persistencia en Git. Prohibida su ejecucion en entornos de disco efimero.",
+      "entorno_designado": "GitHub Actions, con commit de vuelta al repositorio.",
+      "streamlit": "El dashboard LEE registro.json desde el repositorio. Nunca escribe.",
+      "motivo": "En disco efimero, una entrada anadida se pierde en el siguiente deploy sin error visible."
+    }
   },
   "motor": {
     "identificador": "batch_prds",
@@ -192,6 +254,28 @@
         "estado_asignado": "PENDIENTE_REVISION",
         "consume_presupuesto": false,
         "entra_en_correccion_BY": false
+      },
+      "capa_de_interpretacion": {
+        "fuera_del_motor": true,
+        "justificacion_frontera": "El motor congelado genera la distribucion nula y el estadistico observado. Convertir ese par en un p-valor depende de la hipotesis pre-registrada, y esa conversion vive fuera del motor. Consenso de tres revisiones externas independientes.",
+        "regla": "El p-valor se calcula segun el signo_esperado declarado en la ficha, nunca segun el signo observado.",
+        "formulas": {
+          "positivo": "p = media(difs >= real)",
+          "negativo": "p = media(difs <= real)",
+          "bilateral": "p = media(abs(difs) >= abs(real))"
+        },
+        "prohibicion_duplicacion": "Prohibido calcular el bilateral como 2 x cola menor.",
+        "evidencia_de_calibracion": {
+          "metodo": "Simulacion bajo H0 con datos sinteticos: 400 repeticiones, mascara independiente de los retornos, retornos a 30 dias solapados con colas gruesas, esquema de remuestreo identico al del motor.",
+          "tasa_error_tipo_I_medida_a_nominal_0.05": {
+            "cola_segun_signo_observado_v1": 0.095,
+            "dos_por_cola_menor": 0.068,
+            "valor_absoluto": 0.043
+          },
+          "conclusion": "Solo la formula de valor absoluto queda calibrada. La convencion de v1 duplica el error nominal. La duplicacion de la cola menor lo deja un 36 por ciento por encima del nominal.",
+          "naturaleza_de_la_evidencia": "Simulacion sobre datos sinteticos. Es evidencia sobre el esquema de remuestreo, no sobre ninguna serie real."
+        },
+        "orden": "La correccion se aplica ANTES de la correccion Benjamini-Yekutieli del lote. BY recibe el p-valor que representa la hipotesis realmente registrada."
       }
     }
   },
@@ -200,7 +284,34 @@
     "familias_nuevas_maximas_por_trimestre": 2,
     "minimo_de_lote": null,
     "nota_familias": "Las familias ya presentes en catalogo_familias no consumen la cuota de familias nuevas. La cuota se aplica solo al alta de familias que no existian.",
-    "nota_consumo": "Una propuesta consume presupuesto en el momento en que se le asigna estado EN_TEST. Las que caen en PENDIENTE_REVISION antes de testearse no lo consumen."
+    "nota_consumo": "Una propuesta consume presupuesto en el momento en que se le asigna estado EN_TEST. Las que caen en PENDIENTE_REVISION antes de testearse no lo consumen.",
+    "derivacion": {
+      "regla": "filtro.py NO lee presupuesto_por_trimestre como fuente de verdad. Deriva el consumo contando entradas del registro y aborta si el valor derivado no coincide con el almacenado.",
+      "motivo": "presupuesto_por_trimestre vive fuera del array entradas, que es lo unico que entra en la cadena de hashes. Es editable sin romper la cadena.",
+      "formula": "consumo(lote) = numero de ids distintos con ese lote, de tipo propuesta, que hayan alcanzado EN_TEST o cualquier estado posterior.",
+      "estados_que_cuentan_como_consumido": [
+        "EN_TEST",
+        "DESCARTADA_GATE_1",
+        "DESCARTADA_GATE_2",
+        "DESCARTADA_GATE_3",
+        "DESCARTADA_GATE_4",
+        "RECHAZADA_PVALOR",
+        "EN_CONFIRMACION",
+        "CONFIRMADA",
+        "RECHAZADA_FORWARD"
+      ],
+      "tipos_de_entrada_que_no_consumen": [
+        "aclaracion",
+        "alta_retroactiva",
+        "ficha_congelada"
+      ],
+      "lotes_exentos": [
+        "v1-historico"
+      ],
+      "motivo_exclusiones": "Una aclaracion, un alta retroactiva o una ficha congelada no son un test nuevo: completan o anotan una propuesta ya registrada. Sin esta exclusion, nasdaq_aclaracion_panel (lote 2026-Q3, estado RECHAZADA_PVALOR) contaria como presupuesto consumido y no lo es.",
+      "comportamiento_si_discrepan": "filtro.py aborta y reporta ambos valores.",
+      "verificacion_2026Q3": "Con esta regla el consumo derivado de 2026-Q3 es 0, coincidente con el contador almacenado."
+    }
   },
   "catalogo_familias": {
     "cerrado": false,
@@ -420,7 +531,46 @@
     "genesis": "0000000000000000000000000000000000000000000000000000000000000000",
     "verificacion": "filtro.py recorre la cadena al arrancar. Si algun hash no coincide, aborta y no ejecuta ningun lote.",
     "append_only": true,
-    "nota": "Git conserva el historial. La cadena de hashes hace visible una edicion silenciosa de una entrada pasada, que un diff aislado podria pasar por alto."
+    "nota": "Git conserva el historial. La cadena de hashes hace visible una edicion silenciosa de una entrada pasada, que un diff aislado podria pasar por alto.",
+    "anti_truncamiento": {
+      "problema": "Una cadena truncada por el final sigue verificando. El hash encadena hacia atras, no hacia adelante: nada dentro del propio archivo sabe cuantas entradas deberia haber.",
+      "mecanismo": "En cada push, un GitHub Action compara registro.json contra su version en el commit anterior y verifica que la nueva es una extension: mismo prefijo de hashes, cero entradas eliminadas.",
+      "implementacion": "cadena.es_extension(viejo, nuevo)",
+      "comportamiento_si_falla": "El Action falla y bloquea el merge. No es responsabilidad de filtro.py: filtro.py solo ve un archivo, no su historia.",
+      "limitacion_declarada": "Este mecanismo depende de Git. Un borrado del historial de Git completo no es detectable desde dentro del repositorio."
+    },
+    "resolucion_de_entradas": {
+      "regla": "Cuando varias entradas comparten id, la operativa es la de mayor indice en la cadena. Las anteriores se conservan como historial y no se evaluan.",
+      "validacion_de_ficha": "Los campos obligatorios de ficha_congelada se exigen unicamente a la entrada operativa. Una entrada historica incompleta no hace abortar a filtro.py.",
+      "inmutabilidad": {
+        "regla": "Una entrada solo puede ser sustituida mientras la variable este en estado PROPUESTA. En cuanto alcanza EN_TEST, su ficha queda inmutable y toda entrada posterior con el mismo id hace abortar a filtro.py.",
+        "motivo": "Sin esta clausula, 'gana la ultima' destruye el sentido de congelar la ficha: bastaria anadir una entrada nueva despues de ver el resultado.",
+        "coste_asumido": "Un error semantico en una ficha descubierto despues de EN_TEST no se puede corregir. Como unicidad_del_test no admite excepciones, esa variable queda perdida. Se acepta: la alternativa abre la puerta a corregir fichas tras ver resultados."
+      },
+      "tipo_entrada": {
+        "cerrado": true,
+        "valores": [
+          "propuesta",
+          "ficha_congelada",
+          "aclaracion",
+          "alta_retroactiva"
+        ],
+        "ausente_equivale_a": "propuesta",
+        "nota_retrocompatibilidad": "Las entradas 1 a 12 no llevan tipo_entrada. Se interpretan como propuesta. No se editan: el registro es append-only.",
+        "comportamiento_ante_valor_desconocido": "filtro.py aborta, igual que con un estado fuera de la lista cerrada."
+      },
+      "convencion_elegida": "Mismo id, gana la ultima. Descartada la convencion de id nuevo con referencia (usada en nasdaq_aclaracion_panel) porque habria exigido una excepcion para la entrada 15, que ya existe y no puede editarse."
+    },
+    "modulo_de_escritura": {
+      "unico": "cadena.py",
+      "operaciones_permitidas": [
+        "verificar",
+        "anadir",
+        "es_extension"
+      ],
+      "prohibicion": "No debe existir en el repositorio ninguna funcion capaz de reconstruir registro.json desde cero. Esa capacidad convierte cualquier ejecucion accidental en una perdida silenciosa de entradas.",
+      "accion_de_migracion": "build_registro.py eliminado del repositorio el 2026-09-03 (commit efb792a)."
+    }
   },
   "definicion_de_efecto": {
     "estado": "FIJADA",
@@ -457,7 +607,8 @@
       "horizonte_N",
       "M",
       "casilla_dashboard",
-      "casilla_dashboard.funcion_D_theta"
+      "casilla_dashboard.funcion_D_theta",
+      "signo_esperado"
     ],
     "mascara": {
       "enmienda": 2,
@@ -483,7 +634,19 @@
       "justificacion": "Sin esto, ante un resultado que no mueve la casilla A siempre cabe alegar que mueve la casilla B. Eso es seleccion posterior a la evidencia.",
       "hallazgo_2026_09_03": "Ninguna casilla existente del dashboard es direccional. El bloque 07 declara explicitamente que no indica direccion, y el bloque 02 opera en unidades de percentil-Mayer. Por tanto theta, que es direccional, no puede mover hoy ninguna casilla existente. La casilla se especifica como la que la variable creara si se confirma, con su granularidad fijada en la propuesta."
     },
-    "nota_rutas": "Un campo con punto indica ruta anidada. filtro.py resuelve la ruta antes de comprobar la presencia."
+    "nota_rutas": "Un campo con punto indica ruta anidada. filtro.py resuelve la ruta antes de comprobar la presencia.",
+    "signo_esperado": {
+      "obligatorio": true,
+      "valores": [
+        "positivo",
+        "negativo",
+        "bilateral"
+      ],
+      "por_defecto": "bilateral",
+      "regla_unilateral": "Declarar positivo o negativo exige rellenar justificacion_signo con el mecanismo previo que sostiene la direccion. No basta con que parezca razonable.",
+      "prohibicion": "El valor queda firmado antes de ejecutar. No puede modificarse despues, ni siquiera para corregirlo.",
+      "nota_incentivos": "Elegir bilateral no es un fallo ni requiere penalizacion. Su coste es la menor potencia inherente a una hipotesis menos especifica. Forzar una direccion para ganar potencia es peor que no declararla."
+    }
   },
   "estimador_de_robustez": {
     "enmienda": 5,
