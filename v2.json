@@ -6,16 +6,70 @@
     "archivo_registro_asociado": "registro.json",
     "declaracion_obligatoria": "Batch-PRDS actua como cribado de descubrimiento. La garantia real de control de falsos positivos descansa en la confirmacion forward sobre datos que no existian cuando la variable fue propuesta.",
     "regla_de_impresion": "La declaracion_obligatoria debe imprimirse literalmente en cada salida de filtro.py y en cada informe de lote. No es un comentario: es parte de la salida.",
-    "precedencia": "Este archivo es la fuente de verdad del protocolo. Ninguna regla vive dentro del codigo. Si filtro.py y este archivo discrepan, filtro.py debe abortar, no adaptarse."
+    "precedencia": "Este archivo es la fuente de verdad del protocolo. Ninguna regla vive dentro del codigo. Si filtro.py y este archivo discrepan, filtro.py debe abortar, no adaptarse.",
+    "enmiendas": [
+      {
+        "n": 1,
+        "titulo": "definicion_de_efecto",
+        "fecha": "2026-09-03",
+        "motivo": "theta no tenia unidades declaradas en ninguna parte del protocolo."
+      },
+      {
+        "n": 2,
+        "titulo": "mascara en la ficha congelada",
+        "fecha": "2026-09-03",
+        "motivo": "Sin congelar la mascara, theta_B2 y theta_F no son comparables. Consenso de cuatro revisiones externas independientes."
+      },
+      {
+        "n": 3,
+        "titulo": "casilla y funcion D(theta) nombradas en la propuesta",
+        "fecha": "2026-09-03",
+        "motivo": "Impide elegir a posteriori la casilla del dashboard que hace M mas pequeno."
+      },
+      {
+        "n": 4,
+        "titulo": "separacion entre trimestres forward",
+        "fecha": "2026-09-03",
+        "motivo": "Los retornos a N dias cerca del borde de un trimestre se solapan con el siguiente y rompen su independencia."
+      },
+      {
+        "n": 5,
+        "titulo": "estimador de robustez secundario",
+        "fecha": "2026-09-03",
+        "motivo": "Consenso de cuatro revisiones externas. Va en el informe, no dentro del motor, para no violar motor:CONGELADO."
+      },
+      {
+        "n": 6,
+        "titulo": "umbrales de gate migrados a la doctrina",
+        "fecha": "2026-09-03",
+        "motivo": "Vivian hardcodeados en filtro.py y no existian en la doctrina, por lo que el codigo no podia leerlos de ningun sitio."
+      },
+      {
+        "n": 7,
+        "titulo": "dias_episodio >= N",
+        "fecha": "2026-09-03",
+        "motivo": "Con N=30 y separacion fija de 21 dias, dos episodios 'independientes' a 22 dias comparten 8 dias de retorno futuro."
+      },
+      {
+        "n": 8,
+        "titulo": "mapeo de salida de filtro.py a la lista cerrada",
+        "fecha": "2026-09-03",
+        "motivo": "filtro.py emitia PASA/RECHAZADA/PROVISIONAL, ninguno en la lista cerrada. El codigo abortaria ante su propia salida."
+      },
+      {
+        "n": 9,
+        "titulo": "alta del estado NULO_V1",
+        "fecha": "2026-09-03",
+        "motivo": "probabilidad_contexto no encajaba en ninguna casilla existente. Excepcion documentada a estados.cerrado."
+      }
+    ]
   },
-
   "motor": {
     "identificador": "batch_prds",
     "estado": "CONGELADO",
     "origen_decision": "Decision 5 del cierre de diseno v2",
     "nota": "No se sustituye ni se reparametriza el motor. Cualquier cambio de motor exige una version nueva de protocolo (v3) y no se aplica retroactivamente a variables ya testeadas."
   },
-
   "protocolo": {
     "particion_datos": {
       "metodo": "corte_proporcional_por_variable",
@@ -38,7 +92,6 @@
       },
       "registro_obligatorio": "La fecha de corte concreta se registra en la entrada de cada experimento. No se recalcula despues."
     },
-
     "gates_cualitativos": {
       "cantidad": 4,
       "lista": [
@@ -48,16 +101,54 @@
         "coherencia_de_signo"
       ],
       "bloque_usado": "bloque_1",
-      "advertencia": "Los gates son seleccion no corregida. La correccion BY no los cubre. Esta es la razon exacta de la declaracion_obligatoria."
+      "advertencia": "Los gates son seleccion no corregida. La correccion BY no los cubre. Esta es la razon exacta de la declaracion_obligatoria.",
+      "parametros": {
+        "origen": "Migrados literalmente desde filtro.py v1 (auditoria del 29/08/2026). No se reparametrizan en esta enmienda.",
+        "estabilidad_entre_epocas": {
+          "umbral_correlacion": 0.04,
+          "criterio": "signo coherente en todas las epocas evaluables Y |mediana de las correlaciones| >= umbral",
+          "epocas_minimas": 3,
+          "observaciones_minimas_por_epoca": 100,
+          "tipo_correlacion": "spearman",
+          "definicion_de_epocas": {
+            "valor": null,
+            "estado": "PENDIENTE_DECISION",
+            "bloqueo_activo": true,
+            "problema": "filtro.py usa una lista fija de epocas de calendario (2011-2014, 2015-2017, 2018-2020, 2021-2023, 2024-2026). Esa lista es un artefacto de v1 y choca con particion_datos.metodo = corte_proporcional_por_variable. Una variable cuyo bloque_1 abarque menos de tres epocas de calendario falla el gate 1 por construccion, no por falta de evidencia.",
+            "opciones": [
+              "A) Mantener las epocas de calendario fijas tal cual (migracion literal).",
+              "B) Definir las epocas como tres sub-periodos de igual longitud dentro del bloque_1 de cada variable."
+            ],
+            "regla": "filtro.py aborta mientras este campo sea null."
+          }
+        },
+        "anticipacion_no_contemporaneidad": {
+          "desfases_evaluados": [
+            0,
+            1,
+            2,
+            3,
+            5
+          ],
+          "retencion_minima": 0.4,
+          "criterio": "|corr(desfase 1)| / |corr(desfase 0)| >= retencion_minima Y |corr(desfase 1)| >= umbral_correlacion"
+        },
+        "contribucion_incremental_R2": {
+          "minimo_puntos_porcentuales": 3.0,
+          "observaciones_minimas": 50
+        },
+        "coherencia_de_signo": {
+          "criterio": "signo identico de la correlacion en todas las epocas evaluables del bloque_1",
+          "nota": "En filtro.py v1 esta comprobacion vivia dentro del paso 1. Bajo v2 es un gate con identidad propia, tal como exige gates_cualitativos.lista."
+        }
+      }
     },
-
     "unicidad_del_test": {
       "regla": "Una variable se testea una sola vez, en el trimestre en que entra.",
       "re_test_permitido": false,
       "excepciones": [],
       "nota": "No hay mecanismo de reapertura. Una variable descartada queda descartada de forma permanente bajo este protocolo."
     },
-
     "ventana_temporal": {
       "regla": "La ventana de datos del test termina en la fecha_propuesta de la variable.",
       "derivacion": "automatica",
@@ -66,23 +157,44 @@
       "comportamiento_filtro_py": "Si los datos cargados contienen observaciones posteriores a fecha_propuesta, filtro.py aborta la ejecucion. No trunca en silencio.",
       "justificacion": "Si la fecha de fin de ventana se pudiera escribir a mano despues de mirar los datos, la regla no protegeria de nada."
     },
-
     "correccion_multiple": {
       "metodo": "benjamini_yekutieli",
-      "q_nominal": 0.20,
+      "q_nominal": 0.2,
       "ambito": "dentro del lote trimestral",
       "m_efectivo": {
         "formula": "m = max(3, numero de p-valores efectivamente calculados en el lote)",
-        "cuentan": ["variables que llegaron a producir p-valor en el bloque 2"],
+        "cuentan": [
+          "variables que llegaron a producir p-valor en el bloque 2"
+        ],
         "no_cuentan": [
           "variables descartadas en cualquiera de los 4 gates",
           "variables en PENDIENTE_REVISION por historia insuficiente"
         ],
         "justificacion_suelo_3": "Decision 6: no hay minimo de lote real. El suelo de 3 existe solo para que la correccion BY no sea trivial en lotes muy pequenos."
       }
+    },
+    "test_de_permutacion": {
+      "origen": "Migrado literalmente desde paso4_significancia de filtro.py v1.",
+      "bloque_usado": "bloque_2",
+      "metodo": "permutacion por bloques contiguos",
+      "n_permutaciones": 2000,
+      "semilla": 0,
+      "observaciones_enmascaradas_minimas": 20,
+      "episodios_independientes_minimos": 8,
+      "dias_episodio": {
+        "regla": "dias_episodio = max(21, N)",
+        "valor_bajo_N_30": 30,
+        "enmienda": 7,
+        "justificacion": "Con N=30 y separacion de 21 dias, dos episodios contados como independientes a 22 dias de distancia comparten 8 dias de retorno futuro. La separacion no puede ser menor que el horizonte del retorno.",
+        "efecto_conocido": "Reduce el recuento de episodios y endurece el test. Se acepta el endurecimiento."
+      },
+      "si_no_alcanza_minimos": {
+        "estado_asignado": "PENDIENTE_REVISION",
+        "consume_presupuesto": false,
+        "entra_en_correccion_BY": false
+      }
     }
   },
-
   "presupuesto": {
     "propuestas_maximas_por_trimestre": 12,
     "familias_nuevas_maximas_por_trimestre": 2,
@@ -90,7 +202,6 @@
     "nota_familias": "Las familias ya presentes en catalogo_familias no consumen la cuota de familias nuevas. La cuota se aplica solo al alta de familias que no existian.",
     "nota_consumo": "Una propuesta consume presupuesto en el momento en que se le asigna estado EN_TEST. Las que caen en PENDIENTE_REVISION antes de testearse no lo consumen."
   },
-
   "catalogo_familias": {
     "cerrado": false,
     "ampliable": "maximo 2 familias nuevas por trimestre",
@@ -132,13 +243,11 @@
       }
     ]
   },
-
   "confirmacion_forward": {
     "_modifica_decision_original": true,
     "_decision_original_texto": "Confirmacion forward: 5 trimestres (antes 4), signo estable + magnitud >=50%.",
     "_motivo_modificacion": "La evaluacion trimestre a trimestre con descarte por cualquier fallo produce una tasa de falso descarte de entre el 41% y el 94% sobre senales reales pero ruidosas, segun el ruido por trimestre. Tres revisiones externas independientes coincidieron en rechazarla. La evaluacion agregada mantiene la exigencia sobre la senal y elimina el castigo al ruido.",
     "_fecha_modificacion": "2026-09-03",
-
     "ventana": {
       "trimestres": 5,
       "fija": true,
@@ -146,14 +255,12 @@
       "descarte_anticipado_permitido": false,
       "nota": "No hay contador, no hay trimestres 'validos' acumulados, no hay limite de 8. Una variable en confirmacion completa siempre los 5 trimestres antes de recibir veredicto."
     },
-
     "estimacion": {
       "metodo": "efecto agregado unico sobre los 5 trimestres conjuntos",
       "simbolo": "theta_F",
       "evaluacion_por_trimestre": false,
       "nota": "Los trimestres individuales se registran para auditoria, pero no se juzgan uno a uno. Un trimestre aislado de BTC es una observacion demasiado ruidosa para decidir nada."
     },
-
     "criterios_de_confirmacion": {
       "todos_obligatorios": true,
       "criterios": [
@@ -179,42 +286,119 @@
         }
       ]
     },
-
     "umbral_absoluto_M": {
-      "valor": null,
-      "estado": "PENDIENTE_DEFINICION",
-      "unidad_theta": null,
+      "valor": 0.03,
+      "estado": "FIJADO",
+      "unidad_theta": "fraccion de retorno simple a 30 dias",
       "criterio_de_fijacion": "M es el efecto mas pequeno capaz de cambiar una casilla visible del dashboard. Una senal real cuyo efecto no mueve ninguna decision del sistema es, para este sistema, indistinguible de ruido.",
       "momento_de_fijacion": "en el momento de la propuesta de la variable, antes de que existan datos forward",
       "inmutable_tras_fijacion": true,
       "bloqueo": {
-        "activo": true,
-        "regla": "Ninguna variable puede transitar a EN_CONFIRMACION mientras umbral_absoluto_M.valor sea null. filtro.py debe abortar la transicion.",
-        "justificacion": "El criterio relativo del 50% por si solo es insuficiente: si theta_B2 salio pequeno por ruido, el liston resultante es trivial; si salio grande por ruido, el 50% se supera pese a una regresion severa a la media."
+        "activo": false,
+        "regla": "Levantado al fijarse el valor el 2026-09-03.",
+        "justificacion_historica": "El criterio relativo del 50% por si solo es insuficiente: si theta_B2 salio pequeno por ruido, el liston resultante es trivial; si salio grande por ruido, el 50% se supera pese a una regresion severa a la media."
+      },
+      "fecha_fijacion": "2026-09-03",
+      "derivacion": {
+        "casilla_ancla": "bloque 07, rango esperado a 30 dias",
+        "metodo": "M = menor salto de estado distinto de cero en la tabla RANGOS_POR_CUARTIL de rango.py",
+        "calculo": "amplitud p50 pasa de 0.22 (cuartil 'baja') a 0.25 (cuartil 'alta'). Salto = 0.03.",
+        "descartado_bloque_02": "Los cortes 85/65/35/15 del percentil de Mayer los declara arbitrarios el propio codigo, y estan en unidades de percentil-Mayer, no de retorno.",
+        "descartado_dimensionamiento": "Su salto de 0.015 es aguas abajo del bloque 07: hereda los mismos cuartiles con redondeo mas fino, y usarlo contaria la misma granularidad dos veces.",
+        "descartado_resolucion_de_pixel": "Usar el ultimo digito mostrado produciria un M trivial. El criterio es el cambio de ESTADO visible, no la resolucion de impresion."
+      },
+      "alcance": {
+        "valor_por_defecto_del_regimen": true,
+        "override_por_variable": "Una entrada puede fijar un M distinto solo si documenta en su ficha la casilla y la derivacion concretas, por el mismo metodo, en el momento de la propuesta.",
+        "nota": "La granularidad del dashboard es una propiedad del dashboard, no de la variable, por lo que el valor comun es el caso normal."
       }
+    },
+    "separacion_entre_trimestres": {
+      "enmienda": 4,
+      "problema": "Una senal emitida en los ultimos N dias de un trimestre tiene su retorno a N dias dentro del trimestre siguiente. Los cinco trimestres dejan de ser observaciones independientes justo en los bordes.",
+      "regla": "Las senales emitidas dentro de los ultimos N dias naturales de cada trimestre no se asignan a ese trimestre ni al siguiente: se excluyen del computo de consistencia_minima.",
+      "efecto_sobre_theta_F": "El efecto agregado theta_F se calcula sobre las senales retenidas, no sobre las excluidas.",
+      "efecto_conocido": "Reduce el numero de senales utilizables en la ventana forward. Se acepta."
     }
   },
-
   "estados": {
     "cerrado": true,
     "comportamiento_ante_estado_desconocido": "filtro.py aborta. No se admiten etiquetas fuera de esta lista.",
     "lista": [
-      { "id": "PROPUESTA", "descripcion": "Registrada en el lote, aun no testeada" },
-      { "id": "EN_TEST", "descripcion": "Consumiendo presupuesto, atravesando gates" },
-      { "id": "DESCARTADA_GATE_1", "descripcion": "Fallo estabilidad entre epocas" },
-      { "id": "DESCARTADA_GATE_2", "descripcion": "Fallo anticipacion: efecto contemporaneo, no anticipatorio" },
-      { "id": "DESCARTADA_GATE_3", "descripcion": "Fallo contribucion incremental de R2" },
-      { "id": "DESCARTADA_GATE_4", "descripcion": "Fallo coherencia de signo" },
-      { "id": "PENDIENTE_REVISION", "descripcion": "Historia insuficiente. No consume presupuesto ni entra en BY" },
-      { "id": "RECHAZADA_PVALOR", "descripcion": "No supera el umbral BY del lote" },
-      { "id": "EN_CONFIRMACION", "descripcion": "Superado el cribado, en ventana forward de 5 trimestres" },
-      { "id": "CONFIRMADA", "descripcion": "Supera los 3 criterios de confirmacion forward" },
-      { "id": "RECHAZADA_FORWARD", "descripcion": "No supera alguno de los 3 criterios forward" },
-      { "id": "SELLADA_V1", "descripcion": "Hallazgo heredado de v1. No se re-testea ni se reabre" },
-      { "id": "DESCARTADA_PREVIA", "descripcion": "Descartada antes de entrar en test, por decision documentada" }
-    ]
+      {
+        "id": "PROPUESTA",
+        "descripcion": "Registrada en el lote, aun no testeada"
+      },
+      {
+        "id": "EN_TEST",
+        "descripcion": "Consumiendo presupuesto, atravesando gates"
+      },
+      {
+        "id": "DESCARTADA_GATE_1",
+        "descripcion": "Fallo estabilidad entre epocas"
+      },
+      {
+        "id": "DESCARTADA_GATE_2",
+        "descripcion": "Fallo anticipacion: efecto contemporaneo, no anticipatorio"
+      },
+      {
+        "id": "DESCARTADA_GATE_3",
+        "descripcion": "Fallo contribucion incremental de R2"
+      },
+      {
+        "id": "DESCARTADA_GATE_4",
+        "descripcion": "Fallo coherencia de signo"
+      },
+      {
+        "id": "PENDIENTE_REVISION",
+        "descripcion": "Historia insuficiente. No consume presupuesto ni entra en BY"
+      },
+      {
+        "id": "RECHAZADA_PVALOR",
+        "descripcion": "No supera el umbral BY del lote"
+      },
+      {
+        "id": "EN_CONFIRMACION",
+        "descripcion": "Superado el cribado, en ventana forward de 5 trimestres"
+      },
+      {
+        "id": "CONFIRMADA",
+        "descripcion": "Supera los 3 criterios de confirmacion forward"
+      },
+      {
+        "id": "RECHAZADA_FORWARD",
+        "descripcion": "No supera alguno de los 3 criterios forward"
+      },
+      {
+        "id": "SELLADA_V1",
+        "descripcion": "Hallazgo heredado de v1. No se re-testea ni se reabre"
+      },
+      {
+        "id": "DESCARTADA_PREVIA",
+        "descripcion": "Descartada antes de entrar en test, por decision documentada"
+      },
+      {
+        "id": "NULO_V1",
+        "descripcion": "Experimento formal ejecutado bajo v1 con protocolo congelado previo, sin candidata cualificada. El test no llego a abrirse.",
+        "alta": "2026-09-03",
+        "enmienda": 9,
+        "nota": "Excepcion documentada a estados.cerrado. Se anade antes de ejecutar ningun lote v2."
+      }
+    ],
+    "mapeo_salida_filtro_py": {
+      "enmienda": 8,
+      "problema": "filtro.py v1 emitia PASA, RECHAZADA y PROVISIONAL, etiquetas ausentes de la lista cerrada. Bajo la regla de estado desconocido, el codigo abortaria ante su propia salida.",
+      "regla": "filtro.py no emite etiquetas propias. Traduce su resultado interno a la lista cerrada antes de escribir nada en el registro.",
+      "tabla": {
+        "PASA": "EN_CONFIRMACION (solo si supera ademas el umbral BY del lote; en caso contrario RECHAZADA_PVALOR)",
+        "PROVISIONAL": "PENDIENTE_REVISION",
+        "RECHAZADA_paso_1": "DESCARTADA_GATE_1",
+        "RECHAZADA_paso_2": "DESCARTADA_GATE_2",
+        "RECHAZADA_paso_3": "DESCARTADA_GATE_3",
+        "RECHAZADA_coherencia_signo": "DESCARTADA_GATE_4"
+      }
+    }
   },
-
   "sellados": [
     {
       "variable": "halving_ciclo",
@@ -228,7 +412,6 @@
       "comportamiento": "Ejecuta en silencio. Solo emerge en la interfaz cuando la fecha actual se aproxima a la ventana de riesgo identificada."
     }
   ],
-
   "integridad": {
     "metodo": "cadena_de_hashes",
     "algoritmo": "sha256",
@@ -238,5 +421,98 @@
     "verificacion": "filtro.py recorre la cadena al arrancar. Si algun hash no coincide, aborta y no ejecuta ningun lote.",
     "append_only": true,
     "nota": "Git conserva el historial. La cadena de hashes hace visible una edicion silenciosa de una entrada pasada, que un diff aislado podria pasar por alto."
+  },
+  "definicion_de_efecto": {
+    "estado": "FIJADA",
+    "fecha_fijacion": "2026-09-03",
+    "inmutable": true,
+    "horizonte_N": {
+      "valor": 30,
+      "unidad": "dias naturales",
+      "justificacion": "Unico horizonte que supero el test de estabilidad entre epocas con ventanas no solapadas (rango.py, 28/08/2026): correlacion de persistencia 0.53 / 0.45 / 0.49 en 2011-2015, 2016-2020 y 2021-2026. Los horizontes de 60, 90 y 180 dias fallaron. El de 7 dias nunca se ha medido en este proyecto.",
+      "prohibicion": "No se evalua la misma variable a varios N para elegir despues el que funciona. N es unico y comun a todo el regimen v2."
+    },
+    "convenio_de_retorno": {
+      "tipo": "simple",
+      "formula": "R_N(t) = P(t+N) / P(t) - 1",
+      "escala": "fraccion",
+      "nota_escala": "0.03 significa 3 puntos porcentuales. Toda magnitud del protocolo, incluido M, se expresa en esta misma escala.",
+      "justificacion": "Coherente con el bloque 07 del dashboard, que ya opera en ratios simples. No se componen retornos, por lo que la no aditividad de las medianas no aplica."
+    },
+    "estadistico_theta": {
+      "formula": "theta = mediana(R_N | mascara=1) - mediana(R_N | mascara=0)",
+      "unidad": "fraccion de retorno simple a 30 dias",
+      "naturaleza": "diferencia de localizacion, direccional",
+      "limitacion_declarada": "La diferencia de medianas es ciega a cambios de cola y de dispersion. Una variable cuyo efecto real sea un aumento de la probabilidad de movimientos extremos sin desplazar el centro de la distribucion sera medida como theta ~ 0. Si la hipotesis de una variable es de cola y no de localizacion, debe hacerse constar en su entrada del registro: el motor esta CONGELADO y no puede testear esa forma de efecto."
+    }
+  },
+  "ficha_congelada": {
+    "obligatoria": true,
+    "momento": "en la propuesta, antes de ejecutar ningun test y antes de que existan datos forward",
+    "inmutable_tras_fijacion": true,
+    "comportamiento_filtro_py": "Si una entrada en estado PROPUESTA carece de cualquier campo obligatorio de la ficha, filtro.py aborta y no la transita a EN_TEST.",
+    "campos_obligatorios": [
+      "metrica_continua",
+      "mascara",
+      "horizonte_N",
+      "M",
+      "casilla_dashboard",
+      "casilla_dashboard.funcion_D_theta"
+    ],
+    "mascara": {
+      "enmienda": 2,
+      "descripcion": "Regla determinista que convierte la metrica continua en booleano. Se congela entera, no solo el percentil.",
+      "campos_obligatorios": [
+        "q_percentil",
+        "tipo_ventana",
+        "longitud_ventana_dias",
+        "solo_informacion_anterior_a_t",
+        "inclusividad",
+        "warm_up_dias",
+        "warm_up_excluido_del_computo_de_bloques"
+      ],
+      "congelar_percentil_no_valor": {
+        "regla": "Se congela el percentil q y la regla de calculo, no el valor numerico del umbral.",
+        "justificacion": "Un umbral absoluto congelado sobre una metrica con tendencia fuerte activa la mascara casi exclusivamente en una epoca, lo que hace fallar el gate de estabilidad entre epocas por construccion y no por falta de senal.",
+        "condicion": "El calculo del percentil solo puede usar informacion anterior a t. Cualquier uso de la muestra completa es look-ahead e invalida el test."
+      }
+    },
+    "casilla_dashboard": {
+      "enmienda": 3,
+      "regla": "La propuesta debe nombrar la casilla concreta del dashboard que la variable podria mover, y la funcion D(theta) que transforma el efecto en el estado visible de esa casilla.",
+      "justificacion": "Sin esto, ante un resultado que no mueve la casilla A siempre cabe alegar que mueve la casilla B. Eso es seleccion posterior a la evidencia.",
+      "hallazgo_2026_09_03": "Ninguna casilla existente del dashboard es direccional. El bloque 07 declara explicitamente que no indica direccion, y el bloque 02 opera en unidades de percentil-Mayer. Por tanto theta, que es direccional, no puede mover hoy ninguna casilla existente. La casilla se especifica como la que la variable creara si se confirma, con su granularidad fijada en la propuesta."
+    },
+    "nota_rutas": "Un campo con punto indica ruta anidada. filtro.py resuelve la ruta antes de comprobar la presencia."
+  },
+  "estimador_de_robustez": {
+    "enmienda": 5,
+    "estado": "ACTIVO",
+    "estimadores": [
+      "hodges_lehmann",
+      "media_recortada_10pct"
+    ],
+    "ambito": "informe de lote unicamente",
+    "afecta_a_veredicto": false,
+    "prohibicion": "No participa en ningun criterio de pasa/no-pasa, ni en los gates, ni en el p-valor, ni en los tres criterios de confirmacion forward. Por eso no constituye un cambio de motor y no exige v3.",
+    "proposito": "Responder a la pregunta de auditoria: la conclusion depende demasiado de haber elegido la mediana como estadistico?",
+    "regla_de_divergencia": "Si el estimador de robustez y theta divergen en signo, se hace constar en el informe. No cambia el veredicto."
+  },
+  "notas_de_migracion": {
+    "theta_v1_no_comparable": {
+      "hallazgo": "El horizonte del retorno usado en los tests de v1 no es recuperable del repositorio: 'resultado' era un argumento de paso4_significancia y no existe ninguna llamada registrada.",
+      "consecuencia": "Los theta de v1 y los de v2 no son comparables. Cualquier lectura cruzada de magnitudes entre ambos regimenes es invalida.",
+      "regla": "Ningun informe puede comparar magnitudes de efecto entre entradas con regimen v1 y regimen v2."
+    },
+    "frontera_con_regimen_py": {
+      "regla": "regimen.py queda FUERA del alcance de este protocolo.",
+      "justificacion": "v2.json gobierna la validacion de variables candidatas. regimen.py calibra y audita el panel. Si se mezclan, cada retoque del dashboard se convierte en una enmienda de doctrina y la doctrina deja de ser utilizable.",
+      "consecuencia": "Las constantes de regimen.py no son reglas de protocolo y no requieren vivir en este archivo."
+    },
+    "renombrado_pendiente": {
+      "accion": "registro.py -> diario.py",
+      "motivo": "Convivir un modulo importable llamado registro con un archivo registro.json es una fuente segura de confusion futura.",
+      "estado": "PENDIENTE"
+    }
   }
 }
