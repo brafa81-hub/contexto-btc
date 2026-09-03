@@ -1,0 +1,242 @@
+{
+  "meta": {
+    "nombre": "Contexto-BTC — Protocolo de validacion v2",
+    "version_esquema": "2.0.0",
+    "fecha_creacion": "2026-09-03",
+    "archivo_registro_asociado": "registro.json",
+    "declaracion_obligatoria": "Batch-PRDS actua como cribado de descubrimiento. La garantia real de control de falsos positivos descansa en la confirmacion forward sobre datos que no existian cuando la variable fue propuesta.",
+    "regla_de_impresion": "La declaracion_obligatoria debe imprimirse literalmente en cada salida de filtro.py y en cada informe de lote. No es un comentario: es parte de la salida.",
+    "precedencia": "Este archivo es la fuente de verdad del protocolo. Ninguna regla vive dentro del codigo. Si filtro.py y este archivo discrepan, filtro.py debe abortar, no adaptarse."
+  },
+
+  "motor": {
+    "identificador": "batch_prds",
+    "estado": "CONGELADO",
+    "origen_decision": "Decision 5 del cierre de diseno v2",
+    "nota": "No se sustituye ni se reparametriza el motor. Cualquier cambio de motor exige una version nueva de protocolo (v3) y no se aplica retroactivamente a variables ya testeadas."
+  },
+
+  "protocolo": {
+    "particion_datos": {
+      "metodo": "corte_proporcional_por_variable",
+      "bloque_1": {
+        "porcion": "primer 50% de la historia disponible de la variable",
+        "uso": "los 4 gates cualitativos de filtro.py",
+        "contaminado_por_seleccion": true
+      },
+      "bloque_2": {
+        "porcion": "50% restante",
+        "uso": "calculo del p-valor por permutacion con ventanas no solapadas",
+        "contaminado_por_seleccion": false,
+        "nota": "Es la unica estimacion limpia disponible en el momento del test. Por eso es la linea base de magnitud en la fase forward."
+      },
+      "minimo_por_bloque_anios": 3,
+      "si_no_alcanza_minimo": {
+        "estado_asignado": "PENDIENTE_REVISION",
+        "consume_presupuesto": false,
+        "entra_en_correccion_BY": false
+      },
+      "registro_obligatorio": "La fecha de corte concreta se registra en la entrada de cada experimento. No se recalcula despues."
+    },
+
+    "gates_cualitativos": {
+      "cantidad": 4,
+      "lista": [
+        "estabilidad_entre_epocas",
+        "anticipacion_no_contemporaneidad",
+        "contribucion_incremental_R2",
+        "coherencia_de_signo"
+      ],
+      "bloque_usado": "bloque_1",
+      "advertencia": "Los gates son seleccion no corregida. La correccion BY no los cubre. Esta es la razon exacta de la declaracion_obligatoria."
+    },
+
+    "unicidad_del_test": {
+      "regla": "Una variable se testea una sola vez, en el trimestre en que entra.",
+      "re_test_permitido": false,
+      "excepciones": [],
+      "nota": "No hay mecanismo de reapertura. Una variable descartada queda descartada de forma permanente bajo este protocolo."
+    },
+
+    "ventana_temporal": {
+      "regla": "La ventana de datos del test termina en la fecha_propuesta de la variable.",
+      "derivacion": "automatica",
+      "fuente": "campo fecha_propuesta de la entrada del registro",
+      "edicion_manual_permitida": false,
+      "comportamiento_filtro_py": "Si los datos cargados contienen observaciones posteriores a fecha_propuesta, filtro.py aborta la ejecucion. No trunca en silencio.",
+      "justificacion": "Si la fecha de fin de ventana se pudiera escribir a mano despues de mirar los datos, la regla no protegeria de nada."
+    },
+
+    "correccion_multiple": {
+      "metodo": "benjamini_yekutieli",
+      "q_nominal": 0.20,
+      "ambito": "dentro del lote trimestral",
+      "m_efectivo": {
+        "formula": "m = max(3, numero de p-valores efectivamente calculados en el lote)",
+        "cuentan": ["variables que llegaron a producir p-valor en el bloque 2"],
+        "no_cuentan": [
+          "variables descartadas en cualquiera de los 4 gates",
+          "variables en PENDIENTE_REVISION por historia insuficiente"
+        ],
+        "justificacion_suelo_3": "Decision 6: no hay minimo de lote real. El suelo de 3 existe solo para que la correccion BY no sea trivial en lotes muy pequenos."
+      }
+    }
+  },
+
+  "presupuesto": {
+    "propuestas_maximas_por_trimestre": 12,
+    "familias_nuevas_maximas_por_trimestre": 2,
+    "minimo_de_lote": null,
+    "nota_familias": "Las familias ya presentes en catalogo_familias no consumen la cuota de familias nuevas. La cuota se aplica solo al alta de familias que no existian.",
+    "nota_consumo": "Una propuesta consume presupuesto en el momento en que se le asigna estado EN_TEST. Las que caen en PENDIENTE_REVISION antes de testearse no lo consumen."
+  },
+
+  "catalogo_familias": {
+    "cerrado": false,
+    "ampliable": "maximo 2 familias nuevas por trimestre",
+    "familias": [
+      {
+        "id": "valoracion_onchain",
+        "descripcion": "Metricas de valoracion derivadas de datos de cadena",
+        "alta": "2026-09-03"
+      },
+      {
+        "id": "flujos_derivados",
+        "descripcion": "Flujos de capital y posicionamiento en derivados",
+        "alta": "2026-09-03"
+      },
+      {
+        "id": "macro",
+        "descripcion": "Variables macroeconomicas y de mercados tradicionales",
+        "alta": "2026-09-03"
+      },
+      {
+        "id": "red_mineria",
+        "descripcion": "Salud y economia de la red y de la mineria",
+        "alta": "2026-09-03"
+      },
+      {
+        "id": "sentimiento",
+        "descripcion": "Indicadores de sentimiento y encuesta",
+        "alta": "2026-09-03"
+      },
+      {
+        "id": "ciclo_temporal",
+        "descripcion": "Estructura temporal y de ciclo",
+        "alta": "2026-09-03"
+      },
+      {
+        "id": "liquidez_stablecoins",
+        "descripcion": "Liquidez disponible en stablecoins y ratios asociados",
+        "alta": "2026-09-03"
+      }
+    ]
+  },
+
+  "confirmacion_forward": {
+    "_modifica_decision_original": true,
+    "_decision_original_texto": "Confirmacion forward: 5 trimestres (antes 4), signo estable + magnitud >=50%.",
+    "_motivo_modificacion": "La evaluacion trimestre a trimestre con descarte por cualquier fallo produce una tasa de falso descarte de entre el 41% y el 94% sobre senales reales pero ruidosas, segun el ruido por trimestre. Tres revisiones externas independientes coincidieron en rechazarla. La evaluacion agregada mantiene la exigencia sobre la senal y elimina el castigo al ruido.",
+    "_fecha_modificacion": "2026-09-03",
+
+    "ventana": {
+      "trimestres": 5,
+      "fija": true,
+      "extension_permitida": false,
+      "descarte_anticipado_permitido": false,
+      "nota": "No hay contador, no hay trimestres 'validos' acumulados, no hay limite de 8. Una variable en confirmacion completa siempre los 5 trimestres antes de recibir veredicto."
+    },
+
+    "estimacion": {
+      "metodo": "efecto agregado unico sobre los 5 trimestres conjuntos",
+      "simbolo": "theta_F",
+      "evaluacion_por_trimestre": false,
+      "nota": "Los trimestres individuales se registran para auditoria, pero no se juzgan uno a uno. Un trimestre aislado de BTC es una observacion demasiado ruidosa para decidir nada."
+    },
+
+    "criterios_de_confirmacion": {
+      "todos_obligatorios": true,
+      "criterios": [
+        {
+          "id": "signo_agregado",
+          "regla": "signo(theta_F) == signo(theta_B2)"
+        },
+        {
+          "id": "magnitud",
+          "regla": "abs(theta_F) >= max(0.5 * abs(theta_B2), M)",
+          "linea_base": "theta_B2, la estimacion del bloque 2",
+          "linea_base_prohibida": [
+            "estimacion del bloque 1",
+            "estimacion sobre la ventana completa del test",
+            "cualquier promedio ponderado que de peso al bloque 1"
+          ],
+          "justificacion_linea_base": "El bloque 1 participo en la seleccion mediante los 4 gates, por lo que su magnitud esta inflada. La ventana completa hereda ese sesgo. El bloque 2 es la unica porcion no contaminada."
+        },
+        {
+          "id": "consistencia_minima",
+          "regla": "al menos 3 de los 5 trimestres presentan el signo esperado",
+          "justificacion": "Impide que un unico trimestre extremo arrastre el agregado y disfrace una relacion inexistente. Es la unica salvaguarda que mira los trimestres por separado, y esta prefijada."
+        }
+      ]
+    },
+
+    "umbral_absoluto_M": {
+      "valor": null,
+      "estado": "PENDIENTE_DEFINICION",
+      "unidad_theta": null,
+      "criterio_de_fijacion": "M es el efecto mas pequeno capaz de cambiar una casilla visible del dashboard. Una senal real cuyo efecto no mueve ninguna decision del sistema es, para este sistema, indistinguible de ruido.",
+      "momento_de_fijacion": "en el momento de la propuesta de la variable, antes de que existan datos forward",
+      "inmutable_tras_fijacion": true,
+      "bloqueo": {
+        "activo": true,
+        "regla": "Ninguna variable puede transitar a EN_CONFIRMACION mientras umbral_absoluto_M.valor sea null. filtro.py debe abortar la transicion.",
+        "justificacion": "El criterio relativo del 50% por si solo es insuficiente: si theta_B2 salio pequeno por ruido, el liston resultante es trivial; si salio grande por ruido, el 50% se supera pese a una regresion severa a la media."
+      }
+    }
+  },
+
+  "estados": {
+    "cerrado": true,
+    "comportamiento_ante_estado_desconocido": "filtro.py aborta. No se admiten etiquetas fuera de esta lista.",
+    "lista": [
+      { "id": "PROPUESTA", "descripcion": "Registrada en el lote, aun no testeada" },
+      { "id": "EN_TEST", "descripcion": "Consumiendo presupuesto, atravesando gates" },
+      { "id": "DESCARTADA_GATE_1", "descripcion": "Fallo estabilidad entre epocas" },
+      { "id": "DESCARTADA_GATE_2", "descripcion": "Fallo anticipacion: efecto contemporaneo, no anticipatorio" },
+      { "id": "DESCARTADA_GATE_3", "descripcion": "Fallo contribucion incremental de R2" },
+      { "id": "DESCARTADA_GATE_4", "descripcion": "Fallo coherencia de signo" },
+      { "id": "PENDIENTE_REVISION", "descripcion": "Historia insuficiente. No consume presupuesto ni entra en BY" },
+      { "id": "RECHAZADA_PVALOR", "descripcion": "No supera el umbral BY del lote" },
+      { "id": "EN_CONFIRMACION", "descripcion": "Superado el cribado, en ventana forward de 5 trimestres" },
+      { "id": "CONFIRMADA", "descripcion": "Supera los 3 criterios de confirmacion forward" },
+      { "id": "RECHAZADA_FORWARD", "descripcion": "No supera alguno de los 3 criterios forward" },
+      { "id": "SELLADA_V1", "descripcion": "Hallazgo heredado de v1. No se re-testea ni se reabre" },
+      { "id": "DESCARTADA_PREVIA", "descripcion": "Descartada antes de entrar en test, por decision documentada" }
+    ]
+  },
+
+  "sellados": [
+    {
+      "variable": "halving_ciclo",
+      "familia": "ciclo_temporal",
+      "estado": "SELLADA_V1",
+      "hallazgo": "Retornos negativos en la ventana 18-24 meses post-halving. No es la narrativa de rally habitualmente citada, sino la contraria.",
+      "p_valor_rango_v1": "0.014 - 0.049",
+      "re_test_permitido": false,
+      "nota_de_sesgo": "Este hallazgo se descubrio bajo las reglas de v1, que tenian sesgo de seleccion conocido y no corregido. Se conserva por su valor operativo y por trazabilidad historica, no como evidencia validada bajo el protocolo v2. No se somete al protocolo v2 ni se re-testea: hacerlo violaria la regla de unicidad del test.",
+      "modulo": "halving.py",
+      "comportamiento": "Ejecuta en silencio. Solo emerge en la interfaz cuando la fecha actual se aproxima a la ventana de riesgo identificada."
+    }
+  ],
+
+  "integridad": {
+    "metodo": "cadena_de_hashes",
+    "algoritmo": "sha256",
+    "ambito": "registro.json",
+    "construccion": "Cada entrada incluye hash_anterior. El hash de una entrada se calcula sobre su serializacion JSON canonica (claves ordenadas, separadores compactos, UTF-8) excluyendo su propio campo hash.",
+    "genesis": "0000000000000000000000000000000000000000000000000000000000000000",
+    "verificacion": "filtro.py recorre la cadena al arrancar. Si algun hash no coincide, aborta y no ejecuta ningun lote.",
+    "append_only": true,
+    "nota": "Git conserva el historial. La cadena de hashes hace visible una edicion silenciosa de una entrada pasada, que un diff aislado podria pasar por alto."
+  }
+}
