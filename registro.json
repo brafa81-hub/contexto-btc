@@ -6,18 +6,17 @@
     "append_only": true,
     "algoritmo_hash": "sha256",
     "genesis": "0000000000000000000000000000000000000000000000000000000000000000",
-    "ultimo_hash": "0aea02d54ce6cecac95fa14a1b6c8d97d7b9ef0e6947a1139b8eaebfcf10748c",
-    "n_entradas": 17,
+    "ultimo_hash": "3f5ca58f36d903c5ce560cefe55f3aab375701421c1991fb0073136a28f0ea57",
+    "n_entradas": 18,
     "regla": "Ninguna entrada se edita ni se borra. Una correccion se registra como entrada nueva que referencia la anterior. filtro.py verifica la cadena completa al arrancar y aborta si esta rota.",
     "canonizacion": "json.dumps(entrada_sin_hash, sort_keys=True, separators=(',',':'), ensure_ascii=False).encode('utf-8')"
   },
   "presupuesto_por_trimestre": {
     "2026-Q3": {
       "propuestas_usadas": 0,
-      "propuestas_maximas": 12,
       "familias_nuevas_usadas": 0,
-      "familias_nuevas_maximas": 2,
-      "nota": "SSR pertenece a una familia del catalogo inicial, por lo que no consume cuota de familia nueva."
+      "nota": "SSR pertenece a una familia del catalogo inicial, por lo que no consume cuota de familia nueva.",
+      "nota_enmienda_29": "Los maximos viven solo en v2.json (presupuesto.autoridad). Aqui quedan unicamente los contadores de uso, que filtro.py contrasta contra el valor derivado del array entradas."
     }
   },
   "entradas": [
@@ -385,6 +384,68 @@
       "consume_presupuesto_v2": false,
       "hash_anterior": "9a5c1a024c4bab19578e12f63d0d37770f6f858d62f4866d3a9080d2b37f64cb",
       "hash": "0aea02d54ce6cecac95fa14a1b6c8d97d7b9ef0e6947a1139b8eaebfcf10748c"
+    },
+    {
+      "id": "stablecoin_supply_ratio",
+      "alias": "SSR",
+      "tipo_entrada": "ficha_congelada",
+      "referencia_entrada_anterior": "stablecoin_supply_ratio",
+      "familia": "liquidez_stablecoins",
+      "regimen": "v2",
+      "lote": "2026-Q3",
+      "fecha_propuesta": "2026-09-03",
+      "fecha_fin_ventana_test": "2026-09-03",
+      "fecha_corte_bloques": null,
+      "estado": "PROPUESTA",
+      "gate_alcanzado": null,
+      "metrica_continua": {
+        "definicion": "Stablecoin Supply Ratio: capitalizacion de BTC dividida entre la oferta agregada de stablecoins.",
+        "interpretacion": "SSR bajo indica mucha liquidez en stablecoins disponible frente al tamano de BTC. SSR alto indica lo contrario.",
+        "fuente": "PENDIENTE_DEFINICION",
+        "nota_fuente": "Debe fijarse antes de transitar a EN_TEST, junto con la lista exacta de stablecoins agregadas y su tratamiento de altas y bajas."
+      },
+      "mascara": {
+        "regla": "mascara(t) = 1 si SSR(t) < Q20(t)",
+        "q_percentil": 20,
+        "tipo_ventana": "movil",
+        "longitud_ventana_dias": 365,
+        "solo_informacion_anterior_a_t": true,
+        "inclusividad": "estricta (<)",
+        "warm_up_dias": 365,
+        "warm_up_excluido_del_computo_de_bloques": true,
+        "justificacion_q": "SSR mide un regimen de liquidez, no un shock puntual. Un quintil es la formulacion correcta para ese tipo de hipotesis; un decil corresponderia a una hipotesis de extremo. Ademas, con q=10 sobre un bloque_2 de aproximadamente 3,8 anios una serie lenta como SSR quedaria previsiblemente por debajo del suelo de 8 episodios independientes.",
+        "declaracion_de_sesgo": "La eleccion de q=20 estuvo influida en parte por la necesidad de que el test fuese ejecutable, no solo por criterio conceptual. No se miraron datos de SSR antes de fijarla. Se declara expresamente para que quede auditable.",
+        "justificacion_ventana_movil": "La oferta de stablecoins ha crecido aproximadamente cien veces. Un umbral absoluto congelado activaria la mascara casi exclusivamente en una epoca y haria fallar el gate de estabilidad por construccion.",
+        "justificacion_longitud_365": "Con 730 dias el warm-up dejaria el bloque_1 por debajo del minimo de 3 anios. Con 365 y el warm-up excluido del computo, ambos bloques quedan en torno a 3,8 anios.",
+        "limitacion_aceptada": "Una ventana de un ano es sensible a un unico regimen anual."
+      },
+      "horizonte_N": 30,
+      "unidad_theta": "fraccion de retorno simple a 30 dias",
+      "theta_B2": null,
+      "M": 0.03,
+      "estado_M": "FIJADO",
+      "derivacion_M": "Valor por defecto del regimen v2. Anclado al menor salto de estado distinto de cero del bloque 07 (amplitud p50: 0.22 en cuartil 'baja' a 0.25 en cuartil 'alta').",
+      "casilla_dashboard": {
+        "identificador": "contexto_liquidez_stablecoins",
+        "existe_hoy": false,
+        "nota": "Ninguna casilla actual del dashboard es direccional, por lo que theta no puede mover ninguna existente. Esta casilla se creara si y solo si la variable se confirma.",
+        "granularidad": 0.03,
+        "estados_visibles": 3,
+        "funcion_D_theta": "D(theta) = 'desfavorable' si theta <= -0.03; 'neutral' si -0.03 < theta < 0.03; 'favorable' si theta >= 0.03"
+      },
+      "naturaleza_de_la_hipotesis": "Desplazamiento de localizacion, no de cola. El mecanismo postulado (menos liquidez disponible precede peor retorno) es un desplazamiento del centro de la distribucion, por lo que la diferencia de medianas es el estadistico apropiado. Se hace constar segun exige definicion_de_efecto.estadistico_theta.limitacion_declarada.",
+      "dias_episodio": 30,
+      "pronostico_registrado": "Existe una probabilidad real de que SSR termine en PENDIENTE_REVISION por episodios independientes insuficientes en el bloque_2. Se registra antes de ejecutar el test para que ese desenlace no se reinterprete despues. El suelo de 8 episodios no se ha modificado para acomodar esta variable.",
+      "consume_presupuesto_v2": false,
+      "nota_presupuesto": "Consumira presupuesto al transitar a EN_TEST.",
+      "signo_esperado": "bilateral",
+      "justificacion_signo": "No se declara direccion. El mecanismo economico admite lectura en ambos sentidos: mas liquidez en stablecoins puede preceder entrada de capital, o puede reflejar capital que ya salio de BTC y espera. Sin hipotesis previa solida, bilateral es el valor correcto.",
+      "fecha_registro": "2026-09-04",
+      "motivo_sustitucion": "Sustituye a la entrada 16 para retirar el campo bloqueo_ejecucion, que la enmienda 29 declara ajeno al alcance de la ficha congelada. Aquella clausula referenciaba la ruta gates_cualitativos.parametros.estabilidad_entre_epocas.definicion_de_epocas, eliminada por la enmienda 24. La condicion que protegia no se pierde: la regla ficha_congelada.marcadores_pendientes impide la transicion a EN_TEST mientras metrica_continua.fuente sea PENDIENTE_DEFINICION, y lo hace para toda variable, no solo para esta. Permitido porque SSR sigue en PROPUESTA.",
+      "nota_cambio_de_tramos": "Se hace constar que el cambio de epocas de calendario a tramos proporcionales (enmienda 24) es FAVORABLE a esta variable: bajo las epocas de calendario de v1, una variable cuyo bloque_1 no abarcase tres epocas fallaba el gate 1 por construccion, que es exactamente el caso de SSR con 3,8 anios por bloque. No se oculta que la sustitucion de ficha ocurre en un contexto que beneficia a la variable. Ningun campo de medida se modifica.",
+      "nota": "Entrada operativa de SSR desde esta fecha. Las entradas 12, 15 y 16 se conservan como historial y no se evaluan.",
+      "hash_anterior": "0aea02d54ce6cecac95fa14a1b6c8d97d7b9ef0e6947a1139b8eaebfcf10748c",
+      "hash": "3f5ca58f36d903c5ce560cefe55f3aab375701421c1991fb0073136a28f0ea57"
     }
   ]
 }

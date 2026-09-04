@@ -1,7 +1,7 @@
 {
   "meta": {
     "nombre": "Contexto-BTC — Protocolo de validacion v2",
-    "version_esquema": "2.2.0",
+    "version_esquema": "2.3.0",
     "fecha_creacion": "2026-09-03",
     "archivo_registro_asociado": "registro.json",
     "declaracion_obligatoria": "Batch-PRDS actua como cribado de descubrimiento. La garantia real de control de falsos positivos descansa en la confirmacion forward sobre datos que no existian cuando la variable fue propuesta.",
@@ -175,6 +175,20 @@
         "titulo": "convencion unica de aclaraciones",
         "fecha": "2026-09-04",
         "motivo": "convencion_elegida fija 'mismo id, gana la ultima' pero la entrada 17 se creo despues usando la convencion descartada. Una aclaracion con id propio es invisible al resolver el id de la variable aclarada, por lo que su regla_derivada no es descubrible por codigo."
+      },
+      {
+        "n": 29,
+        "titulo": "alcance de la ficha congelada, autoridad del presupuesto y limpieza de vocabulario",
+        "fecha": "2026-09-04",
+        "motivo": "La ficha de SSR contenia una clausula operativa (bloqueo_ejecucion) que referenciaba una ruta de la doctrina eliminada por la enmienda 24. El sintoma era una ruta rota; la causa es que la ficha congelada mezclaba definicion de medida, que no caduca, con condiciones operativas transitorias, que si caducan. Se separan ambas cosas y la condicion pasa a la doctrina en forma que no puede quedar desactualizada.",
+        "descartado": "Resolver rutas obsoletas desde el codigo siguiendo renombrado_desde. Rechazado por cuatro revisiones externas independientes: renombrado_desde prueba genealogia documental, no equivalencia semantica, y el renombrado de la enmienda 24 tambien cambio la definicion de los sub-periodos. Ademas contradice meta.precedencia: el codigo aborta, no se adapta.",
+        "partes": [
+          "alcance de ficha_congelada y regla de marcadores PENDIENTE",
+          "autoridad unica del presupuesto",
+          "limpieza de vocabulario de la enmienda 24",
+          "lote inmutable, fijado por la primera entrada del id"
+        ],
+        "hallazgo_durante_la_migracion": "La parte 4 no estaba prevista. Aparecio al comprobar que el presupuesto derivado seguia cuadrando tras la migracion: no cuadraba, y ya no cuadraba en 2.2.0 antes de tocar nada. filtro.py v2 habria abortado en el arranque."
       }
     ],
     "compatibilidad": {
@@ -223,10 +237,10 @@
     "gates_cualitativos": {
       "cantidad": 4,
       "lista": [
-        "estabilidad_entre_epocas",
-        "anticipacion_no_contemporaneidad",
+        "magnitud_en_tramos",
+        "anticipacion",
         "contribucion_incremental_R2",
-        "coherencia_de_signo"
+        "coherencia_de_signo_en_tramos"
       ],
       "bloque_usado": "bloque_1",
       "advertencia": "Los gates son seleccion no corregida y la correccion BY no los cubre. Esta es la razon exacta de la declaracion_obligatoria. Ademas su potencia es baja: ver potencia_medida.",
@@ -357,7 +371,8 @@
         "justificacion": "El motor decide con la mascara. Filtrar con el valor continuo cribaba por una hipotesis distinta de la que emite el veredicto.",
         "nota_estadistica": "Spearman sobre variable binaria ES la correlacion rank-biserial, monotonamente equivalente a Cliff's delta. No cambia el estadistico, solo la entrada.",
         "diagnostico_continuo": "El mismo calculo sobre la metrica continua se registra en el informe como diagnostico. No puede salvar ni condenar a ninguna variable."
-      }
+      },
+      "nota_lista": "Nombres alineados con gates_cualitativos.parametros por la enmienda 29. Los nombres anteriores (estabilidad_entre_epocas, anticipacion_no_contemporaneidad, coherencia_de_signo) quedan en renombrado_desde de cada bloque de parametros, solo como trazabilidad documental. No son alias resolubles por codigo."
     },
     "unicidad_del_test": {
       "regla": "Una variable se testea una sola vez, en el trimestre en que entra.",
@@ -462,9 +477,21 @@
       ],
       "motivo_exclusiones": "Una aclaracion, un alta retroactiva o una ficha congelada no son un test nuevo: completan o anotan una propuesta ya registrada. Sin esta exclusion, nasdaq_aclaracion_panel (lote 2026-Q3, estado RECHAZADA_PVALOR) contaria como presupuesto consumido y no lo es.",
       "comportamiento_si_discrepan": "filtro.py aborta y reporta ambos valores.",
-      "verificacion_2026Q3": "Con la formula corregida el consumo derivado de 2026-Q3 sigue siendo 0: la entrada operativa de SSR esta en PROPUESTA, que no figura en estados_que_cuentan_como_consumido. Coincide con el contador almacenado.",
+      "verificacion_2026Q3": "Con la formula de la enmienda 27 y el orden de resolucion de la enmienda 29, el consumo derivado de 2026-Q3 es 0: la entrada operativa de SSR esta en PROPUESTA, y nasdaq resuelve al lote v1-historico, que es exento. Coincide con el contador almacenado. Verificado por script el 2026-09-04.",
       "enmienda_correctora": 27,
-      "problema_corregido": "La formula anterior contaba entradas 'de tipo propuesta' que alcanzasen EN_TEST. La entrada operativa de SSR es de tipo ficha_congelada, por lo que al pasar SSR a EN_TEST el consumo derivado habria seguido siendo 0 mientras el contador almacenado decia 1, y filtro.py habria abortado."
+      "problema_corregido": "La formula anterior contaba entradas 'de tipo propuesta' que alcanzasen EN_TEST. La entrada operativa de SSR es de tipo ficha_congelada, por lo que al pasar SSR a EN_TEST el consumo derivado habria seguido siendo 0 mientras el contador almacenado decia 1, y filtro.py habria abortado.",
+      "orden_de_resolucion": "El conteo opera sobre ids RESUELTOS, no sobre entradas crudas, y toma el lote segun integridad.resolucion_de_entradas.lote. Ver el orden de los cuatro pasos alli. Sin ese orden, el consumo derivado de 2026-Q3 da 1 en lugar de 0."
+    },
+    "autoridad": {
+      "enmienda": 29,
+      "regla": "Los maximos (propuestas_maximas_por_trimestre y familias_nuevas_maximas_por_trimestre) viven exclusivamente en v2.json. Se retiran de registro.json.",
+      "motivo": "presupuesto_por_trimestre vive fuera del array entradas, luego fuera de la cadena de hashes. Un valor duplicado ahi no es un snapshot forense: es un segundo parametro editable sin romper nada. Conservarlo como 'prueba historica' era falso, porque no esta firmado.",
+      "que_permanece_en_registro_json": [
+        "propuestas_usadas",
+        "familias_nuevas_usadas"
+      ],
+      "por_que_permanecen": "presupuesto.derivacion los necesita: filtro.py deriva el consumo del array entradas y aborta si no coincide con el contador almacenado. Ese contraste es el mecanismo de la enmienda 10 y se conserva intacto.",
+      "comportamiento_filtro_py": "Si registro.json contiene todavia un campo de maximos, filtro.py aborta: indica que la migracion de la enmienda 29 no se aplico."
     }
   },
   "catalogo_familias": {
@@ -600,7 +627,8 @@
       },
       {
         "id": "DESCARTADA_GATE_1",
-        "descripcion": "Fallo estabilidad entre epocas"
+        "descripcion": "Fallo el gate 1: magnitud en tramos",
+        "nota_enmienda_29": "Descripcion actualizada. Las epocas de calendario desaparecieron con la enmienda 24 y el gate 1 dejo de exigir signo con la enmienda 25. El identificador del estado no cambia: el registro es append-only."
       },
       {
         "id": "DESCARTADA_GATE_2",
@@ -662,10 +690,15 @@
         "PASA": "EN_CONFIRMACION (solo si supera ademas el umbral BY del lote; en caso contrario RECHAZADA_PVALOR)",
         "PROVISIONAL": "PENDIENTE_REVISION",
         "RECHAZADA_paso_1": "DESCARTADA_GATE_1",
-        "RECHAZADA_paso_2": "DESCARTADA_GATE_2",
         "RECHAZADA_paso_3": "DESCARTADA_GATE_3",
         "RECHAZADA_coherencia_signo": "DESCARTADA_GATE_4"
-      }
+      },
+      "fila_retirada_enmienda_29": {
+        "fila": "RECHAZADA_paso_2 -> DESCARTADA_GATE_2",
+        "motivo": "Contradecia a la enmienda 19, que retira el estado DESCARTADA_GATE_2 y ordena a filtro.py abortar si lo emite. El gate 2 no es vinculante: no existe ninguna salida que deba mapearse a ese estado.",
+        "el_estado_no_se_borra": "DESCARTADA_GATE_2 permanece en estados.lista con emision_permitida false. Lo referencia presupuesto.derivacion y el registro es append-only."
+      },
+      "nota_claves": "Las claves de la tabla son etiquetas internas de filtro.py, no estados del protocolo. Solo los valores pertenecen a la lista cerrada."
     }
   },
   "sellados": [
@@ -743,6 +776,16 @@
         "regla": "Las entradas 13 (nasdaq_aclaracion_panel) y 17 (halving_ciclo_aclaracion_pvalor) usan id propio con referencia_entrada_anterior. Son excepciones historicas cerradas: el registro es append-only y no se editan.",
         "consecuencia_operativa": "Al resolver los ids 'nasdaq' y 'halving_ciclo', filtro.py debe cargar ademas toda entrada cuyo campo referencia_entrada_anterior apunte a ellos, y aplicar sus regla_derivada.",
         "prohibicion_futura": "Ninguna aclaracion nueva puede usar id propio. filtro.py aborta si aparece una fuera de esas dos."
+      },
+      "lote": {
+        "enmienda": 29,
+        "regla": "lote es una propiedad de la VARIABLE, no de la entrada. Lo fija la PRIMERA entrada de un id y ninguna entrada posterior puede cambiarlo.",
+        "comportamiento_ante_discrepancia": "Si una entrada posterior declara un lote distinto, filtro.py IGNORA ese valor y hace constar la incoherencia en el informe, nombrando la entrada. No aborta: el registro es append-only y estas entradas no se pueden editar.",
+        "relacion_con_gana_la_ultima": "No la contradice. La doctrina ya distingue entre lo que transiciona y lo que queda fijado: el estado gana la ultima, la ficha es inmutable. lote pertenece al segundo grupo y hasta ahora no estaba dicho.",
+        "motivo": "Detectado durante la migracion de la enmienda 29. La entrada 13 (nasdaq_aclaracion_panel) archivo una aclaracion sobre una variable de v1 bajo el lote 2026-Q3, mientras que la entrada 17 (halving_ciclo_aclaracion_pvalor), misma operacion, uso correctamente v1-historico. Dos convenciones distintas para el mismo acto. Al resolver ids, la entrada 13 ganaba como operativa de 'nasdaq' y arrastraba su lote equivocado, lo que hacia que nasdaq (RECHAZADA_PVALOR) contase como presupuesto consumido de 2026-Q3.",
+        "agujero_cerrado": "Sin esta regla, una entrada posterior puede mover cualquier variable de trimestre a posteriori, y con ella su consumo de presupuesto. El caso de la entrada 13 es el sintoma; el agujero es general.",
+        "descartado": "Excluir del conteo los ids cuyas entradas sean aclaraciones con referencia_entrada_anterior a un id distinto. Rechazado: infiere una categoria semantica ('esto no es una variable') de la forma documental de dos entradas, que es el mismo error que la enmienda 29 rechaza en el caso de renombrado_desde. Ademas habria ocultado la incoherencia de la entrada 13 en vez de dejarla visible, y no habria cerrado el agujero general.",
+        "orden_de_resolucion": "1) resolver ids (enmienda 28: las aclaraciones con id propio se pliegan sobre el id referenciado); 2) fijar lote por la primera entrada de cada id resuelto; 3) fijar estado por la ultima; 4) contar presupuesto."
       }
     },
     "modulo_de_escritura": {
@@ -831,6 +874,32 @@
       "regla_unilateral": "Declarar positivo o negativo exige rellenar justificacion_signo con el mecanismo previo que sostiene la direccion. No basta con que parezca razonable.",
       "prohibicion": "El valor queda firmado antes de ejecutar. No puede modificarse despues, ni siquiera para corregirlo.",
       "nota_incentivos": "Elegir bilateral no es un fallo ni requiere penalizacion. Su coste es la menor potencia inherente a una hipotesis menos especifica. Forzar una direccion para ganar potencia es peor que no declararla."
+    },
+    "alcance": {
+      "enmienda": 29,
+      "regla": "La ficha congelada contiene UNICAMENTE definicion de medida: como se mide la variable y como se juzgara el efecto. Prohibido incluir condiciones operativas, estados de disponibilidad de datos o referencias a rutas concretas de v2.json.",
+      "justificacion": "Una definicion de medida no caduca. Una condicion operativa si, y al vivir dentro de un documento inmutable no hay donde actualizarla. Una referencia a una ruta de la doctrina hace que la ficha dependa de la estructura de otro archivo que puede cambiar.",
+      "prohibicion_de_referencias": "Ninguna ficha puede nombrar una ruta de v2.json. Si una ficha contiene una ruta, filtro.py aborta y la nombra. No se resuelve, no se traduce, no se sigue renombrado_desde.",
+      "campos_que_no_pertenecen_a_la_ficha": [
+        "bloqueo_ejecucion"
+      ],
+      "sustituido_por": "ficha_congelada.marcadores_pendientes"
+    },
+    "marcadores_pendientes": {
+      "enmienda": 29,
+      "regla": "Ningun campo de la entrada operativa de una variable puede contener un marcador que empiece por PENDIENTE_ en el momento de transitar a EN_TEST. filtro.py aborta y nombra el campo exacto.",
+      "ambito": "recursivo sobre todos los campos de la entrada operativa, a cualquier profundidad",
+      "prefijo": "PENDIENTE_",
+      "justificacion": "Sustituye a las clausulas bloqueo_ejecucion escritas a mano dentro de cada ficha. Es mas fuerte: se aplica a toda variable presente y futura, no solo a la que se acordo de escribirla, y no nombra ninguna ruta, por lo que no puede quedar desactualizada por un renombrado.",
+      "cobertura_verificada_ssr": "metrica_continua.fuente = PENDIENTE_DEFINICION sigue bloqueando la transicion de SSR a EN_TEST por esta regla, sin necesidad de clausula propia en la ficha.",
+      "no_cubre": "Los bloqueos de alcance global no viven en las fichas. fuente_de_precio.snapshot.estado = PENDIENTE_PRIMER_LOTE afecta a todo lote y lo comprueba filtro.py sobre la doctrina, no sobre la ficha."
+    },
+    "migracion_de_fichas": {
+      "enmienda": 29,
+      "regla": "Cuando una enmienda renombre o elimine una clave de la doctrina, toda ficha en estado PROPUESTA que la referencie debe sustituirse antes de cualquier evaluacion. La sustitucion se registra como entrada nueva.",
+      "limite_de_la_sustitucion": "Una ficha sustitutiva solo puede diferir de la anterior en los campos que la enmienda obliga a tocar, en motivo_sustitucion y en los hashes. Todo campo de definicion de medida (metrica_continua, mascara, horizonte_N, M, unidad_theta, signo_esperado, casilla_dashboard, naturaleza_de_la_hipotesis, dias_episodio) debe ser identico. filtro.py compara ambas entradas y aborta si difiere alguno.",
+      "justificacion_del_limite": "La mutabilidad en PROPUESTA es necesaria, pero sin limite medible se convierte en la puerta de atras que permite retocar una ficha alegando cambio doctrinal. El limite es verificable por codigo.",
+      "prohibido_tras_en_test": "Si la variable ya alcanzo EN_TEST no hay sustitucion posible. filtro.py aborta de forma permanente. Es el coste asumido en integridad.resolucion_de_entradas.inmutabilidad."
     }
   },
   "estimador_de_robustez": {
