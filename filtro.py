@@ -32,7 +32,7 @@ import pandas as pd
 
 import cadena
 
-DOCTRINA_COMPATIBLE = "2.3"
+DOCTRINA_COMPATIBLE = "2.4"
 
 # Hueco declarado de la doctrina: estados.mapeo_salida_filtro_py.tabla traduce
 # la etiqueta interna PASA a EN_CONFIRMACION "solo si supera ademas el umbral BY
@@ -270,21 +270,12 @@ def _validar_ficha(entrada, doc):
                 f"(ficha_congelada.alcance)"
             )
 
-    # Prohibicion de referencias a rutas de v2.json dentro de la ficha.
-    # Aplicacion LITERAL: la doctrina no exime a ningun campo. Si esto salta
-    # sobre una ficha ya congelada, el conflicto es real y lo resuelve una
-    # enmienda, no el codigo.
-    claves_doctrina = set(doc.keys())
-    for camino, valor in _recorrer(entrada):
-        if not isinstance(valor, str):
-            continue
-        for raiz in sorted(claves_doctrina):
-            if f"{raiz}." in valor:
-                problemas.append(
-                    f"el campo '{camino}' nombra una ruta de v2.json ('{raiz}...'). "
-                    f"Prohibido por ficha_congelada.alcance.prohibicion_de_referencias"
-                )
-                break
+    # Referencias a rutas de v2.json dentro de la ficha (enmienda 30).
+    # La aparicion textual de una ruta NO es causa de aborto. La prohibicion es
+    # de DEPENDENCIA, no de mencion: filtro.py nunca resuelve estas cadenas
+    # contra la doctrina. Se recogen en un inventario descriptivo sin severidad
+    # (ficha_congelada.alcance.inventario_de_referencias), que se imprime en el
+    # informe y no condiciona ninguna transicion de estado.
 
     # Marcadores PENDIENTE_ (enmienda 29): recursivo, a cualquier profundidad.
     prefijo = ruta(doc, "ficha_congelada.marcadores_pendientes.prefijo")
@@ -296,6 +287,55 @@ def _validar_ficha(entrada, doc):
             )
 
     return problemas
+
+
+def _existe_ruta(doc, camino):
+    """
+    ficha_congelada.alcance.aislamiento_del_resolver.
+
+    Comprueba EXISTENCIA y devuelve un booleano. Nunca devuelve contenido de la
+    doctrina. Es la unica funcion a la que se le permite recibir una cadena
+    procedente de registro.json, y por construccion no puede convertirla en un
+    valor utilizable por el motor. No usar ruta() aqui: ruta() devuelve valor.
+    """
+    actual = doc
+    for parte in camino.split("."):
+        if not isinstance(actual, dict) or parte not in actual:
+            return False
+        actual = actual[parte]
+    return True
+
+
+def _inventario_de_referencias(entrada, doc):
+    """
+    ficha_congelada.alcance.inventario_de_referencias (enmienda 30).
+
+    Lista las cadenas de la ficha que coinciden con la sintaxis de una ruta
+    doctrinal, junto a si esa ruta existe hoy. Es un inventario, NO un
+    diagnostico: no lleva severidad, no distingue tipos de campo y no bloquea.
+    Una ruta que no resuelve puede ser una referencia historica correcta.
+    """
+    claves = sorted(doc.keys())
+    filas = []
+    for camino, valor in _recorrer(entrada):
+        if not isinstance(valor, str):
+            continue
+        for raiz in claves:
+            marca = f"{raiz}."
+            if marca not in valor:
+                continue
+            resto = valor.split(marca, 1)[1]
+            token = marca + "".join(
+                c for c in resto.split()[0] if c.isalnum() or c in "._"
+            )
+            token = token.rstrip(".")
+            filas.append({
+                "campo": camino,
+                "referencia": token,
+                "resuelve_en_doctrina_vigente": _existe_ruta(doc, token),
+            })
+            break
+    return filas
 
 
 def _comparar_ficha_sustitutiva(variable, doc):
@@ -352,8 +392,10 @@ def _comparar_ficha_sustitutiva(variable, doc):
     return problemas, avisos
 
 
-def fase2_admision(doc, variables, consumo, lote):
+def fase2_admision(doc, variables, consumo, lote, inventario=None):
     candidatas, problemas, avisos = [], [], []
+    if inventario is None:
+        inventario = []
 
     problemas += _bloqueos_globales(doc)
 
@@ -385,6 +427,9 @@ def fase2_admision(doc, variables, consumo, lote):
 
     for v in en_propuesta:
         e = v["entrada_operativa"]
+        for fila in _inventario_de_referencias(e, doc):
+            fila["variable"] = v["id"]
+            inventario.append(fila)
         p = _validar_ficha(e, doc)
         ps, av = _comparar_ficha_sustitutiva(v, doc)
         p += ps
@@ -920,10 +965,21 @@ def ejecutar(args):
     for i in incidencias:
         print(f"[FASE 1] incidencia: {i}")
 
-    candidatas, problemas, avisos = fase2_admision(doc, variables, consumo, args.lote)
+    inventario = []
+    candidatas, problemas, avisos = fase2_admision(
+        doc, variables, consumo, args.lote, inventario
+    )
     print(f"\n[FASE 2] lote {args.lote}: {len(candidatas)} candidatas admisibles a EN_TEST")
     for a in avisos:
         print(f"[FASE 2] aviso: {a}")
+
+    # Inventario de referencias (enmienda 30). Sin severidad, no bloquea.
+    if inventario:
+        print("\n[FASE 2] inventario de referencias doctrinales citadas en fichas")
+        print("         (descriptivo, sin severidad; no condiciona ninguna transicion)")
+        for f in inventario:
+            estado = "vigente" if f["resuelve_en_doctrina_vigente"] else "no resuelve hoy"
+            print(f"  - [{f['variable']}] {f['campo']}: {f['referencia']}  ->  {estado}")
 
     if problemas:
         print("\n[FASE 2] BLOQUEOS:")
