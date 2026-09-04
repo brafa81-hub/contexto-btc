@@ -32,7 +32,7 @@ import pandas as pd
 
 import cadena
 
-DOCTRINA_COMPATIBLE = "2.5"
+DOCTRINA_COMPATIBLE = "2.6"
 
 # Hueco declarado de la doctrina: estados.mapeo_salida_filtro_py.tabla traduce
 # la etiqueta interna PASA a EN_CONFIRMACION "solo si supera ademas el umbral BY
@@ -228,6 +228,7 @@ def fase1_resolver(doc, reg):
     for i, e in enumerate(entradas, start=1):
         estructurales += prohibicion_prospectiva(e, doc, n=i)
     estructurales += _validar_retiradas(variables, doc)
+    estructurales += _colisiones_de_medida(variables, doc)
     if estructurales:
         abortar(
             "defecto estructural del registro (enmienda 31):\n  - "
@@ -425,6 +426,61 @@ def _validar_retiradas(variables, doc):
                 f"{rp['reproposicion']['declaracion_de_sesgo_obligatoria']}"
             )
 
+    return problemas
+
+
+def hash_de_medida(entrada, doc):
+    """
+    ficha_congelada.hash_de_medida (enmienda 32).
+
+    Identidad FORMAL de una medida. Se CALCULA, nunca se almacena: un hash
+    guardado puede divergir del contenido que dice resumir.
+
+    Devuelve None si la ficha no contiene todos los campos de medida. Una ficha
+    se construye por etapas y comparar hashes de subconjuntos distintos de
+    campos no significa nada.
+
+    Canonizacion identica a la de cadena.py, que es la declarada en
+    registro.json -> meta.canonizacion. No se define convencion nueva y no se
+    normaliza el contenido: decidir que diferencias "no son sustanciales" seria
+    clasificacion semantica.
+    """
+    campos = ruta(doc, "ficha_congelada.campos_de_definicion_de_medida.lista")
+    if any(c not in entrada for c in campos):
+        return None
+    cuerpo = {c: entrada[c] for c in campos}
+    canon = json.dumps(
+        cuerpo, sort_keys=True, separators=(",", ":"), ensure_ascii=False
+    ).encode("utf-8")
+    return hashlib.sha256(canon).hexdigest()
+
+
+def _colisiones_de_medida(variables, doc):
+    """
+    ficha_congelada.hash_de_medida.regla_de_colision.
+
+    Colision entre ids RESUELTOS distintos: aborto (reproposicion exacta de una
+    medida ya registrada). Colision dentro del mismo id: esperada y correcta,
+    la impone limite_de_la_sustitucion.
+
+    ALCANCE DECLARADO: esto NO implementa una_sola_vez. Solo bloquea la
+    reproposicion exacta. Ver hash_de_medida.que_NO_protege.
+    """
+    por_hash = {}
+    for v in variables.values():
+        for n, e in v["historial"]:
+            h = hash_de_medida(e, doc)
+            if h:
+                por_hash.setdefault(h, {}).setdefault(v["id"], []).append(n)
+
+    problemas = []
+    for h, ids in por_hash.items():
+        if len(ids) > 1:
+            detalle = ", ".join(f"'{i}' (entrada(s) {ns})" for i, ns in sorted(ids.items()))
+            problemas.append(
+                f"hash de medida {h[:16]}... compartido por ids distintos: "
+                f"{detalle}. Reproposicion exacta de una medida ya registrada"
+            )
     return problemas
 
 

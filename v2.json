@@ -1,7 +1,7 @@
 {
   "meta": {
     "nombre": "Contexto-BTC — Protocolo de validacion v2",
-    "version_esquema": "2.5.0",
+    "version_esquema": "2.6.0",
     "fecha_creacion": "2026-09-03",
     "archivo_registro_asociado": "registro.json",
     "declaracion_obligatoria": "Batch-PRDS actua como cribado de descubrimiento. La garantia real de control de falsos positivos descansa en la confirmacion forward sobre datos que no existian cuando la variable fue propuesta.",
@@ -1005,11 +1005,54 @@
         "declaracion_de_sesgo_obligatoria": "La ficha nueva debe declarar en declaracion_de_sesgo que campos de medida difieren de la retirada y por que. Sin ese campo filtro.py aborta.",
         "una_sola_vez": {
           "regla": "Una ficha que lleve sustituye_a_id_retirado no puede a su vez ser retirada. filtro.py aborta si una transicion a RETIRADA_EN_PROPUESTA apunta a un id cuya ficha contiene ese campo.",
-          "efecto": "Cada variable subyacente dispone de una sola correccion. Cierra el bucle retirar-reproponer-retirar sin castigar el error honesto de una vez.",
-          "descartado": "Hacer que la retirada consuma presupuesto del trimestre. Rechazado: castiga corregir un error, que es el incentivo contrario al que persigue el protocolo."
+          "efecto": "Cada CADENA DE SUCESION DECLARADA dispone de una sola correccion. Cierra el bucle retirar-reproponer-retirar dentro de esa cadena.",
+          "descartado": "Hacer que la retirada consuma presupuesto del trimestre. Rechazado: castiga corregir un error, que es el incentivo contrario al que persigue el protocolo.",
+          "_texto_sustituido_enmienda_31": "Cada variable subyacente dispone de una sola correccion. Cierra el bucle retirar-reproponer-retirar sin castigar el error honesto de una vez.",
+          "alcance_real": {
+            "enmienda": 32,
+            "garantia": "El protocolo garantiza unicidad de IDENTIDAD FORMAL DECLARADA. No garantiza unicidad de concepto ni de constructo.",
+            "no_garantia": "Dos fichas con ids distintos que midan lo mismo en espiritu son, para el motor, dos variables distintas. La deteccion de equivalencia conceptual queda FUERA del enforcement automatico: es un control de auditoria, no una propiedad del sistema.",
+            "motivo_de_la_reformulacion": "La redaccion de la enmienda 31 afirmaba que cada variable subyacente dispone de una sola correccion. El mecanismo no implementa eso: implementa una sola sucesion por cadena declarada. Afirmar la propiedad mas fuerte era prometer algo que el sistema no puede demostrar, que es justo el defecto que el resto del protocolo evita."
+          },
+          "elusion_conocida": {
+            "descripcion": "El freno se ata a la PRESENCIA del campo sustituye_a_id_retirado. Nada impide reproponer la misma medida con un id nuevo omitiendo ese campo y presentandola como variable nueva.",
+            "detectable_por_codigo": false,
+            "no_se_cierra_porque": "Identidad por significado, cero intervencion humana y cero clasificacion semantica son tres propiedades incompatibles entre si. Cualquier regla que decida cuando dos medidas son 'la misma' es clasificacion semantica, que es la via ya descartada expresamente en ficha_congelada.alcance.prohibicion_de_referencias.sin_clasificacion_de_campos por abrir deriva de clasificacion.",
+            "descartado_concept_key": "Se evaluo exigir una clave canonica de concepto declarada por el autor. Rechazado: es una etiqueta declarada, luego tiene exactamente la misma debilidad que sustituye_a_id_retirado, y ademas introduce la clasificacion semantica ya descartada.",
+            "descartada_normalizacion_previa": "Se evaluo normalizar los campos de medida (recortar espacios, unificar mayusculas, ordenar listas) antes de calcular su hash. Rechazado: decidir que diferencias 'no son sustanciales' es clasificacion semantica por la puerta de atras, y haria el hash menos verificable, no mas.",
+            "revision_externa": "Consenso unanime de cuatro modelos externos el 2026-09-05: la visibilidad en la cadena de hashes es un control detectivo, no preventivo, y no frena a un autor que sea tambien su unico auditor."
+          }
         }
       },
-      "coste_asumido_declarado": "Retirar y reproponer es la unica via legitima de corregir un campo de medida en PROPUESTA, y por tanto tambien una puerta trasera potencial a limite_de_la_sustitucion. No se cierra con una prohibicion sino con dos frenos verificables: visibilidad obligatoria (retirada, motivo, id sucesor y declaracion de sesgo en la cadena de hashes y en cada informe) y el limite de una sola vez."
+      "coste_asumido_declarado": "Retirar y reproponer es la unica via legitima de corregir un campo de medida en PROPUESTA, y por tanto tambien una puerta trasera potencial a limite_de_la_sustitucion. No se cierra con una prohibicion sino con dos frenos verificables: visibilidad obligatoria (retirada, motivo, id sucesor y declaracion de sesgo en la cadena de hashes y en cada informe) y el limite de una sola vez.",
+      "retirada_estrategica": {
+        "enmienda": 32,
+        "problema": "Como la retirada no consume presupuesto, funciona como una opcion de abandono gratuita: mirar los datos de forma informal, intuir que la variable va a fallar, retirarla y reproponer una version retocada.",
+        "por_que_no_lo_impide_sin_datos_adquiridos": "La condicion sin_datos_adquiridos solo comprueba que no exista theta_B2 ni snapshot asociado. Mirar una serie sin registrar nada no deja rastro en el registro.",
+        "prevenible_por_codigo": false,
+        "mitigacion_real": "No esta en esta capa. La garantia del sistema frente a este riesgo es la misma que frente al resto de la seleccion: la confirmacion forward sobre datos que no existian cuando la variable fue propuesta. Una retirada estrategica no compra nada alli, porque la ventana forward se juzga sobre datos futuros que el autor no puede haber mirado. Ver meta.declaracion_obligatoria.",
+        "se_declara_no_se_resuelve": "Se hace constar en el mismo registro que potencia_medida y que notas_de_migracion.theta_v1_no_comparable: son limitaciones conocidas del sistema, declaradas para que ningun informe futuro pueda presentarlas como si no existieran."
+      }
+    },
+    "hash_de_medida": {
+      "enmienda": 32,
+      "definicion": "SHA-256 de la serializacion canonica del subconjunto de campos de campos_de_definicion_de_medida.lista presentes en una ficha.",
+      "canonizacion": "La MISMA que registro.json -> meta.canonizacion: claves ordenadas, separadores compactos, UTF-8. No se define ninguna convencion nueva. No se aplica ninguna normalizacion previa del contenido.",
+      "calculado_no_almacenado": {
+        "regla": "El hash NO se escribe en la ficha. filtro.py lo calcula en cada ejecucion a partir del contenido.",
+        "motivo": "Un hash almacenado puede divergir del contenido que dice resumir, y obliga a una comprobacion adicional que puede fallar. Un hash derivado no puede mentir."
+      },
+      "solo_fichas_completas": {
+        "regla": "Solo se calcula sobre entradas que contengan TODOS los campos de la lista. Las fichas incompletas no producen hash y no entran en la comparacion.",
+        "motivo": "Una ficha se construye por etapas. Comparar hashes de subconjuntos distintos de campos no significa nada."
+      },
+      "regla_de_colision": {
+        "entre_ids_distintos": "Si dos ids RESUELTOS distintos producen el mismo hash de medida, filtro.py ABORTA y nombra ambos. Es una reproposicion exacta de una medida ya registrada.",
+        "dentro_del_mismo_id": "Esperado y correcto: limite_de_la_sustitucion exige que una ficha sustitutiva tenga los campos de medida identicos a la anterior. No es colision."
+      },
+      "que_protege": "La reproposicion EXACTA de una medida ya registrada, con o sin sustituye_a_id_retirado. Refuerza protocolo.unicidad_del_test.",
+      "que_NO_protege": "NO implementa una_sola_vez. El proposito legitimo de retirar y reproponer es cambiar campos de medida, luego el hash nuevo nunca colisiona con el retirado. Y una reproposicion abusiva con un retoque minimo tampoco colisiona. Se declara para que nadie lea esta regla como si cerrase la elusion_conocida.",
+      "cobertura_medida_2026_09_05": "0 de las 11 variables ya testeadas. Las entradas 1 a 11, 13, 14 y 17 son de regimen v1 y no contienen ningun campo de definicion de medida, por lo que no producen hash. La cobertura es exclusivamente prospectiva y arranca desde una base vacia. Medido por script sobre el registro de 18 entradas."
     }
   },
   "estimador_de_robustez": {
@@ -1094,8 +1137,22 @@
     "snapshot": {
       "obligatorio": true,
       "regla": "Cada lote congela un unico snapshot CSV de la serie y registra su SHA-256 en la doctrina antes de ejecutar ningun test.",
-      "sha256": null,
-      "estado": "PENDIENTE_PRIMER_LOTE"
+      "sha256": "32c0b8ea8a66f01181032c3cb5b66c10ede867b12f6779d7bea8b19258627e49",
+      "estado": "CONGELADO",
+      "congelacion": {
+        "fecha": "2026-09-05",
+        "fichero": "snapshot_precio_btcusd.csv",
+        "rango": "2015-01-01 a 2026-09-03",
+        "filas": 4264,
+        "dias_sin_dato": 0,
+        "duplicados_resueltos": 0,
+        "columnas": "fecha,cierre",
+        "final_de_linea": "LF",
+        "script": "snapshot_precio.py",
+        "vela_incompleta_descartada": "La API devolvio ademas la vela del 2026-09-04, que a la hora de la descarga aun no habia cerrado (cierra a las 00:00 UTC del 2026-09-05). Se descarto por la fecha de corte declarada en el script, no a mano.",
+        "eleccion_de_la_fecha_de_corte": "2026-09-03 es la ultima vela diaria UTC completa en el momento de fijar la constante. Se declara como constante en el script y no se deriva de la fecha de ejecucion: si dependiese de cuando se lanza, el snapshot no seria reproducible.",
+        "limitacion_declarada": "snapshot.sha256 es un campo escalar, pero la regla dice que cada lote congela su propio snapshot. Mientras solo exista un lote v2 activo no hay conflicto. Un segundo lote exigira convertir este bloque en una estructura por lote, y eso si sera una enmienda."
+      }
     },
     "control_descriptivo": "Validacion visual contra Coinbase como control, sin re-test y sin efecto sobre ningun veredicto."
   },
