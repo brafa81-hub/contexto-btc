@@ -32,7 +32,7 @@ import pandas as pd
 
 import cadena
 
-DOCTRINA_COMPATIBLE = "2.4"
+DOCTRINA_COMPATIBLE = "2.5"
 
 # Hueco declarado de la doctrina: estados.mapeo_salida_filtro_py.tabla traduce
 # la etiqueta interna PASA a EN_CONFIRMACION "solo si supera ademas el umbral BY
@@ -221,6 +221,19 @@ def fase1_resolver(doc, reg):
         if v["estado"] in cuentan:
             consumo[v["lote"]] += 1
 
+    # --- enmienda 31: defectos estructurales del registro ---------------------
+    # Se comprueban ANTES del presupuesto porque no son bloqueos de un lote:
+    # son entradas que nunca debieron escribirse.
+    estructurales = []
+    for i, e in enumerate(entradas, start=1):
+        estructurales += prohibicion_prospectiva(e, doc, n=i)
+    estructurales += _validar_retiradas(variables, doc)
+    if estructurales:
+        abortar(
+            "defecto estructural del registro (enmienda 31):\n  - "
+            + "\n  - ".join(estructurales)
+        )
+
     almacenado = reg.get("presupuesto_por_trimestre", {})
     for lote, derivado in consumo.items():
         guardado = almacenado.get(lote, {}).get("propuestas_usadas")
@@ -284,6 +297,132 @@ def _validar_ficha(entrada, doc):
             problemas.append(
                 f"el campo '{camino}' contiene el marcador '{valor}'. "
                 f"No puede transitar a EN_TEST"
+            )
+
+    return problemas
+
+
+def prohibicion_prospectiva(entrada, doc, n=None):
+    """
+    ficha_congelada.marcadores_pendientes.prohibicion_prospectiva (enmienda 31).
+
+    Ninguna entrada de ficha con fecha_registro >= fecha_efecto puede llevar un
+    marcador PENDIENTE_ dentro de un campo de definicion de medida.
+
+    Devuelve lista de problemas. NO es un bloqueo por variable: el llamador de
+    fase 1 aborta, porque una entrada asi es un defecto estructural del
+    registro. Esta misma funcion es la que usa --validar-entrada antes de
+    escribir nada con cadena.py.
+    """
+    pp = ruta(doc, "ficha_congelada.marcadores_pendientes.prohibicion_prospectiva")
+    prefijo = ruta(doc, "ficha_congelada.marcadores_pendientes.prefijo")
+    campos = ruta(doc, "ficha_congelada.campos_de_definicion_de_medida.lista")
+    tipos = ("propuesta", "ficha_congelada", "alta_retroactiva")
+
+    tipo = entrada.get("tipo_entrada", ruta(
+        doc, "integridad.resolucion_de_entradas.tipo_entrada.ausente_equivale_a"))
+    if tipo not in tipos:
+        return []
+
+    fecha = entrada.get("fecha_registro") or entrada.get("fecha_propuesta")
+    if not fecha or str(fecha) < pp["fecha_efecto"]:
+        return []
+
+    etiqueta = f"entrada {n}: " if n else ""
+    problemas = []
+    for campo in campos:
+        if campo not in entrada:
+            continue
+        for camino, valor in _recorrer({campo: entrada[campo]}):
+            if isinstance(valor, str) and valor.startswith(prefijo):
+                problemas.append(
+                    f"{etiqueta}[{entrada.get('id')}] el campo de definicion de "
+                    f"medida '{camino}' contiene el marcador '{valor}'. "
+                    f"Prohibido desde {pp['fecha_efecto']} (enmienda 31)"
+                )
+    return problemas
+
+
+def _validar_retiradas(variables, doc):
+    """
+    ficha_congelada.retirada_en_propuesta (enmienda 31).
+
+    Comprueba las condiciones estrictas del estado terminal
+    RETIRADA_EN_PROPUESTA. Devuelve lista de problemas; el llamador aborta.
+    """
+    rp = ruta(doc, "ficha_congelada.retirada_en_propuesta")
+    cuentan = set(ruta(doc, "presupuesto.derivacion.estados_que_cuentan_como_consumido"))
+    campo_suc = rp["reproposicion"]["campo_obligatorio"]
+    problemas = []
+
+    retirados = set()
+    for v in variables.values():
+        historial = v["historial"]
+        estados = [e.get("estado") for _, e in historial]
+
+        if "RETIRADA_EN_PROPUESTA" in estados:
+            i = estados.index("RETIRADA_EN_PROPUESTA")
+            n_ret, ret = historial[i]
+            retirados.add(v["id"])
+
+            # terminalidad
+            if i != len(historial) - 1:
+                problemas.append(
+                    f"[{v['id']}] RETIRADA_EN_PROPUESTA (entrada {n_ret}) es "
+                    f"terminal, pero existen entradas posteriores con el mismo id"
+                )
+            # nunca alcanzo EN_TEST ni ningun estado que consuma
+            previos = [s for s in estados[:i] if s in cuentan or s == "EN_TEST"]
+            if previos:
+                problemas.append(
+                    f"[{v['id']}] no puede retirarse: su historial contiene "
+                    f"{sorted(set(previos))}"
+                )
+            # sin datos adquiridos
+            for _, e in historial[:i]:
+                if e.get("theta_B2") is not None:
+                    problemas.append(
+                        f"[{v['id']}] no puede retirarse: theta_B2 no es null"
+                    )
+                    break
+            # forma
+            if ret.get("tipo_entrada") != rp["forma"]["tipo_entrada"]:
+                problemas.append(
+                    f"[{v['id']}] la entrada {n_ret} de retirada debe ser de tipo "
+                    f"'{rp['forma']['tipo_entrada']}'"
+                )
+            for campo in rp["forma"]["campos_obligatorios_adicionales"]:
+                if not ret.get(campo):
+                    problemas.append(
+                        f"[{v['id']}] la entrada {n_ret} de retirada carece del "
+                        f"campo obligatorio '{campo}'"
+                    )
+            # una sola vez: una ficha sucesora no puede a su vez retirarse
+            if any(e.get(campo_suc) for _, e in historial[:i]):
+                problemas.append(
+                    f"[{v['id']}] es una ficha sucesora ({campo_suc}) y no puede "
+                    f"retirarse a su vez: {rp['reproposicion']['una_sola_vez']['regla']}"
+                )
+
+    # verificacion de las sucesoras
+    for v in variables.values():
+        destino = v["entrada_operativa"].get(campo_suc)
+        if not destino:
+            continue
+        if destino not in retirados:
+            problemas.append(
+                f"[{v['id']}] {campo_suc} = '{destino}', que no esta en "
+                f"RETIRADA_EN_PROPUESTA"
+            )
+        if v["entrada_operativa"].get("referencia_entrada_anterior") == destino:
+            problemas.append(
+                f"[{v['id']}] usa referencia_entrada_anterior hacia el id "
+                f"retirado '{destino}'. {rp['reproposicion']['prohibicion_de_forma']}"
+            )
+        if not v["entrada_operativa"].get("declaracion_de_sesgo"):
+            problemas.append(
+                f"[{v['id']}] ficha sucesora sin declaracion_de_sesgo. "
+                f"{rp['reproposicion']['declaracion_de_sesgo_obligatoria']}"
             )
 
     return problemas
@@ -367,8 +506,12 @@ def _comparar_ficha_sustitutiva(variable, doc):
         problemas.append(mig["prohibido_tras_en_test"])
         return problemas, avisos
 
-    texto = mig["limite_de_la_sustitucion"]
-    campos_medida = [c.strip() for c in texto.split("(")[1].split(")")[0].split(",")]
+    # Enmienda 31 parte A: la lista se lee de ficha_congelada.
+    # campos_de_definicion_de_medida.lista. Queda PROHIBIDO derivarla parseando
+    # el texto en prosa de limite_de_la_sustitucion, como hacia la version
+    # anterior: una reescritura del parrafo cambiaba en silencio el alcance de
+    # esta prohibicion.
+    campos_medida = ruta(doc, "ficha_congelada.campos_de_definicion_de_medida.lista")
 
     for c in campos_medida:
         if anterior.get(c) != ultima.get(c):
@@ -1120,7 +1263,7 @@ def ejecutar(args):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description="Motor de validacion v2 de Contexto-BTC")
-    ap.add_argument("--lote", required=True)
+    ap.add_argument("--lote")
     ap.add_argument("--doctrina", default="v2.json")
     ap.add_argument("--registro", default="registro.json")
     ap.add_argument("--precio")
@@ -1128,7 +1271,28 @@ def main(argv=None):
                     help="id=ruta.csv (repetible)")
     ap.add_argument("--informe")
     ap.add_argument("--solo-comprobar", action="store_true")
+    ap.add_argument(
+        "--validar-entrada",
+        help="Valida un fichero JSON con una entrada candidata contra la "
+             "enmienda 31 ANTES de escribirla con cadena.py. No toca el registro."
+    )
     args = ap.parse_args(argv)
+
+    if args.validar_entrada:
+        doc = _cargar_json(args.doctrina)
+        entrada = _cargar_json(args.validar_entrada)
+        problemas = prohibicion_prospectiva(entrada, doc)
+        if problemas:
+            print("RECHAZADA. No escribir esta entrada:")
+            for p in problemas:
+                print("  - " + p)
+            return 1
+        print("OK  la entrada no incumple la enmienda 31. "
+              "Puede escribirse con cadena.py")
+        return 0
+
+    if not args.lote:
+        ap.error("--lote es obligatorio salvo con --validar-entrada")
 
     try:
         return ejecutar(args)
