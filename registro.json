@@ -6,8 +6,8 @@
   "append_only": true,
   "algoritmo_hash": "sha256",
   "genesis": "0000000000000000000000000000000000000000000000000000000000000000",
-  "ultimo_hash": "e31a1e92b03234ed747823b07b6c59aa347a52426e2049c3949435008c258be4",
-  "n_entradas": 20,
+  "ultimo_hash": "a1b5b876d114e5d11f3b521d6a5df2bd1e9c8eef61a9566e0e7af0b03ba15738",
+  "n_entradas": 21,
   "regla": "Ninguna entrada se edita ni se borra. Una correccion se registra como entrada nueva que referencia la anterior. filtro.py verifica la cadena completa al arrancar y aborta si esta rota.",
   "canonizacion": "json.dumps(entrada_sin_hash, sort_keys=True, separators=(',',':'), ensure_ascii=False).encode('utf-8')"
  },
@@ -586,6 +586,141 @@
    "nota": "Ficha sucesora de 'stablecoin_supply_ratio' (RETIRADA_EN_PROPUESTA, entrada 19). Registrada bajo la enmienda 31 y sujeta en pleno a su prohibicion prospectiva por llevar fecha_registro 2026-09-05.",
    "hash_anterior": "cbad64504a0c2a069e43ca84018164c1023376d36bf2dff1e17ff877f0e2fe5f",
    "hash": "e31a1e92b03234ed747823b07b6c59aa347a52426e2049c3949435008c258be4"
+  },
+  {
+   "id": "ssr_capstables",
+   "alias": "SSR",
+   "tipo_entrada": "aclaracion",
+   "familia": "liquidez_stablecoins",
+   "regimen": "v2",
+   "lote": "2026-Q3",
+   "fecha_propuesta": "2026-09-05",
+   "fecha_fin_ventana_test": "2026-09-05",
+   "fecha_corte_bloques": null,
+   "estado": "PROPUESTA",
+   "gate_alcanzado": null,
+   "metrica_continua": {
+    "definicion": "Stablecoin Supply Ratio, variante de capitalizacion: precio de BTC en t dividido entre la capitalizacion de mercado agregada del universo de stablecoins peggedUSD en t. La capitalizacion de cada token es oferta circulante(t) por precio de mercado del token(t), no oferta nominal (D3). El numerador NO incorpora la oferta circulante de BTC: ver fuente.numerador.",
+    "interpretacion": "SSR bajo indica mucha liquidez en stablecoins disponible frente al tamano de BTC. SSR alto indica lo contrario.",
+    "fuente": {
+     "numerador": {
+      "serie": "Precio de cierre diario de BTC/USD segun fuente_de_precio de la doctrina (Bitstamp, hora de corte 00:00:00 UTC del dia siguiente).",
+      "justificacion": "La formulacion habitual de SSR usa capitalizacion de mercado de BTC, es decir precio por oferta circulante. Aqui se usa solo el precio, por dos razones. Primera, robustez: la oferta circulante de BTC exigiria una tercera fuente de datos externa que no pudo verificarse en la sesion en que se congela esta ficha, y una fuente no verificada dentro de un campo de definicion de medida es precisamente lo que dejo sin salida a la entrada 18. Segunda, materialidad: la oferta circulante de BTC crece de forma monotona y suave, del orden del 1% anual, mientras la mascara es un percentil movil de 365 dias sobre una serie cuya variacion anual es uno o dos ordenes de magnitud mayor; el factor omitido es casi constante dentro de cada ventana.",
+      "limitacion_declarada": "Con esta eleccion la serie no es la capitalizacion de BTC en sentido estricto, y el alias SSR se conserva por continuidad de nombre, no por identidad formal con la definicion estandar. La diferencia numerica frente a la version que divide por oferta circulante no se ha medido."
+     },
+     "denominador": {
+      "serie": "Suma, dia a dia, de la capitalizacion de mercado de todos los tokens del universo definido por las reglas de este mismo objeto.",
+      "proveedor": "DefiLlama, API publica de stablecoins, sin clave de acceso.",
+      "endpoint_universo": "https://stablecoins.llama.fi/stablecoins?includePrices=true",
+      "endpoint_serie_por_token": "https://stablecoins.llama.fi/stablecoincharts/all?stablecoin={id}",
+      "campo_usado": "totalCirculatingUSD de la categoria peggedUSD. Es circulante(t) por precio historico(t), es decir capitalizacion de mercado real y no valor nominal. Verificado con evidencia: UST pasa de ratio 1,0000 el 2022-05-07 a 0,7540 el 2022-05-09.",
+      "agregado_del_proveedor_rechazado": "NO se usa el agregado /stablecoincharts/all sin filtro. Ese agregado suma la lista que DefiLlama decide clasificar como stablecoin cada dia, que es exactamente la lista dinamica del proveedor que D4 rechaza. La serie se construye token a token con ?stablecoin={id} y se le aplican las reglas de este objeto."
+     },
+     "regla_de_inclusion": {
+      "regla": "Un token entra en el universo del dia t si su capitalizacion de mercado en t es igual o superior a 100.000.000 USD. Umbral absoluto, evaluado dia a dia (D5).",
+      "justificacion": "El umbral relativo alternativo (0,10% del agregado) exige anclar el porcentaje al agregado bruto de todo lo que el proveedor clasifique como stablecoin ese dia, lo que convertiria a DefiLlama en quien fija el liston de inclusion. D4 establece que el proveedor es fuente de datos, no autoridad metodologica. El umbral absoluto no tiene ese problema.",
+      "contraargumento_declarado": "El umbral absoluto no es neutral en el tiempo: 100 millones USD eran aproximadamente el 5,5% del mercado de stablecoins en 2019 y son aproximadamente el 0,03% en 2026. La regla se vuelve mas permisiva a medida que el mercado crece. Se declara y no se corrige.",
+      "cobertura_verificada": "El umbral de 100M cubre igual o mas del 99% del agregado en todas las fechas de sondeo desde 2019. El umbral alternativo de 500M fue descartado porque deja 2,85 anios por bloque, por debajo del suelo de 3."
+     },
+     "exclusion_por_naturaleza_del_instrumento": {
+      "regla": "Quedan excluidos los tokens cuyo rendimiento esta incorporado contractualmente al propio token, las participaciones de fondo tokenizadas y las notas tokenizadas (por ejemplo USYC, USDY, BUIDL). La exclusion es point-in-time: un token se excluye desde la fecha en que el instrumento tiene esa naturaleza (D6).",
+      "criterio": "El criterio es la NATURALEZA DEL INSTRUMENTO, nunca el precio. Excluir un token por cotizar por encima de 1,00 romperia D3: UST se desvio brutalmente de 1,00 y precisamente queremos que esa desviacion se refleje en la serie.",
+      "magnitud_actual_declarada": "Los tokens con rendimiento son el 1,73% del agregado en la fecha de esta ficha, aparecen a partir de 2023-2024 y su peso es creciente."
+     },
+     "duplicados": {
+      "regla": "Cuando dos o mas ids del proveedor comparten el mismo gecko_id en la misma fecha t, se conserva el de mayor capitalizacion ese dia y se descartan los demas. La resolucion es dia a dia, no global (D7).",
+      "obligacion_de_transparencia": "El script que construye la serie debe listar explicitamente los tokens sin gecko_id, de modo que el hueco de cobertura de la regla quede visible y no silencioso.",
+      "caso_conocido": "USDU aparece con ids 283 y 304 bajo el mismo gecko_id."
+     },
+     "arranque_minimo_del_universo": {
+      "regla": "El primer dia de la serie cruda es la primera fecha en la que al menos 2 tokens cumplen simultaneamente la regla de inclusion. Antes de esa fecha no existe serie.",
+      "justificacion": "Un agregado de un solo token no es un universo, es un token: las reglas de inclusion, de exclusion por naturaleza y de duplicados no tienen contenido con un unico elemento. Dos es el minimo con el que la definicion de agregado es no trivial. Cualquier recuento mayor seria arbitrario.",
+      "declaracion_de_sesgo": "Este criterio se aplico primero dentro de un script de verificacion y su resultado era ya conocido al redactar esta ficha: arranque crudo 2018-10-27, mas 365 dias de warm-up, 2503 dias utiles hasta el corte, 3,43 anios por bloque, por encima del suelo de 3. El margen es de unos cinco meses. No se han medido arranques con recuentos de 3 o 4 tokens y no se mediran a posteriori: medir varias variantes y quedarse con la que supera el suelo seria elegir el criterio por su resultado. Se fija por el argumento conceptual y se declara el sesgo."
+     },
+     "altas_y_bajas": "Point-in-time y sin borrado retroactivo. Un token entra en el universo el dia en que cumple la regla de inclusion y sale el dia en que deja de cumplirla, sin que su entrada o salida modifique ningun dia anterior de la serie.",
+     "stablecoins_extintas": "Una stablecoin extinta permanece en la serie hasta su ultima fecha real de datos y no se prolonga artificialmente ni se elimina de los dias en que existio. Verificado: USTC figura con deadFrom 2022-05-09 y su serie tiene rango real 2020-11-26 a 2022-06-22.",
+     "depegs": "Un depeg se refleja en el valor de la serie y no se corrige, se filtra ni se normaliza. Es consecuencia directa de usar capitalizacion de mercado y no oferta nominal (D3), y es la propiedad por la que se eligio ese campo.",
+     "wrapped_y_migradas": "Las versiones envueltas y las migraciones de contrato se resuelven por el gecko_id del proveedor: si comparten gecko_id en la fecha t, se aplica la regla de duplicados; si el proveedor les asigna gecko_id distinto, cuentan como tokens separados. No se hace ninguna reconciliacion manual adicional, porque decidir que dos ids del proveedor son el mismo activo seria clasificacion semantica propia sobre datos ajenos.",
+     "pegs_no_usd": "El universo se restringe a la categoria peggedUSD. Los pegs a otras divisas quedan fuera. Magnitud declarada: el mayor de ellos, peggedEUR, equivale al 0,26% del agregado peggedUSD.",
+     "datos_faltantes": "No se interpola. Si un token no tiene dato en el dia t dentro de su rango vivo, no computa ese dia. La serie diaria del proveedor cubre 2017-11-29 a 2026-09-03, 3201 dias, sin huecos de calendario.",
+     "cobertura_de_precio_real": {
+      "hecho": "La proporcion del agregado con precio de mercado real observado, frente al valor de reserva de 1,00 que aplica DefiLlama cuando no dispone de precio, es del 100% en 2019, cae al 49,6% en 2024 y sube al 77,5% en 2026.",
+      "tratamiento": "Limitacion a declarar, no a corregir. Sustituir el valor de reserva por una estimacion propia introduciria una decision nuestra sobre datos del proveedor."
+     },
+     "limitacion_declarada": "La historia que sirve DefiLlama hoy es una historia REVISADA, no un archivo point-in-time verdadero. El proveedor puede haber reclasificado, corregido o incorporado tokens con efecto sobre fechas pasadas. Las reglas de este objeto son point-in-time sobre los datos tal como el proveedor los sirve hoy, lo que no equivale a reconstruir lo que un observador habria visto en aquella fecha. Se declara y no se corrige: no existe archivo publico gratuito que permita la reconstruccion verdadera.",
+     "snapshot": {
+      "objeto": "Matriz fecha por token con las columnas fecha, id_proveedor, gecko_id, totalCirculatingUSD e incluido_tras_reglas, ordenada por fecha y por id_proveedor.",
+      "algoritmo": "sha256",
+      "canonizacion": "La misma declarada en registro.json, campo meta.canonizacion.",
+      "sha256": null,
+      "regla": "El snapshot se congela en el momento de ejecutar el test y su sha256 se registra en la entrada de transicion a EN_TEST. La definicion de la medida es la regla que genera la matriz; el hash es evidencia de ejecucion de esa regla sobre unos datos concretos.",
+      "declaracion": "El valor null NO es un marcador diferido encubierto. La regla que genera la matriz esta completa en este objeto y no depende de ninguna decision futura. El precedente doctrinal es fuente_de_precio.snapshot, cuyo sha256 tambien es null y cuyo bloqueo se comprueba sobre la doctrina y no sobre la ficha."
+     }
+    }
+   },
+   "mascara": {
+    "regla": "mascara(t) = 1 si SSR(t) < Q20(t)",
+    "q_percentil": 20,
+    "tipo_ventana": "movil",
+    "longitud_ventana_dias": 365,
+    "solo_informacion_anterior_a_t": true,
+    "inclusividad": "estricta (<)",
+    "warm_up_dias": 365,
+    "warm_up_excluido_del_computo_de_bloques": true,
+    "justificacion_q": "SSR mide un regimen de liquidez, no un shock puntual. Un quintil es la formulacion correcta para ese tipo de hipotesis; un decil corresponderia a una hipotesis de extremo. Ademas, con q=10 sobre un bloque_2 de aproximadamente 3,8 anios una serie lenta como SSR quedaria previsiblemente por debajo del suelo de 8 episodios independientes.",
+    "declaracion_de_sesgo": "La eleccion de q=20 estuvo influida en parte por la necesidad de que el test fuese ejecutable, no solo por criterio conceptual. No se miraron datos de SSR antes de fijarla. Se declara expresamente para que quede auditable.",
+    "justificacion_ventana_movil": "La oferta de stablecoins ha crecido aproximadamente cien veces. Un umbral absoluto congelado activaria la mascara casi exclusivamente en una epoca y haria fallar el gate de estabilidad por construccion.",
+    "justificacion_longitud_365": "Con 730 dias el warm-up dejaria el bloque_1 por debajo del minimo de 3 anios. Con 365 y el warm-up excluido del computo, ambos bloques quedan en torno a 3,8 anios.",
+    "limitacion_aceptada": "Una ventana de un ano es sensible a un unico regimen anual."
+   },
+   "horizonte_N": 30,
+   "unidad_theta": "fraccion de retorno simple a 30 dias",
+   "theta_B2": null,
+   "M": 0.03,
+   "estado_M": "FIJADO",
+   "derivacion_M": "Valor por defecto del regimen v2. Anclado al menor salto de estado distinto de cero del bloque 07 (amplitud p50: 0.22 en cuartil 'baja' a 0.25 en cuartil 'alta').",
+   "casilla_dashboard": {
+    "identificador": "contexto_liquidez_stablecoins",
+    "existe_hoy": false,
+    "nota": "Ninguna casilla actual del dashboard es direccional, por lo que theta no puede mover ninguna existente. Esta casilla se creara si y solo si la variable se confirma.",
+    "granularidad": 0.03,
+    "estados_visibles": 3,
+    "funcion_D_theta": "D(theta) = 'desfavorable' si theta <= -0.03; 'neutral' si -0.03 < theta < 0.03; 'favorable' si theta >= 0.03"
+   },
+   "naturaleza_de_la_hipotesis": "Desplazamiento de localizacion, no de cola. El mecanismo postulado (menos liquidez disponible precede peor retorno) es un desplazamiento del centro de la distribucion, por lo que la diferencia de medianas es el estadistico apropiado. Se hace constar segun exige definicion_de_efecto.estadistico_theta.limitacion_declarada.",
+   "dias_episodio": 30,
+   "signo_esperado": "bilateral",
+   "justificacion_signo": "No se declara direccion. El mecanismo economico admite lectura en ambos sentidos: mas liquidez en stablecoins puede preceder entrada de capital, o puede reflejar capital que ya salio de BTC y espera. Sin hipotesis previa solida, bilateral es el valor correcto.",
+   "pronostico_registrado": "Existe una probabilidad real de que SSR termine en PENDIENTE_REVISION por episodios independientes insuficientes en el bloque_2. Se registra antes de ejecutar el test para que ese desenlace no se reinterprete despues. El suelo de 8 episodios no se ha modificado para acomodar esta variable.",
+   "consume_presupuesto_v2": false,
+   "nota_presupuesto": "Consumira presupuesto al transitar a EN_TEST.",
+   "fecha_registro": "2026-09-05",
+   "sustituye_a_id_retirado": "stablecoin_supply_ratio",
+   "verificacion_ex_post_de_supuestos": {
+    "origen": "D8 del plan cerrado el 2026-09-05, opcion A.",
+    "alcance": "Campo de primer nivel, fuera de todo campo de definicion de medida. No participa en hash_de_medida, no condiciona ninguna transicion de estado y no corrige ningun texto de la ficha.",
+    "supuesto": {
+     "donde_aparece": "mascara.justificacion_q y mascara.justificacion_longitud_365",
+     "texto_estimado": "aproximadamente 3,8 anios por bloque",
+     "valor_medido": "3,43 anios por bloque. Arranque crudo 2018-10-27, mas 365 dias de warm-up hasta 2019-10-27, 2503 dias utiles hasta el corte, repartidos en dos bloques.",
+     "correccion_aplicada": "Ninguna. Las justificaciones de mascara no se editan.",
+     "razones": [
+      "El 3,8 fue una estimacion ex ante hecha sin mirar datos y dependiente de una regla de universo que entonces no existia, no una afirmacion de hecho.",
+      "Ninguna de las dos justificaciones cambia de conclusion con 3,43: ambas se refuerzan con un bloque mas corto, porque el argumento era que un bloque corto hace inviable q=10.",
+      "La identidad campo a campo con la entrada 18 en los ocho campos de medida no afectados es la evidencia de que la retirada de aquella ficha no se aprovecho para retocar la medida. Esa evidencia no se gasta en una correccion cosmetica."
+     ]
+    },
+    "nota_sobre_limite_de_la_sustitucion": "ficha_congelada.migracion_de_fichas.limite_de_la_sustitucion no obliga a esta ficha, porque lleva id nuevo y no es una sustitucion en el sentido de la enmienda 29. La identidad con la entrada 18 se mantiene por disciplina de auditoria, no por obligacion doctrinal."
+   },
+   "declaracion_de_sesgo": "Campos de definicion de medida que difieren respecto a la ficha retirada (id 'stablecoin_supply_ratio', entrada 18) y por que:\n- metrica_continua.definicion: se sustituye 'oferta agregada de stablecoins' (ambigua, sin marcador propio, senalada por revisores externos) por 'capitalizacion de mercado agregada del universo de stablecoins' (D3). El cambio esta motivado por que el tratamiento del depeg de UST altera el resultado segun se use oferta nominal o capitalizacion, y revisores externos senalaron esa sensibilidad antes de fijar la eleccion.\n- metrica_continua.definicion, numerador: la entrada 18 decia 'capitalizacion de BTC' sin fijar la fuente de la oferta circulante. Aqui el numerador es solo el precio de BTC tomado de la fuente de precio de la doctrina; la razon esta en metrica_continua.fuente.numerador.justificacion y la limitacion en fuente.numerador.limitacion_declarada. La decision se tomo sin haber medido ninguna de las dos variantes.\n- metrica_continua.fuente: pasa de una cadena diferida a un objeto completo que fija proveedor, endpoints, regla de inclusion, exclusiones, duplicados, arranque del universo, altas y bajas, extintas, depegs, wrapped, pegs no USD, datos faltantes, cobertura de precio, limitacion de historia revisada y regla de snapshot.\n- metrica_continua.interpretacion: identica a la de la entrada 18, sin cambios.\nNingun otro campo de definicion de medida cambia: mascara, horizonte_N, M, unidad_theta, signo_esperado, casilla_dashboard, naturaleza_de_la_hipotesis y dias_episodio son identicos, verificados campo a campo contra la entrada 18.\nCambio de identificador: la ficha se registra como 'ssr_capstables' y no como el borrador 'ssr_capmarket_ptit', porque el sufijo point-in-time afirmaba una propiedad que fuente.limitacion_declarada niega expresamente.",
+   "nota": "Ficha sucesora de 'stablecoin_supply_ratio' (RETIRADA_EN_PROPUESTA, entrada 19). Registrada bajo la enmienda 31 y sujeta en pleno a su prohibicion prospectiva por llevar fecha_registro 2026-09-05.",
+   "motivo": "Revision externa (cuatro modelos, 2026-09-05) sobre la eleccion de usar solo el precio de BTC en el numerador, en vez de precio por oferta circulante, senalo dos errores en la justificacion original de metrica_continua.fuente.numerador.justificacion. Se declaran aqui sin modificar la ficha congelada.\n\nERROR 1, premisa de fuente: se argumento que la oferta circulante de BTC exige una fuente externa no verificable. Es incorrecto. La emision de BTC es deterministica por protocolo (suma de subsidios de bloque hasta la altura h), calculable localmente sin API externa, con un margen de error inferior al 0,01% por la incertidumbre en el mapeo fecha-altura. La razon de robustez dada en la ficha no se sostiene tal como esta escrita.\n\nERROR 2, argumento de materialidad: se argumento que el factor omitido (oferta de BTC) es casi constante dentro de una ventana de 365 dias y que por tanto su impacto sobre que dias caen bajo el percentil 20 seria marginal. Esa conclusion no se sigue de la premisa. El orden entre dos dias A y B se invierte cuando la diferencia relativa entre sus valores de SSR es menor que la deriva de la oferta de BTC entre esas dos fechas. Con una deriva de aproximadamente 3,7-4% anual en el periodo 2019-2020 (arranque real del bloque_1 de esta variable), cualquier par de observaciones separadas por menos de esa magnitud puede reordenarse. El percentil 20 es precisamente un corte de orden, por lo que la magnitud pequenia del factor omitido no acota su capacidad de alterar el resultado binario de la mascara.",
+   "declaracion": "Se declara, sin corregir mascara ni metrica_continua:\n\n1. La variable ssr_capstables NO es el Stablecoin Supply Ratio convencional (definido en la literatura como capitalizacion de mercado de BTC entre capitalizacion de mercado de stablecoins, adimensional). Al omitir la oferta circulante de BTC del numerador, la magnitud resultante tiene dimension inversa de BTC (1/BTC), no es adimensional, y no admite la interpretacion economica estandar de poder de compra de stablecoins sobre la oferta total de BTC. El alias 'SSR' se conserva por continuidad de nombre con la entrada retirada 18/19, no por identidad formal con la definicion canonica.\n\n2. Se retira la afirmacion de invarianza aproximada del percentil 20 frente a la inclusion o exclusion de la oferta de BTC. No hay base matematica para sostenerla de forma general; depende de la proximidad entre observaciones cercanas al corte y de la deriva de oferta en cada tramo de la ventana.\n\n3. Limitacion no cuantificada y no resuelta en esta aclaracion: el sesgo introducido por omitir la oferta de BTC es direccional, no aleatorio, porque la oferta crece de forma monotona. Esto puede afectar de forma distinta al bloque_1 (arranque en 2019-10-27, regimen de mayor crecimiento de oferta, ~3,7-4% anual) que al bloque_2 (regimen mas reciente, crecimiento menor al 1% anual desde 2024). El gate de estabilidad de esta variable compara theta entre ambos bloques. Existe un mecanismo, no cuantificado, por el que un resultado del gate podria deberse en parte a esta asimetria y no unicamente a la hipotesis economica bajo prueba. Se deja registrado antes de ejecutar el test para que un eventual fallo del gate no pueda reinterpretarse a posteriori como si esta posibilidad no hubiera sido conocida.",
+   "regla_derivada": "Todo informe, dashboard o resumen que cite ssr_capstables debe citar tambien esta aclaracion. No debe presentarse la variable como el SSR convencional de la literatura ni afirmarse invarianza de su percentil frente a la oferta de BTC.",
+   "no_es_re_test": "No se recalcula nada. La definicion de metrica_continua y mascara de ssr_capstables no cambian. Esta entrada no consume presupuesto ni altera el estado operativo de la variable.",
+   "estado_sin_cambios": true,
+   "hash_anterior": "e31a1e92b03234ed747823b07b6c59aa347a52426e2049c3949435008c258be4",
+   "hash": "a1b5b876d114e5d11f3b521d6a5df2bd1e9c8eef61a9566e0e7af0b03ba15738"
   }
  ]
 }
