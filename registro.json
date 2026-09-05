@@ -6,8 +6,8 @@
     "append_only": true,
     "algoritmo_hash": "sha256",
     "genesis": "0000000000000000000000000000000000000000000000000000000000000000",
-    "ultimo_hash": "3f5ca58f36d903c5ce560cefe55f3aab375701421c1991fb0073136a28f0ea57",
-    "n_entradas": 18,
+    "ultimo_hash": "cbad64504a0c2a069e43ca84018164c1023376d36bf2dff1e17ff877f0e2fe5f",
+    "n_entradas": 19,
     "regla": "Ninguna entrada se edita ni se borra. Una correccion se registra como entrada nueva que referencia la anterior. filtro.py verifica la cadena completa al arrancar y aborta si esta rota.",
     "canonizacion": "json.dumps(entrada_sin_hash, sort_keys=True, separators=(',',':'), ensure_ascii=False).encode('utf-8')"
   },
@@ -446,6 +446,16 @@
       "nota": "Entrada operativa de SSR desde esta fecha. Las entradas 12, 15 y 16 se conservan como historial y no se evaluan.",
       "hash_anterior": "0aea02d54ce6cecac95fa14a1b6c8d97d7b9ef0e6947a1139b8eaebfcf10748c",
       "hash": "3f5ca58f36d903c5ce560cefe55f3aab375701421c1991fb0073136a28f0ea57"
+    },
+    {
+      "id": "stablecoin_supply_ratio",
+      "tipo_entrada": "transicion_de_estado",
+      "estado": "RETIRADA_EN_PROPUESTA",
+      "fecha_registro": "2026-09-05",
+      "motivo": "D1 del plan cerrado 2026-09-05. La entrada 18 no tiene salida dentro de la doctrina: ficha_congelada.marcadores_pendientes exige que metrica_continua.fuente deje de ser PENDIENTE_DEFINICION antes de EN_TEST, y ficha_congelada.migracion_de_fichas.limite_de_la_sustitucion prohibe que metrica_continua difiera entre una ficha y su sustitutiva. Ninguna excepcion monotonica podria ademas corregir la ambiguedad de 'oferta agregada' en metrica_continua.definicion, que no lleva marcador propio.",
+      "declaracion": "Esta retirada NO es un resultado de test. SSR nunca alcanzo EN_TEST, no tiene theta_B2, no tiene snapshot de datos asociado y no ha consumido presupuesto (propuestas_usadas 2026-Q3 = 0 antes y despues de esta entrada). No reabre protocolo.unicidad_del_test.",
+      "hash_anterior": "3f5ca58f36d903c5ce560cefe55f3aab375701421c1991fb0073136a28f0ea57",
+      "hash": "cbad64504a0c2a069e43ca84018164c1023376d36bf2dff1e17ff877f0e2fe5f"
     }
   ]
 }
