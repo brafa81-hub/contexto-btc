@@ -1,0 +1,129 @@
+{
+ "sha256_v2_json": "e599bc82a46f49a7ce621ad267dc93321a5e6d3d9a1531e764b9d3ca08c7f71c",
+ "doctrina": "2.7.0",
+ "lote": "2026-Q3",
+ "declaracion_obligatoria": "Batch-PRDS actua como cribado de descubrimiento. La garantia real de control de falsos positivos descansa en la confirmacion forward sobre datos que no existian cuando la variable fue propuesta.",
+ "potencia_medida": "Esta capa de gates no es un cribado permisivo. Medida por simulacion sobre un bloque_1 de 1387 dias con mascara activa el 20% del tiempo, detecta aproximadamente el 39% de un efecto real de theta=0.084 y deja pasar el 15% del ruido puro. Un efecto real puede no atravesarla. Que una variable sea descartada aqui no demuestra que no exista.",
+ "incidencias_registro": [
+  "entrada 13: 'nasdaq_aclaracion_panel' resuelve al id 'nasdaq' (excepcion enmienda 28)",
+  "entrada 17: 'halving_ciclo_aclaracion_pvalor' resuelve al id 'halving_ciclo' (excepcion enmienda 28)",
+  "entrada 13 (nasdaq_aclaracion_panel) declara lote '2026-Q3' pero 'nasdaq' tiene lote 'v1-historico' fijado por la entrada 6. Se ignora y se reporta (enmienda 29 parte 4).",
+  "entrada 19 (stablecoin_supply_ratio): transicion de estado con campos fuera de la lista cerrada: ['declaracion'] (anterior a la enmienda 33, declarada, no corregible)"
+ ],
+ "avisos": [
+  "[ssr_capstables] en EN_TEST con la transicion ya escrita (entrada 22) y el test sin ejecutar. Ficha operativa: entrada 21"
+ ],
+ "presupuesto_derivado": {
+  "2026-Q3": 1
+ },
+ "precio": {
+  "duplicados_resueltos": 0,
+  "sha256_snapshot": "32c0b8ea8a66f01181032c3cb5b66c10ede867b12f6779d7bea8b19258627e49",
+  "dias": 4264,
+  "desde": "2015-01-01",
+  "hasta": "2026-09-03"
+ },
+ "correccion_multiple": null,
+ "resultados": {
+  "ssr_capstables": {
+   "id": "ssr_capstables",
+   "mascara": {
+    "operador": "<",
+    "q": 20,
+    "ventana_dias": 365,
+    "warm_up_dias": 365,
+    "primer_dia_valido": "2019-10-27"
+   },
+   "particion": {
+    "fecha_corte_bloques": "2023-03-31",
+    "anios_bloque_1": 3.43,
+    "anios_bloque_2": 3.43,
+    "minimo_por_bloque_anios": 3,
+    "suficiente": true,
+    "comprometida_en_transicion": "2023-03-31",
+    "coincide_con_la_derivada": true
+   },
+   "racha_media_mascara": 54.6,
+   "tramos": [
+    [
+     "2019-10-27",
+     "2020-12-16"
+    ],
+    [
+     "2020-12-17",
+     "2022-02-06"
+    ],
+    [
+     "2022-02-07",
+     "2023-03-31"
+    ]
+   ],
+   "gates": {
+    "1": {
+     "gate": 1,
+     "vinculante": true,
+     "estadistico": 0.22694434890642723,
+     "umbral": 0.14049566603927616,
+     "n_realizaciones_nulo": 300,
+     "correlaciones_por_tramo": [
+      -0.35670513885324456,
+      -0.15705667277431798,
+      -0.22694434890642723
+     ],
+     "tramos_insuficientes": [],
+     "pasa": true,
+     "insuficiencia": false,
+     "criterio": "|mediana de las correlaciones de los tramos| >= umbral",
+     "exige_signo": false
+    },
+    "2": {
+     "gate": 2,
+     "vinculante": false,
+     "afecta_a_veredicto": false,
+     "theta_fwd": -0.06393339949587584,
+     "theta_bwd": -0.25133496830713187,
+     "cociente": 0.2543752663089407,
+     "lectura": "el efecto hacia atras domina: parece contemporaneo, no anticipatorio",
+     "ambito": "informe de lote unicamente"
+    },
+    "3": {
+     "gate": 3,
+     "vinculante": true,
+     "delta_r2_pp": 0.5307801724403483,
+     "umbral_pp": 1.2028680336723496,
+     "n_realizaciones_nulo": 300,
+     "observaciones_efectivas": 41.7,
+     "minimo": 36,
+     "base": [
+      "mayer",
+      "vol30",
+      "mom30"
+     ],
+     "insuficiencia": false,
+     "pasa": false
+    },
+    "4": {
+     "gate": 4,
+     "vinculante": true,
+     "signos": [
+      -1,
+      -1,
+      -1
+     ],
+     "pasa": true,
+     "advertencia": "Tres tramos con signo identico ocurre por azar con probabilidad 1/4. Es un cribado, no evidencia de estabilidad.",
+     "tasa_bajo_ruido_medida": 0.241
+    }
+   },
+   "diagnostico_solape_bloques": 30,
+   "estado": "DESCARTADA_GATE_3"
+  }
+ },
+ "huecos_de_doctrina_detectados": [
+  "estados.mapeo_salida_filtro_py.tabla no tiene fila para la rama negativa del umbral BY. filtro.py usa RECHAZADA_PVALOR de la lista cerrada.",
+  "ficha_congelada.mascara.campos_obligatorios no incluye un campo 'operador': la direccion de la mascara se deduce de 'inclusividad'.",
+  "protocolo.gates_cualitativos.parametros.metodo_de_umbral no especifica el sorteo de desplazamientos del nulo por rotacion, ni que hacer con las rotaciones cuya realizacion es indefinida (se descartan y se cuenta cuantas quedan).",
+  "La doctrina no define que ocurre si un tramo del bloque_1 no tiene ninguna observacion con la mascara activa: la correlacion queda indefinida. filtro.py aborta en vez de decidirlo por su cuenta."
+ ],
+ "no_escribe_registro": "filtro.py no modifica registro.json. La entrada de transicion se escribe aparte con cadena.anadir."
+}
