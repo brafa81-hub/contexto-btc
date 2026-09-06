@@ -4,13 +4,21 @@ Este documento describe el sistema tal y como está, no como sería elegante que
 estuviera. Donde hay huecos, se dicen. Donde una regla no está clara en la
 doctrina, se dice también en lugar de rellenarla.
 
-Está escrito contra el estado del repositorio en el commit `be181da`:
+Está escrito contra este estado verificado del repositorio:
 
-| Fichero | SHA-256 | Contenido |
-|---|---|---|
-| `v2.json` | `c24117ea…` | Doctrina, esquema 2.8.0, 34 enmiendas |
-| `registro.json` | `8257e0c3…` | 23 entradas, último hash `27769888…` |
-| `filtro.py` | `152dddf5…` | Motor de validación |
+| Fichero | SHA-256 |
+|---|---|
+| `v2.json` | `c12a1f0d6d9160d278483dbb2e84dba7771b2be321d4abc26a744cf07bb0f5a5` |
+| `filtro.py` | `e7ced4352fc1f4be3264ca1a411a301429bbaa28b0b31c01c66ce4bcbdec9ea6` |
+| `registro.json` | `8257e0c369406801ddeb94c62c99902711fd76b4cc31b240ed3b6378973e403b` |
+| `requirements.txt` | `f0e59c76d7628bed28eecbd49a216dc45f9f4a277d2c3246cc3d64a44b9f4be5` |
+| `cadena.py` | `ac6576efbba641f5ef241aa4e1da51739d10ed8defaa8815f5f6dce9a4156997` |
+| `enmienda_35.py` | `11682bbad1a0982fc9f721aa0eaf4dafb2c1147ddb98d3c30df9b1ac08f8d737` |
+| `informe_2026Q3_ssr_capstables.json` | `eaff81e22ebbe8ecc1c5b7381134206549c9a999a1e70fc1114d54d5801f0e88` |
+
+Este propio documento no aparece en la tabla: no puede contener su propio
+SHA-256, porque calcular el hash de un fichero que incluye su propio hash es
+una referencia circular. No se disimula el hueco.
 
 Si abres el repositorio y estos hashes no coinciden, el sistema ha cambiado
 desde que se escribió esto. Lee la doctrina, no este documento.
@@ -502,40 +510,74 @@ Que es exactamente lo que pasó.
 Cosas que el sistema promete y todavía no comprueba automáticamente. Están
 declaradas en el propio registro, no descubiertas aquí:
 
-1. **Hashes de snapshot sin verificar.** `filtro.py` verifica el SHA-256 del
-   snapshot de precio contra la doctrina, pero **no** el del snapshot de matriz
-   ni el del CSV de la métrica. Quedan como evidencia documental. Hueco
-   declarado en la entrada 22.
+1. **CERRADO.** Hashes de snapshot sin verificar. `filtro.py` en su versión
+   2.9 verifica el CSV de la métrica contra `sha256_serie_metrica` y el
+   artefacto bruto contra `sha256_snapshot_metrica`, este último mediante el
+   nuevo argumento `--snapshot-metrica`. Antes solo se verificaba el snapshot
+   de precio; ahora también estos dos.
 
-2. **La obligatoriedad de la enmienda 34 no se comprueba.** Los campos
-   `sha256_motor` y `sha256_informe` son obligatorios para los estados de
-   resultado de test, pero `filtro.py` no lo verifica. Hueco declarado en la
-   propia enmienda.
+2. **CERRADO.** La obligatoriedad de la enmienda 34 no se comprobaba.
+   `filtro.py` 2.9 la automatiza —junto con la de la enmienda 35—, leyendo
+   los campos, estados y cortes directamente de la doctrina, sin añadir
+   constantes nuevas al código.
 
-3. **`requirements.txt` no fija versiones** (`pandas>=2.0`, `numpy>=1.24`). Un
-   resultado reproducible en teoría podría no serlo en la práctica si una
-   dependencia cambia de comportamiento.
+3. **REDUCIDO, NO CERRADO.** `requirements.txt` fija ahora `pandas==2.3.3` y
+   `numpy==2.3.5`. Pero:
+   - El intérprete de Python y las dependencias transitivas siguen sin fijar.
+   - La fijación solo se ha podido **verificar** contra el arranque
+     (`import`) y las fases 0-2, que no usan `pandas`. **No** se ha podido
+     verificar contra el camino numérico, porque el lote está cerrado y
+     `ssr_capstables` ya no es admisible a `EN_TEST` (unicidad del test).
+   - **No** reconstruye las versiones con las que se ejecutó realmente la
+     entrada 23: esas siguen siendo **desconocidas**.
+   - La propia enmienda 35 lo dice así: *"la limitación se reduce, no
+     desaparece"*. No se declara cerrado.
 
-4. **El alcance de `sha256_motor` es limitado y está declarado:** cubre el
-   fichero `filtro.py`, no el entorno ni las dependencias.
+4. **PERMANECE, íntegro.** El alcance de `sha256_motor` es limitado y está
+   declarado: cubre el fichero `filtro.py`, no el entorno ni las
+   dependencias.
 
-5. **N=30 tiene un cabo suelto documentado.** El horizonte se justificó midiendo
-   la persistencia de la *métrica continua* entre épocas. Desde la enmienda 18
-   los gates operan sobre la *máscara binaria*, así que esa justificación ya no
-   describe exactamente lo que el protocolo hace. No se recalcula nada, porque
-   `definicion_de_efecto` es inmutable. La enmienda 26 lo anotó expresamente
-   *"para que el cabo suelto no se descubra como sorpresa dentro de dos años"*.
+5. **Sin cambios.** N=30 tiene un cabo suelto documentado. El horizonte se
+   justificó midiendo la persistencia de la *métrica continua* entre épocas.
+   Desde la enmienda 18 los gates operan sobre la *máscara binaria*, así que
+   esa justificación ya no describe exactamente lo que el protocolo hace. No
+   se recalcula nada, porque `definicion_de_efecto` es inmutable. La
+   enmienda 26 lo anotó expresamente *"para que el cabo suelto no se
+   descubra como sorpresa dentro de dos años"*.
 
-6. **El anti-truncamiento depende de Git.** Un borrado del historial completo no
-   es detectable desde dentro del repositorio.
+6. **Sin cambios.** El anti-truncamiento depende de Git. Un borrado del
+   historial completo no es detectable desde dentro del repositorio.
 
-7. **La numeración de versión del esquema no está definida** en la doctrina (ver
-   sección 12).
+7. **Sin cambios.** La numeración de versión del esquema no está definida en
+   la doctrina (ver sección 12).
+
+8. **Nuevo.** La enmienda 34 y la enmienda 35 nombran de forma distinta la
+   misma lista de estados dentro de su bloque `obligatoriedad_condicional`:
+   la 34 la llama `estados_de_resultado_de_test`, la 35 la llama
+   `estados_que_lo_exigen`. `filtro.py` no codifica ninguno de los dos
+   nombres: toma la única lista de cadenas que encuentra dentro de cada
+   bloque `obligatoriedad_condicional`, y aborta si encuentra más de una.
+   Funciona, pero es un parche de lectura, no una regla unificada. Queda
+   anotado en `huecos_de_doctrina_detectados` de cada informe. Es candidato
+   a una enmienda futura que armonice el nombre del campo; esa enmienda no
+   se propone en este documento.
+
+**Cabo suelto ya resuelto: "cuatro incidentes históricos" vs. "tres".** En una
+versión anterior de este documento se habló de cuatro incidentes históricos,
+mientras que la comprobación con `filtro.py --lote 2026-Q3 --solo-comprobar`
+mostraba tres. Aclarado: eran cuatro **líneas de incidencia** repartidas en
+**tres entradas** (la entrada 13 aparece dos veces, una por la enmienda 28 y
+otra por la enmienda 29 parte 4). Con la doctrina 2.9.0 pasan a ser **cinco
+líneas en cuatro entradas**: se suma la entrada 22, que está en `EN_TEST` sin
+`sha256_serie_metrica`. Esa entrada queda por debajo del corte de la entrada
+23, así que es una incidencia declarada, no un bloqueo.
 
 ---
 
 ## Estado a fecha de este documento
 
+- Esquema **2.9.0**, **35 enmiendas** aplicadas, **23 entradas** en el
+  registro, cadena válida.
 - Lote **2026-Q3 cerrado**. Consumo: 1 de 12.
 - `ssr_capstables` testeada y **rechazada en el gate 3** (entrada 23). No se
   re-propone, ni ella ni variantes.
