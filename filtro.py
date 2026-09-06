@@ -32,7 +32,7 @@ import pandas as pd
 
 import cadena
 
-DOCTRINA_COMPATIBLE = "2.6"
+DOCTRINA_COMPATIBLE = "2.7"  # enmienda 33
 
 # Hueco declarado de la doctrina: estados.mapeo_salida_filtro_py.tabla traduce
 # la etiqueta interna PASA a EN_CONFIRMACION "solo si supera ademas el umbral BY
@@ -198,6 +198,17 @@ def fase1_resolver(doc, reg):
                 )
 
         n_ultima, ultima = lista[-1]
+
+        # enmienda 33: el estado lo fija la ultima entrada; la FICHA operativa es
+        # la ultima que no sea una transicion de estado. Una transicion no lleva
+        # ningun campo de ficha (lista cerrada), asi que tomarla como ficha dejaba
+        # a la variable sin mascara ni horizonte.
+        fichas = [
+            (n, e) for n, e in lista
+            if e.get("tipo_entrada", tipo_ausente) != "transicion_de_estado"
+        ]
+        n_ficha, ficha_op = fichas[-1] if fichas else (n_ultima, ultima)
+
         variables[id_res] = {
             "id": id_res,
             "lote": lote,
@@ -205,6 +216,8 @@ def fase1_resolver(doc, reg):
             "familia": ultima.get("familia") or primera.get("familia"),
             "entrada_operativa": ultima,
             "n_entrada_operativa": n_ultima,
+            "ficha_operativa": ficha_op,
+            "n_ficha_operativa": n_ficha,
             "historial": lista,
         }
 
@@ -229,6 +242,9 @@ def fase1_resolver(doc, reg):
         estructurales += prohibicion_prospectiva(e, doc, n=i)
     estructurales += _validar_retiradas(variables, doc)
     estructurales += _colisiones_de_medida(variables, doc)
+    _prob_tr, _inc_tr = _campos_de_transicion(entradas, doc)
+    estructurales += _prob_tr
+    incidencias += _inc_tr
     if estructurales:
         abortar(
             "defecto estructural del registro (enmienda 31):\n  - "
@@ -484,6 +500,45 @@ def _colisiones_de_medida(variables, doc):
     return problemas
 
 
+def _campos_de_transicion(entradas, doc):
+    """
+    Enmienda 33. La doctrina afirmaba desde el principio que filtro.py aborta si
+    una entrada de tipo transicion_de_estado incluye cualquier campo fuera de su
+    lista cerrada. El motor no lo comprobaba. Aqui se implementa.
+
+    Prospectivo: bloquea las entradas escritas a partir de la enmienda 33. Las
+    anteriores no se pueden corregir (append-only) y se reportan como incidencia.
+
+    Devuelve (problemas, incidencias).
+    """
+    base = ruta(
+        doc,
+        "integridad.resolucion_de_entradas.tipo_entrada.alta_transicion_de_estado",
+    )
+    permitidos = set(base["campos_permitidos"])
+    corte = base["control_de_campos_implementado"]["aplicacion_prospectiva"][
+        "entradas_previas_a_la_enmienda"
+    ]
+    tipo_ausente = ruta(doc, "integridad.resolucion_de_entradas.tipo_entrada.ausente_equivale_a")
+
+    problemas, incidencias = [], []
+    for i, e in enumerate(entradas, start=1):
+        if e.get("tipo_entrada", tipo_ausente) != "transicion_de_estado":
+            continue
+        sobran = sorted(set(e.keys()) - permitidos)
+        if not sobran:
+            continue
+        texto = (f"entrada {i} ({e['id']}): transicion de estado con campos fuera de "
+                 f"la lista cerrada: {sobran}")
+        if i > corte:
+            problemas.append(texto)
+        else:
+            incidencias.append(
+                texto + " (anterior a la enmienda 33, declarada, no corregible)"
+            )
+    return problemas, incidencias
+
+
 def _existe_ruta(doc, camino):
     """
     ficha_congelada.alcance.aislamiento_del_resolver.
@@ -606,11 +661,33 @@ def fase2_admision(doc, variables, consumo, lote, inventario=None):
     if not del_lote:
         abortar(f"el lote '{lote}' no contiene ninguna variable en el registro")
 
+    # enmienda 33: admisible = PROPUESTA, o EN_TEST cuyo test aun no se ejecuto
+    # (transicion ya escrita, gate_alcanzado ausente o nulo). Sin esto, el orden
+    # que exige la doctrina -- escribir la transicion antes de ejecutar ningun
+    # gate -- era inejecutable.
+    def _en_test_pendiente(v):
+        return (v["estado"] == "EN_TEST"
+                and not v["entrada_operativa"].get("gate_alcanzado"))
+
     en_propuesta = [v for v in del_lote if v["estado"] == "PROPUESTA"]
-    if not en_propuesta:
-        avisos.append(f"el lote {lote} no tiene ninguna variable en PROPUESTA")
+    pendientes = [v for v in del_lote if _en_test_pendiente(v)]
+    admisibles = en_propuesta + pendientes
+
+    if not admisibles:
+        avisos.append(
+            f"el lote {lote} no tiene ninguna variable en PROPUESTA ni en EN_TEST "
+            f"pendiente de ejecutar"
+        )
+    for v in pendientes:
+        avisos.append(
+            f"[{v['id']}] en EN_TEST con la transicion ya escrita (entrada "
+            f"{v['n_entrada_operativa']}) y el test sin ejecutar. Ficha operativa: "
+            f"entrada {v['n_ficha_operativa']}"
+        )
 
     consumido = consumo.get(lote, 0)
+    # las pendientes ya estan contadas en 'consumido': solo suman las que aun han
+    # de transitar.
     if consumido + len(en_propuesta) > max_prop:
         problemas.append(
             f"presupuesto excedido en {lote}: {consumido} consumidas + "
@@ -624,8 +701,8 @@ def fase2_admision(doc, variables, consumo, lote, inventario=None):
             f"> maximo {max_fam}"
         )
 
-    for v in en_propuesta:
-        e = v["entrada_operativa"]
+    for v in admisibles:
+        e = v["ficha_operativa"]
         for fila in _inventario_de_referencias(e, doc):
             fila["variable"] = v["id"]
             inventario.append(fila)
@@ -1206,7 +1283,7 @@ def ejecutar(args):
     resultados, pvalores = {}, {}
 
     for v in candidatas:
-        ficha = v["entrada_operativa"]
+        ficha = v["ficha_operativa"]
         vid = v["id"]
         if vid not in rutas_metrica:
             abortar(f"falta --metrica {vid}=<csv> para la variable admitida '{vid}'")
@@ -1217,6 +1294,21 @@ def ejecutar(args):
         mask = mask[mask.index <= fecha_fin]
 
         b1, b2, meta_part = particionar(mask.index, doc)
+
+        # enmienda 33: la fecha de corte registrada en la transicion es un
+        # precompromiso. El motor sigue derivandola; aqui solo comprueba que lo
+        # derivado coincide con lo comprometido antes de ver ningun resultado.
+        comprometida = v["entrada_operativa"].get("fecha_corte_bloques")
+        if comprometida:
+            if str(meta_part["fecha_corte_bloques"]) != str(comprometida):
+                abortar(
+                    f"[{vid}] la fecha de corte derivada "
+                    f"({meta_part['fecha_corte_bloques']}) no coincide con la "
+                    f"comprometida en la entrada de transicion ({comprometida})"
+                )
+            meta_part["comprometida_en_transicion"] = str(comprometida)
+            meta_part["coincide_con_la_derivada"] = True
+
         r = {"id": vid, "mascara": meta_mask, "particion": meta_part,
              "racha_media_mascara": round(racha_media(mask), 1)}
 
@@ -1266,6 +1358,22 @@ def ejecutar(args):
                 r["estado"] = "PENDIENTE_BY"
 
         resultados[vid] = r
+
+    # enmienda 33: prohibicion del fallo silencioso. Una variable con la
+    # transicion escrita y el test sin ejecutar no puede quedarse sin resultado
+    # sin que el motor lo diga.
+    sin_ejecutar = [
+        v["id"] for v in variables.values()
+        if v["lote"] == args.lote
+        and v["estado"] == "EN_TEST"
+        and not v["entrada_operativa"].get("gate_alcanzado")
+        and v["id"] not in resultados
+    ]
+    if sin_ejecutar:
+        abortar(
+            f"el lote {args.lote} tiene variables en EN_TEST con el test sin "
+            f"ejecutar que no han producido resultado: {sin_ejecutar}"
+        )
 
     by_meta = None
     if pvalores:

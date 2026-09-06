@@ -1,1183 +1,1267 @@
 {
-  "meta": {
-    "nombre": "Contexto-BTC — Protocolo de validacion v2",
-    "version_esquema": "2.6.0",
-    "fecha_creacion": "2026-09-03",
-    "archivo_registro_asociado": "registro.json",
-    "declaracion_obligatoria": "Batch-PRDS actua como cribado de descubrimiento. La garantia real de control de falsos positivos descansa en la confirmacion forward sobre datos que no existian cuando la variable fue propuesta.",
-    "regla_de_impresion": "La declaracion_obligatoria y el bloque potencia_medida deben imprimirse literalmente en cada salida de filtro.py y en cada informe de lote. No son comentarios: son parte de la salida. Sin potencia_medida, un lector puede leer 'capa de gates' y suponer un cribado permisivo que no es.",
-    "precedencia": "Este archivo es la fuente de verdad del protocolo. Ninguna regla vive dentro del codigo. Si filtro.py y este archivo discrepan, filtro.py debe abortar, no adaptarse.",
-    "enmiendas": [
-      {
-        "n": 1,
-        "titulo": "definicion_de_efecto",
-        "fecha": "2026-09-03",
-        "motivo": "theta no tenia unidades declaradas en ninguna parte del protocolo."
-      },
-      {
-        "n": 2,
-        "titulo": "mascara en la ficha congelada",
-        "fecha": "2026-09-03",
-        "motivo": "Sin congelar la mascara, theta_B2 y theta_F no son comparables. Consenso de cuatro revisiones externas independientes."
-      },
-      {
-        "n": 3,
-        "titulo": "casilla y funcion D(theta) nombradas en la propuesta",
-        "fecha": "2026-09-03",
-        "motivo": "Impide elegir a posteriori la casilla del dashboard que hace M mas pequeno."
-      },
-      {
-        "n": 4,
-        "titulo": "separacion entre trimestres forward",
-        "fecha": "2026-09-03",
-        "motivo": "Los retornos a N dias cerca del borde de un trimestre se solapan con el siguiente y rompen su independencia."
-      },
-      {
-        "n": 5,
-        "titulo": "estimador de robustez secundario",
-        "fecha": "2026-09-03",
-        "motivo": "Consenso de cuatro revisiones externas. Va en el informe, no dentro del motor, para no violar motor:CONGELADO."
-      },
-      {
-        "n": 6,
-        "titulo": "umbrales de gate migrados a la doctrina",
-        "fecha": "2026-09-03",
-        "motivo": "Vivian hardcodeados en filtro.py y no existian en la doctrina, por lo que el codigo no podia leerlos de ningun sitio."
-      },
-      {
-        "n": 7,
-        "titulo": "dias_episodio >= N",
-        "fecha": "2026-09-03",
-        "motivo": "Con N=30 y separacion fija de 21 dias, dos episodios 'independientes' a 22 dias comparten 8 dias de retorno futuro."
-      },
-      {
-        "n": 8,
-        "titulo": "mapeo de salida de filtro.py a la lista cerrada",
-        "fecha": "2026-09-03",
-        "motivo": "filtro.py emitia PASA/RECHAZADA/PROVISIONAL, ninguno en la lista cerrada. El codigo abortaria ante su propia salida."
-      },
-      {
-        "n": 9,
-        "titulo": "alta del estado NULO_V1",
-        "fecha": "2026-09-03",
-        "motivo": "probabilidad_contexto no encajaba en ninguna casilla existente. Excepcion documentada a estados.cerrado."
-      },
-      {
-        "n": 10,
-        "titulo": "presupuesto derivado del registro",
-        "fecha": "2026-09-03",
-        "motivo": "presupuesto_por_trimestre vive fuera de la cadena de hashes y es editable sin romperla."
-      },
-      {
-        "n": 11,
-        "titulo": "anti-truncamiento por Action",
-        "fecha": "2026-09-03",
-        "motivo": "La cadena detecta modificacion de entradas pasadas pero no borrado de las ultimas."
-      },
-      {
-        "n": 12,
-        "titulo": "pin de version y traza SHA-256",
-        "fecha": "2026-09-03",
-        "motivo": "filtro.py no tenia forma de detectar que la doctrina cambio bajo sus pies."
-      },
-      {
-        "n": 13,
-        "titulo": "resolucion de entradas duplicadas",
-        "fecha": "2026-09-03",
-        "motivo": "El registro usaba dos convenciones contradictorias y filtro.py abortaria ante la entrada 12 de SSR."
-      },
-      {
-        "n": 14,
-        "titulo": "cadena.py como unico modulo de escritura",
-        "fecha": "2026-09-03",
-        "motivo": "build_registro.py reconstruia desde cero y estaba desfasado: 12 entradas frente a 15 reales."
-      },
-      {
-        "n": 15,
-        "titulo": "entorno de ejecucion con persistencia",
-        "fecha": "2026-09-03",
-        "motivo": "En disco efimero una entrada anadida se pierde en el siguiente deploy sin error visible."
-      },
-      {
-        "n": 16,
-        "titulo": "signo_esperado y capa de interpretacion",
-        "fecha": "2026-09-03",
-        "motivo": "La cola del test se elegia tras ver el signo observado. Error tipo I medido 0.095 a nominal 0.05."
-      },
-      {
-        "n": 17,
-        "titulo": "aclaracion del p_valor_rango_v1 de halving_ciclo",
-        "fecha": "2026-09-03",
-        "motivo": "El rango registrado se calculo con la convencion de cola de v1 y no es comparable con p-valores de v2."
-      },
-      {
-        "n": 18,
-        "titulo": "gates sobre la mascara binaria",
-        "fecha": "2026-09-04",
-        "motivo": "Los gates filtraban con la metrica continua mientras el motor decide con la mascara: cribaban por una hipotesis distinta de la que emite el veredicto. Detectado por tres revisiones externas de forma independiente."
-      },
-      {
-        "n": 19,
-        "titulo": "gate 2 degradado a descriptivo no vinculante",
-        "fecha": "2026-09-04",
-        "motivo": "Potencia medida nula. Frente a una senal real de regimen de theta=0.087 pasa el 51.4%, frente a ruido puro el 53.8%. No discrimina: destruye la mitad de los hallazgos reales sin comprar especificidad. SSR esta declarada en su ficha como variable de regimen, luego es exactamente el caso donde el gate no funciona."
-      },
-      {
-        "n": 20,
-        "titulo": "fuente de precio congelada",
-        "fecha": "2026-09-04",
-        "motivo": "El protocolo definia el retorno objetivo sin decir de que serie de precio se calcula. Sin fuente, hora de corte y tratamiento de huecos congelados, dos ejecuciones del mismo test pueden diferir."
-      },
-      {
-        "n": 21,
-        "titulo": "base fija y permanente del gate 3",
-        "fecha": "2026-09-04",
-        "motivo": "Con base creciente, un mismo Delta-R2 deja de significar lo mismo en anios distintos y una variable podria morir por el orden en que se descubrio, lo que es inaceptable bajo unicidad_del_test."
-      },
-      {
-        "n": 22,
-        "titulo": "umbrales de gates 1 y 3 por nulo de rotacion, percentil 50",
-        "fecha": "2026-09-04",
-        "motivo": "Los umbrales heredados no estaban medidos contra la entrada que el motor usa: el 0.04 dejaba pasar el 74% del ruido puro aplicado a la mascara binaria. Un umbral fijo tampoco es homogeneo entre longitudes de historia. Se congela el percentil y el procedimiento, no el numero."
-      },
-      {
-        "n": 23,
-        "titulo": "minimos en observaciones efectivas, no en dias crudos",
-        "fecha": "2026-09-04",
-        "motivo": "Con retornos solapados a 30 dias, 50 dias crudos equivalen a 1.7 observaciones independientes. Los minimos se derivan de minimo_por_bloque_anios, que ya estaba fijado en 3, y no son numeros nuevos."
-      },
-      {
-        "n": 24,
-        "titulo": "tramos en lugar de epocas de calendario",
-        "fecha": "2026-09-04",
-        "motivo": "definicion_de_epocas llevaba bloqueo_activo con valor null y filtro.py debia abortar. Las epocas de calendario de v1 chocaban con corte_proporcional_por_variable: una variable cuyo bloque_1 no abarcase tres epocas fallaba por construccion, no por falta de evidencia."
-      },
-      {
-        "n": 25,
-        "titulo": "separacion de los gates 1 y 4",
-        "fecha": "2026-09-04",
-        "motivo": "El gate 1 exigia signo Y magnitud, por lo que DESCARTADA_GATE_4 era un estado que nunca podia emitirse. Confirmado por tres revisiones externas sin matices."
-      },
-      {
-        "n": 26,
-        "titulo": "aclaracion sobre la justificacion de N=30",
-        "fecha": "2026-09-04",
-        "motivo": "N se justifico midiendo persistencia de la metrica continua entre epocas. Con los gates ahora sobre la mascara, esa justificacion registrada ya no describe exactamente lo que el protocolo hace. No se recalcula nada: se anota para que no se descubra dentro de dos anios."
-      },
-      {
-        "n": 27,
-        "titulo": "ciclo de vida de las entradas del registro",
-        "fecha": "2026-09-04",
-        "motivo": "La clausula de inmutabilidad hacia abortar a filtro.py ante toda entrada posterior a EN_TEST con el mismo id, pero presupuesto.derivacion espera estados posteriores a EN_TEST. Ningun estado posterior a EN_TEST podia registrarse: contradiccion interna entre integridad y presupuesto."
-      },
-      {
-        "n": 28,
-        "titulo": "convencion unica de aclaraciones",
-        "fecha": "2026-09-04",
-        "motivo": "convencion_elegida fija 'mismo id, gana la ultima' pero la entrada 17 se creo despues usando la convencion descartada. Una aclaracion con id propio es invisible al resolver el id de la variable aclarada, por lo que su regla_derivada no es descubrible por codigo."
-      },
-      {
-        "n": 29,
-        "titulo": "alcance de la ficha congelada, autoridad del presupuesto y limpieza de vocabulario",
-        "fecha": "2026-09-04",
-        "motivo": "La ficha de SSR contenia una clausula operativa (bloqueo_ejecucion) que referenciaba una ruta de la doctrina eliminada por la enmienda 24. El sintoma era una ruta rota; la causa es que la ficha congelada mezclaba definicion de medida, que no caduca, con condiciones operativas transitorias, que si caducan. Se separan ambas cosas y la condicion pasa a la doctrina en forma que no puede quedar desactualizada.",
-        "descartado": "Resolver rutas obsoletas desde el codigo siguiendo renombrado_desde. Rechazado por cuatro revisiones externas independientes: renombrado_desde prueba genealogia documental, no equivalencia semantica, y el renombrado de la enmienda 24 tambien cambio la definicion de los sub-periodos. Ademas contradice meta.precedencia: el codigo aborta, no se adapta.",
-        "partes": [
-          "alcance de ficha_congelada y regla de marcadores PENDIENTE",
-          "autoridad unica del presupuesto",
-          "limpieza de vocabulario de la enmienda 24",
-          "lote inmutable, fijado por la primera entrada del id"
-        ],
-        "hallazgo_durante_la_migracion": "La parte 4 no estaba prevista. Aparecio al comprobar que el presupuesto derivado seguia cuadrando tras la migracion: no cuadraba, y ya no cuadraba en 2.2.0 antes de tocar nada. filtro.py v2 habria abortado en el arranque."
-      },
-      {
-        "n": 30,
-        "titulo": "la prohibicion de referencias pasa de sintactica a funcional",
-        "fecha": "2026-09-04",
-        "motivo": "La enmienda 29 quiso impedir que una ficha DEPENDA de la estructura de v2.json, pero escribio la prueba como 'ninguna ficha puede nombrar una ruta', que es una prueba sobre el texto y no sobre la dependencia. La entrada 18 la incumple en cuatro citas, una de ellas a una ruta eliminada por la enmienda 24 que se cita precisamente para dejar constancia de que murio. Un registro de auditoria de cambios doctrinales necesita poder nombrar lo que cambio. Ademas la via de sustituir la ficha esta cerrada por migracion_de_fichas.limite_de_la_sustitucion, que exige identidad en naturaleza_de_la_hipotesis. La garantia real ya estaba escrita en la ultima frase de la propia regla 29 y se eleva aqui a clausula principal."
-      }
-    ],
-    "compatibilidad": {
-      "regla": "filtro.py declara una constante DOCTRINA_COMPATIBLE con el valor mayor.menor de version_esquema que sabe interpretar. Si no coincide con este archivo, aborta antes de leer nada mas.",
-      "granularidad": "mayor.menor. El tercer numero (parche) se ignora y queda reservado a correcciones sin efecto semantico: erratas, comentarios, reordenacion de claves.",
-      "traza": "filtro.py imprime el SHA-256 de v2.json en cada salida, junto a la declaracion_obligatoria. Cada informe queda anclado a un estado exacto de la doctrina.",
-      "cierre_del_hueco_de_parche": "La granularidad mayor.menor deja abierto quien decide que es un parche. Lo cierra la traza: un cambio semantico disfrazado de parche produce un SHA-256 distinto en el informe siguiente y queda visible.",
-      "consecuencia_asumida": "Toda enmienda que cambie mayor.menor obliga a tocar filtro.py. Es deliberado: fuerza a que codigo y doctrina no se separen en silencio.",
-      "no_es_politica_nueva": "meta.precedencia ya ordena a filtro.py abortar si discrepa de la doctrina. Esta enmienda solo hace esa orden verificable por maquina."
-    },
-    "entorno_de_ejecucion": {
-      "regla": "filtro.py solo se ejecuta en un entorno con persistencia en Git. Prohibida su ejecucion en entornos de disco efimero.",
-      "entorno_designado": "GitHub Actions, con commit de vuelta al repositorio.",
-      "streamlit": "El dashboard LEE registro.json desde el repositorio. Nunca escribe.",
-      "motivo": "En disco efimero, una entrada anadida se pierde en el siguiente deploy sin error visible."
-    }
-  },
-  "motor": {
-    "identificador": "batch_prds",
-    "estado": "CONGELADO",
-    "origen_decision": "Decision 5 del cierre de diseno v2",
-    "nota": "No se sustituye ni se reparametriza el motor. Cualquier cambio de motor exige una version nueva de protocolo (v3) y no se aplica retroactivamente a variables ya testeadas."
-  },
-  "protocolo": {
-    "particion_datos": {
-      "metodo": "corte_proporcional_por_variable",
-      "bloque_1": {
-        "porcion": "primer 50% de la historia disponible de la variable",
-        "uso": "los 4 gates cualitativos de filtro.py",
-        "contaminado_por_seleccion": true
-      },
-      "bloque_2": {
-        "porcion": "50% restante",
-        "uso": "calculo del p-valor por permutacion con ventanas no solapadas",
-        "contaminado_por_seleccion": false,
-        "nota": "Es la unica estimacion limpia disponible en el momento del test. Por eso es la linea base de magnitud en la fase forward."
-      },
-      "minimo_por_bloque_anios": 3,
-      "si_no_alcanza_minimo": {
-        "estado_asignado": "PENDIENTE_REVISION",
-        "consume_presupuesto": false,
-        "entra_en_correccion_BY": false
-      },
-      "registro_obligatorio": "La fecha de corte concreta se registra en la entrada de cada experimento. No se recalcula despues."
-    },
-    "gates_cualitativos": {
-      "cantidad": 4,
-      "lista": [
-        "magnitud_en_tramos",
-        "anticipacion",
-        "contribucion_incremental_R2",
-        "coherencia_de_signo_en_tramos"
-      ],
-      "bloque_usado": "bloque_1",
-      "advertencia": "Los gates son seleccion no corregida y la correccion BY no los cubre. Esta es la razon exacta de la declaracion_obligatoria. Ademas su potencia es baja: ver potencia_medida.",
-      "parametros": {
-        "origen": "Recalibrados el 2026-09-04 contra ruido puro y contra senal real inyectada. Ya NO son los de filtro.py v1: los de v1 se habian calibrado contra la metrica continua y no describen la entrada binaria.",
-        "metodo_de_umbral": {
-          "enmienda": 22,
-          "nombre": "nulo_por_rotacion",
-          "regla": "El umbral de los gates 1 y 3 no es un numero congelado. Es el percentil congelado de la distribucion obtenida rotando circularmente la mascara de la propia variable frente al resto de series, manteniendo todo lo demas fijo.",
-          "percentil": 50,
-          "n_rotaciones": 300,
-          "semilla": 0,
-          "que_se_rota": "la mascara, no el retorno",
-          "justificacion_de_que_se_rota": "Rotar el retorno rompe tambien su alineacion con la base del gate 3 y contamina R2(base). Rotar la mascara preserva la relacion base-retorno y rompe solo la que se testea.",
-          "en_lenguaje_llano": "La variable debe superar lo que supera la mitad de las versiones barajadas de si misma.",
-          "ventaja": "No finge una ley universal, no exige definir observaciones efectivas para el umbral, se adapta sola a la longitud de la historia y a la velocidad de la mascara, y no depende de los supuestos sinteticos de la calibracion.",
-          "limitacion_declarada": "Con mascaras muy lentas, de racha media en torno a 90 dias, el nulo por rotacion es inestable entre realizaciones. Si la racha media de la mascara supera los 60 dias, filtro.py lo hace constar en el informe junto al umbral obtenido."
-        },
-        "magnitud_en_tramos": {
-          "gate": 1,
-          "enmiendas": [
-            18,
-            22,
-            23,
-            24,
-            25
-          ],
-          "vinculante": true,
-          "renombrado_desde": "estabilidad_entre_epocas",
-          "estadistico": "spearman(mascara, retorno_N) por tramo; rank-biserial",
-          "criterio": "|mediana de las correlaciones de los tramos| >= umbral",
-          "exige_signo": false,
-          "nota_signo": "El signo lo exige el gate 4 en exclusiva. Antes el gate 1 exigia ambas cosas y hacia inalcanzable al gate 4.",
-          "umbral": "nulo_por_rotacion, percentil 50",
-          "observaciones_efectivas_minimas_por_tramo": 12,
-          "derivacion_del_minimo": "floor(365 * minimo_por_bloque_anios / (n_tramos * N)) = floor(365*3/(3*30)) = 12",
-          "unidad_del_minimo": "dias con dato en el tramo divididos por N. NO dias con mascara activa.",
-          "por_que_no_dias_activos": "Con una mascara lenta, entre el 33% y el 42% de los tramos de 365 dias tienen menos de 30 dias activos. Filtrarlos haria inevaluable por construccion a una variable de regimen, que es el fallo que la enmienda 24 viene a corregir. Ademas el umbral se calibra sobre el nulo completo, incluidos los tramos ralos: anadir ese filtro cambiaria el nulo e invalidaria el umbral."
-        },
-        "anticipacion": {
-          "gate": 2,
-          "enmienda": 19,
-          "vinculante": false,
-          "ambito": "informe de lote unicamente",
-          "afecta_a_veredicto": false,
-          "estadistico": "|theta_fwd| frente a |theta_bwd|, ambos sobre la mascara",
-          "theta_fwd": "mediana(P(t+N)/P(t)-1 | mascara=1) - mediana(... | mascara=0)",
-          "theta_bwd": "mediana(P(t)/P(t-N)-1 | mascara=1) - mediana(... | mascara=0)",
-          "se_reporta": "el cociente |theta_fwd| / |theta_bwd| y su lectura en lenguaje llano",
-          "motivo_de_la_degradacion": "Potencia medida nula frente a variables de regimen: 51.4% de paso con senal real de theta=0.087 contra 53.8% con ruido puro. Cuando la mascara es persistente, la ventana hacia atras esta tan contaminada por el efecto como la ventana hacia adelante y la comparacion es un empate.",
-          "cuando_si_discrimina": "Con senal puramente anticipatoria desplazada 30 dias pasa el 75.6%. El gate distingue anticipacion de regimen, no senal de ruido.",
-          "sustituye_a": "el test de retencion de correlacion a 1-5 dias de v1, que con retorno a 30 dias solapado retenia ~97% de la correlacion por pura mecanica del solapamiento",
-          "desaparecen_de_la_doctrina": [
-            "desfases_evaluados",
-            "retencion_minima"
-          ]
-        },
-        "contribucion_incremental_R2": {
-          "gate": 3,
-          "enmiendas": [
-            18,
-            21,
-            22,
-            23
-          ],
-          "vinculante": true,
-          "regresor_nuevo": "la mascara binaria",
-          "justificacion_regresor": "Consenso de las cuatro revisiones externas. El gate debe medir la aportacion de la variable en la forma exacta en que el motor la usa.",
-          "base": {
-            "fija_para_siempre": true,
-            "no_crece_al_confirmarse_variables": true,
-            "series": {
-              "mayer": "P(t) / SMA200(t)",
-              "vol30": "desviacion tipica de los retornos diarios de los ultimos 30 dias",
-              "mom30": "P(t)/P(t-30) - 1"
-            },
-            "justificacion": "Con base creciente, un Delta-R2 del 2% en 2026 y otro en 2028 dejan de significar lo mismo, y una variable podria morir solo por el orden en que se descubrio. Inaceptable bajo unicidad_del_test.",
-            "aportacion_sobre_panel_vivo": "Se mide y se reporta como dato descriptivo del informe, igual que estimador_de_robustez. Nunca como criterio de admision."
-          },
-          "umbral": "nulo_por_rotacion, percentil 50",
-          "umbral_v1_retirado": {
-            "valor": 3.0,
-            "motivo": "No estaba medido. Sobre la mascara binaria dejaba pasar entre el 16% y el 21% del ruido segun la longitud del bloque_1; sobre la metrica continua dejaba pasar el 0.1%. El mismo numero significaba cosas opuestas segun la entrada."
-          },
-          "observaciones_efectivas_minimas": 36,
-          "derivacion_del_minimo": "floor(365 * minimo_por_bloque_anios / N) = floor(365*3/30) = 36",
-          "sustituye_a": "el minimo de 50 dias crudos, que con retornos solapados equivale a ~1.7 observaciones independientes"
-        },
-        "coherencia_de_signo_en_tramos": {
-          "gate": 4,
-          "enmiendas": [
-            18,
-            24,
-            25
-          ],
-          "vinculante": true,
-          "criterio": "signo identico de la correlacion en los 3 tramos del bloque_1",
-          "unico_gate_que_exige_signo": true,
-          "sin_parametro_libre": true,
-          "tasa_bajo_ruido_medida": 0.241,
-          "advertencia_obligatoria": "Tres tramos con signo identico ocurre por azar con probabilidad 1/4. Es un cribado, no evidencia de estabilidad."
-        },
-        "definicion_de_tramos": {
-          "enmienda": 24,
-          "valor": "tres sub-periodos de igual longitud dentro del bloque_1 de cada variable",
-          "estado": "FIJADA",
-          "bloqueo_activo": false,
-          "n_tramos": 3,
-          "renombrado_desde": "epocas",
-          "que_mide_realmente": "Persistencia temporal dentro del bloque_1. NO supervivencia a regimenes de mercado reales: los tramos son cortes por longitud, no por regimen.",
-          "por_que_no_mas_de_tres": "Con 3.8 anios y mascara al 20%, cinco tramos dejan alrededor de dos episodios independientes por tramo. Inservible.",
-          "descartado": "La lista fija de epocas de calendario de v1 (2011-2014, 2015-2017, 2018-2020, 2021-2023, 2024-2026), que chocaba con corte_proporcional_por_variable."
-        }
-      },
-      "cantidad_vinculantes": 3,
-      "lista_vinculantes": [
-        "magnitud_en_tramos",
-        "contribucion_incremental_R2",
-        "coherencia_de_signo_en_tramos"
-      ],
-      "lista_descriptivos": [
-        "anticipacion"
-      ],
-      "nota_numeracion": "La numeracion gate 1 a gate 4 se conserva pese a que el gate 2 deja de ser vinculante. Renumerar romperia la correspondencia con los estados DESCARTADA_GATE_n de la lista cerrada.",
-      "entrada": {
-        "enmienda": 18,
-        "regla": "Todos los gates operan sobre la MASCARA BINARIA congelada en la ficha, nunca sobre la metrica continua.",
-        "justificacion": "El motor decide con la mascara. Filtrar con el valor continuo cribaba por una hipotesis distinta de la que emite el veredicto.",
-        "nota_estadistica": "Spearman sobre variable binaria ES la correlacion rank-biserial, monotonamente equivalente a Cliff's delta. No cambia el estadistico, solo la entrada.",
-        "diagnostico_continuo": "El mismo calculo sobre la metrica continua se registra en el informe como diagnostico. No puede salvar ni condenar a ninguna variable."
-      },
-      "nota_lista": "Nombres alineados con gates_cualitativos.parametros por la enmienda 29. Los nombres anteriores (estabilidad_entre_epocas, anticipacion_no_contemporaneidad, coherencia_de_signo) quedan en renombrado_desde de cada bloque de parametros, solo como trazabilidad documental. No son alias resolubles por codigo."
-    },
-    "unicidad_del_test": {
-      "regla": "Una variable se testea una sola vez, en el trimestre en que entra.",
-      "re_test_permitido": false,
-      "excepciones": [],
-      "nota": "No hay mecanismo de reapertura. Una variable descartada queda descartada de forma permanente bajo este protocolo.",
-      "nota_retirada_en_propuesta": "RETIRADA_EN_PROPUESTA no es una excepcion a esta regla. Una variable retirada antes de EN_TEST no fue testeada, luego reproponerla no es un re-test. La lista excepciones permanece vacia."
-    },
-    "ventana_temporal": {
-      "regla": "La ventana de datos del test termina en la fecha_propuesta de la variable.",
-      "derivacion": "automatica",
-      "fuente": "campo fecha_propuesta de la entrada del registro",
-      "edicion_manual_permitida": false,
-      "comportamiento_filtro_py": "Si los datos cargados contienen observaciones posteriores a fecha_propuesta, filtro.py aborta la ejecucion. No trunca en silencio.",
-      "justificacion": "Si la fecha de fin de ventana se pudiera escribir a mano despues de mirar los datos, la regla no protegeria de nada."
-    },
-    "correccion_multiple": {
-      "metodo": "benjamini_yekutieli",
-      "q_nominal": 0.2,
-      "ambito": "dentro del lote trimestral",
-      "m_efectivo": {
-        "formula": "m = max(3, numero de p-valores efectivamente calculados en el lote)",
-        "cuentan": [
-          "variables que llegaron a producir p-valor en el bloque 2"
-        ],
-        "no_cuentan": [
-          "variables descartadas en cualquiera de los 4 gates",
-          "variables en PENDIENTE_REVISION por historia insuficiente"
-        ],
-        "justificacion_suelo_3": "Decision 6: no hay minimo de lote real. El suelo de 3 existe solo para que la correccion BY no sea trivial en lotes muy pequenos."
-      }
-    },
-    "test_de_permutacion": {
-      "origen": "Migrado literalmente desde paso4_significancia de filtro.py v1.",
-      "bloque_usado": "bloque_2",
-      "metodo": "permutacion por bloques contiguos",
-      "n_permutaciones": 2000,
-      "semilla": 0,
-      "observaciones_enmascaradas_minimas": 20,
-      "episodios_independientes_minimos": 8,
-      "dias_episodio": {
-        "regla": "dias_episodio = max(21, N)",
-        "valor_bajo_N_30": 30,
-        "enmienda": 7,
-        "justificacion": "Con N=30 y separacion de 21 dias, dos episodios contados como independientes a 22 dias de distancia comparten 8 dias de retorno futuro. La separacion no puede ser menor que el horizonte del retorno.",
-        "efecto_conocido": "Reduce el recuento de episodios y endurece el test. Se acepta el endurecimiento."
-      },
-      "si_no_alcanza_minimos": {
-        "estado_asignado": "PENDIENTE_REVISION",
-        "consume_presupuesto": false,
-        "entra_en_correccion_BY": false
-      },
-      "capa_de_interpretacion": {
-        "fuera_del_motor": true,
-        "justificacion_frontera": "El motor congelado genera la distribucion nula y el estadistico observado. Convertir ese par en un p-valor depende de la hipotesis pre-registrada, y esa conversion vive fuera del motor. Consenso de tres revisiones externas independientes.",
-        "regla": "El p-valor se calcula segun el signo_esperado declarado en la ficha, nunca segun el signo observado.",
-        "formulas": {
-          "positivo": "p = media(difs >= real)",
-          "negativo": "p = media(difs <= real)",
-          "bilateral": "p = media(abs(difs) >= abs(real))"
-        },
-        "prohibicion_duplicacion": "Prohibido calcular el bilateral como 2 x cola menor.",
-        "evidencia_de_calibracion": {
-          "metodo": "Simulacion bajo H0 con datos sinteticos: 400 repeticiones, mascara independiente de los retornos, retornos a 30 dias solapados con colas gruesas, esquema de remuestreo identico al del motor.",
-          "tasa_error_tipo_I_medida_a_nominal_0.05": {
-            "cola_segun_signo_observado_v1": 0.095,
-            "dos_por_cola_menor": 0.068,
-            "valor_absoluto": 0.043
-          },
-          "conclusion": "Solo la formula de valor absoluto queda calibrada. La convencion de v1 duplica el error nominal. La duplicacion de la cola menor lo deja un 36 por ciento por encima del nominal.",
-          "naturaleza_de_la_evidencia": "Simulacion sobre datos sinteticos. Es evidencia sobre el esquema de remuestreo, no sobre ninguna serie real."
-        },
-        "orden": "La correccion se aplica ANTES de la correccion Benjamini-Yekutieli del lote. BY recibe el p-valor que representa la hipotesis realmente registrada."
-      }
-    }
-  },
-  "presupuesto": {
-    "propuestas_maximas_por_trimestre": 12,
-    "familias_nuevas_maximas_por_trimestre": 2,
-    "minimo_de_lote": null,
-    "nota_familias": "Las familias ya presentes en catalogo_familias no consumen la cuota de familias nuevas. La cuota se aplica solo al alta de familias que no existian.",
-    "nota_consumo": "Una propuesta consume presupuesto en el momento en que se le asigna estado EN_TEST. Las que caen en PENDIENTE_REVISION antes de testearse no lo consumen.",
-    "derivacion": {
-      "regla": "filtro.py NO lee presupuesto_por_trimestre como fuente de verdad. Deriva el consumo contando entradas del registro y aborta si el valor derivado no coincide con el almacenado.",
-      "motivo": "presupuesto_por_trimestre vive fuera del array entradas, que es lo unico que entra en la cadena de hashes. Es editable sin romper la cadena.",
-      "formula": "consumo(lote) = numero de ids DISTINTOS con ese lote cuya entrada operativa tenga un estado de la lista estados_que_cuentan_como_consumido. El tipo_entrada NO interviene en el conteo: se cuenta el id, no la entrada.",
-      "estados_que_cuentan_como_consumido": [
-        "EN_TEST",
-        "DESCARTADA_GATE_1",
-        "DESCARTADA_GATE_2",
-        "DESCARTADA_GATE_3",
-        "DESCARTADA_GATE_4",
-        "RECHAZADA_PVALOR",
-        "EN_CONFIRMACION",
-        "CONFIRMADA",
-        "RECHAZADA_FORWARD"
-      ],
-      "tipos_de_entrada_que_no_consumen": [
-        "Campo retirado por la enmienda 27: el tipo de entrada ya no interviene en el conteo, solo el estado de la entrada operativa."
-      ],
-      "lotes_exentos": [
-        "v1-historico"
-      ],
-      "motivo_exclusiones": "Una aclaracion, un alta retroactiva o una ficha congelada no son un test nuevo: completan o anotan una propuesta ya registrada. Sin esta exclusion, nasdaq_aclaracion_panel (lote 2026-Q3, estado RECHAZADA_PVALOR) contaria como presupuesto consumido y no lo es.",
-      "comportamiento_si_discrepan": "filtro.py aborta y reporta ambos valores.",
-      "verificacion_2026Q3": "Con la formula de la enmienda 27 y el orden de resolucion de la enmienda 29, el consumo derivado de 2026-Q3 es 0: la entrada operativa de SSR esta en PROPUESTA, y nasdaq resuelve al lote v1-historico, que es exento. Coincide con el contador almacenado. Verificado por script el 2026-09-04.",
-      "enmienda_correctora": 27,
-      "problema_corregido": "La formula anterior contaba entradas 'de tipo propuesta' que alcanzasen EN_TEST. La entrada operativa de SSR es de tipo ficha_congelada, por lo que al pasar SSR a EN_TEST el consumo derivado habria seguido siendo 0 mientras el contador almacenado decia 1, y filtro.py habria abortado.",
-      "orden_de_resolucion": "El conteo opera sobre ids RESUELTOS, no sobre entradas crudas, y toma el lote segun integridad.resolucion_de_entradas.lote. Ver el orden de los cuatro pasos alli. Sin ese orden, el consumo derivado de 2026-Q3 da 1 en lugar de 0."
-    },
-    "autoridad": {
-      "enmienda": 29,
-      "regla": "Los maximos (propuestas_maximas_por_trimestre y familias_nuevas_maximas_por_trimestre) viven exclusivamente en v2.json. Se retiran de registro.json.",
-      "motivo": "presupuesto_por_trimestre vive fuera del array entradas, luego fuera de la cadena de hashes. Un valor duplicado ahi no es un snapshot forense: es un segundo parametro editable sin romper nada. Conservarlo como 'prueba historica' era falso, porque no esta firmado.",
-      "que_permanece_en_registro_json": [
-        "propuestas_usadas",
-        "familias_nuevas_usadas"
-      ],
-      "por_que_permanecen": "presupuesto.derivacion los necesita: filtro.py deriva el consumo del array entradas y aborta si no coincide con el contador almacenado. Ese contraste es el mecanismo de la enmienda 10 y se conserva intacto.",
-      "comportamiento_filtro_py": "Si registro.json contiene todavia un campo de maximos, filtro.py aborta: indica que la migracion de la enmienda 29 no se aplico."
-    }
-  },
-  "catalogo_familias": {
-    "cerrado": false,
-    "ampliable": "maximo 2 familias nuevas por trimestre",
-    "familias": [
-      {
-        "id": "valoracion_onchain",
-        "descripcion": "Metricas de valoracion derivadas de datos de cadena",
-        "alta": "2026-09-03"
-      },
-      {
-        "id": "flujos_derivados",
-        "descripcion": "Flujos de capital y posicionamiento en derivados",
-        "alta": "2026-09-03"
-      },
-      {
-        "id": "macro",
-        "descripcion": "Variables macroeconomicas y de mercados tradicionales",
-        "alta": "2026-09-03"
-      },
-      {
-        "id": "red_mineria",
-        "descripcion": "Salud y economia de la red y de la mineria",
-        "alta": "2026-09-03"
-      },
-      {
-        "id": "sentimiento",
-        "descripcion": "Indicadores de sentimiento y encuesta",
-        "alta": "2026-09-03"
-      },
-      {
-        "id": "ciclo_temporal",
-        "descripcion": "Estructura temporal y de ciclo",
-        "alta": "2026-09-03"
-      },
-      {
-        "id": "liquidez_stablecoins",
-        "descripcion": "Liquidez disponible en stablecoins y ratios asociados",
-        "alta": "2026-09-03"
-      }
-    ]
-  },
-  "confirmacion_forward": {
-    "_modifica_decision_original": true,
-    "_decision_original_texto": "Confirmacion forward: 5 trimestres (antes 4), signo estable + magnitud >=50%.",
-    "_motivo_modificacion": "La evaluacion trimestre a trimestre con descarte por cualquier fallo produce una tasa de falso descarte de entre el 41% y el 94% sobre senales reales pero ruidosas, segun el ruido por trimestre. Tres revisiones externas independientes coincidieron en rechazarla. La evaluacion agregada mantiene la exigencia sobre la senal y elimina el castigo al ruido.",
-    "_fecha_modificacion": "2026-09-03",
-    "ventana": {
-      "trimestres": 5,
-      "fija": true,
-      "extension_permitida": false,
-      "descarte_anticipado_permitido": false,
-      "nota": "No hay contador, no hay trimestres 'validos' acumulados, no hay limite de 8. Una variable en confirmacion completa siempre los 5 trimestres antes de recibir veredicto."
-    },
-    "estimacion": {
-      "metodo": "efecto agregado unico sobre los 5 trimestres conjuntos",
-      "simbolo": "theta_F",
-      "evaluacion_por_trimestre": false,
-      "nota": "Los trimestres individuales se registran para auditoria, pero no se juzgan uno a uno. Un trimestre aislado de BTC es una observacion demasiado ruidosa para decidir nada."
-    },
-    "criterios_de_confirmacion": {
-      "todos_obligatorios": true,
-      "criterios": [
-        {
-          "id": "signo_agregado",
-          "regla": "signo(theta_F) == signo(theta_B2)"
-        },
-        {
-          "id": "magnitud",
-          "regla": "abs(theta_F) >= max(0.5 * abs(theta_B2), M)",
-          "linea_base": "theta_B2, la estimacion del bloque 2",
-          "linea_base_prohibida": [
-            "estimacion del bloque 1",
-            "estimacion sobre la ventana completa del test",
-            "cualquier promedio ponderado que de peso al bloque 1"
-          ],
-          "justificacion_linea_base": "El bloque 1 participo en la seleccion mediante los 4 gates, por lo que su magnitud esta inflada. La ventana completa hereda ese sesgo. El bloque 2 es la unica porcion no contaminada."
-        },
-        {
-          "id": "consistencia_minima",
-          "regla": "al menos 3 de los 5 trimestres presentan el signo esperado",
-          "justificacion": "Impide que un unico trimestre extremo arrastre el agregado y disfrace una relacion inexistente. Es la unica salvaguarda que mira los trimestres por separado, y esta prefijada."
-        }
-      ]
-    },
-    "umbral_absoluto_M": {
-      "valor": 0.03,
-      "estado": "FIJADO",
-      "unidad_theta": "fraccion de retorno simple a 30 dias",
-      "criterio_de_fijacion": "M es el efecto mas pequeno capaz de cambiar una casilla visible del dashboard. Una senal real cuyo efecto no mueve ninguna decision del sistema es, para este sistema, indistinguible de ruido.",
-      "momento_de_fijacion": "en el momento de la propuesta de la variable, antes de que existan datos forward",
-      "inmutable_tras_fijacion": true,
-      "bloqueo": {
-        "activo": false,
-        "regla": "Levantado al fijarse el valor el 2026-09-03.",
-        "justificacion_historica": "El criterio relativo del 50% por si solo es insuficiente: si theta_B2 salio pequeno por ruido, el liston resultante es trivial; si salio grande por ruido, el 50% se supera pese a una regresion severa a la media."
-      },
-      "fecha_fijacion": "2026-09-03",
-      "derivacion": {
-        "casilla_ancla": "bloque 07, rango esperado a 30 dias",
-        "metodo": "M = menor salto de estado distinto de cero en la tabla RANGOS_POR_CUARTIL de rango.py",
-        "calculo": "amplitud p50 pasa de 0.22 (cuartil 'baja') a 0.25 (cuartil 'alta'). Salto = 0.03.",
-        "descartado_bloque_02": "Los cortes 85/65/35/15 del percentil de Mayer los declara arbitrarios el propio codigo, y estan en unidades de percentil-Mayer, no de retorno.",
-        "descartado_dimensionamiento": "Su salto de 0.015 es aguas abajo del bloque 07: hereda los mismos cuartiles con redondeo mas fino, y usarlo contaria la misma granularidad dos veces.",
-        "descartado_resolucion_de_pixel": "Usar el ultimo digito mostrado produciria un M trivial. El criterio es el cambio de ESTADO visible, no la resolucion de impresion."
-      },
-      "alcance": {
-        "valor_por_defecto_del_regimen": true,
-        "override_por_variable": "Una entrada puede fijar un M distinto solo si documenta en su ficha la casilla y la derivacion concretas, por el mismo metodo, en el momento de la propuesta.",
-        "nota": "La granularidad del dashboard es una propiedad del dashboard, no de la variable, por lo que el valor comun es el caso normal."
-      }
-    },
-    "separacion_entre_trimestres": {
-      "enmienda": 4,
-      "problema": "Una senal emitida en los ultimos N dias de un trimestre tiene su retorno a N dias dentro del trimestre siguiente. Los cinco trimestres dejan de ser observaciones independientes justo en los bordes.",
-      "regla": "Las senales emitidas dentro de los ultimos N dias naturales de cada trimestre no se asignan a ese trimestre ni al siguiente: se excluyen del computo de consistencia_minima.",
-      "efecto_sobre_theta_F": "El efecto agregado theta_F se calcula sobre las senales retenidas, no sobre las excluidas.",
-      "efecto_conocido": "Reduce el numero de senales utilizables en la ventana forward. Se acepta."
-    }
-  },
-  "estados": {
-    "cerrado": true,
-    "comportamiento_ante_estado_desconocido": "filtro.py aborta. No se admiten etiquetas fuera de esta lista.",
-    "lista": [
-      {
-        "id": "PROPUESTA",
-        "descripcion": "Registrada en el lote, aun no testeada"
-      },
-      {
-        "id": "EN_TEST",
-        "descripcion": "Consumiendo presupuesto, atravesando gates"
-      },
-      {
-        "id": "DESCARTADA_GATE_1",
-        "descripcion": "Fallo el gate 1: magnitud en tramos",
-        "nota_enmienda_29": "Descripcion actualizada. Las epocas de calendario desaparecieron con la enmienda 24 y el gate 1 dejo de exigir signo con la enmienda 25. El identificador del estado no cambia: el registro es append-only."
-      },
-      {
-        "id": "DESCARTADA_GATE_2",
-        "descripcion": "Fallo anticipacion: efecto contemporaneo, no anticipatorio",
-        "emision_permitida": false,
-        "retirado_por_enmienda": 19,
-        "nota": "El gate 2 deja de ser vinculante, por lo que este estado ya no puede emitirse. Se conserva en la lista cerrada porque el registro es append-only y presupuesto.derivacion lo referencia. filtro.py aborta si lo emite."
-      },
-      {
-        "id": "DESCARTADA_GATE_3",
-        "descripcion": "Fallo contribucion incremental de R2"
-      },
-      {
-        "id": "DESCARTADA_GATE_4",
-        "descripcion": "Fallo coherencia de signo",
-        "nota": "Alcanzable desde la enmienda 25. Antes era inalcanzable porque el gate 1 ya exigia signo."
-      },
-      {
-        "id": "PENDIENTE_REVISION",
-        "descripcion": "Historia insuficiente. No consume presupuesto ni entra en BY"
-      },
-      {
-        "id": "RECHAZADA_PVALOR",
-        "descripcion": "No supera el umbral BY del lote"
-      },
-      {
-        "id": "EN_CONFIRMACION",
-        "descripcion": "Superado el cribado, en ventana forward de 5 trimestres"
-      },
-      {
-        "id": "CONFIRMADA",
-        "descripcion": "Supera los 3 criterios de confirmacion forward"
-      },
-      {
-        "id": "RECHAZADA_FORWARD",
-        "descripcion": "No supera alguno de los 3 criterios forward"
-      },
-      {
-        "id": "SELLADA_V1",
-        "descripcion": "Hallazgo heredado de v1. No se re-testea ni se reabre"
-      },
-      {
-        "id": "DESCARTADA_PREVIA",
-        "descripcion": "Descartada antes de entrar en test, por decision documentada"
-      },
-      {
-        "id": "NULO_V1",
-        "descripcion": "Experimento formal ejecutado bajo v1 con protocolo congelado previo, sin candidata cualificada. El test no llego a abrirse.",
-        "alta": "2026-09-03",
-        "enmienda": 9,
-        "nota": "Excepcion documentada a estados.cerrado. Se anade antes de ejecutar ningun lote v2."
-      },
-      {
-        "id": "RETIRADA_EN_PROPUESTA",
-        "descripcion": "Variable retirada antes de testearse, por decision documentada. No es un resultado de test.",
-        "alta": "2026-09-05",
-        "enmienda": 31,
-        "terminal": true,
-        "consume_presupuesto": false,
-        "admisible_a_EN_TEST": false,
-        "declaracion_obligatoria": "Este estado NO expresa ningun juicio sobre la variable. No es evidencia de ausencia de efecto, no es un resultado de test y no puede citarse como tal en ningun informe. No abre ninguna excepcion a protocolo.unicidad_del_test: ese protocolo gobierna tests ejecutados, y aqui no se ejecuto ninguno.",
-        "nota_excepcion_a_estados_cerrado": "Segunda excepcion documentada a estados.cerrado, tras NULO_V1 (enmienda 9). Se anade antes de ejecutar ningun lote v2."
-      }
-    ],
-    "mapeo_salida_filtro_py": {
-      "enmienda": 8,
-      "problema": "filtro.py v1 emitia PASA, RECHAZADA y PROVISIONAL, etiquetas ausentes de la lista cerrada. Bajo la regla de estado desconocido, el codigo abortaria ante su propia salida.",
-      "regla": "filtro.py no emite etiquetas propias. Traduce su resultado interno a la lista cerrada antes de escribir nada en el registro.",
-      "tabla": {
-        "PASA": "EN_CONFIRMACION (solo si supera ademas el umbral BY del lote; en caso contrario RECHAZADA_PVALOR)",
-        "PROVISIONAL": "PENDIENTE_REVISION",
-        "RECHAZADA_paso_1": "DESCARTADA_GATE_1",
-        "RECHAZADA_paso_3": "DESCARTADA_GATE_3",
-        "RECHAZADA_coherencia_signo": "DESCARTADA_GATE_4"
-      },
-      "fila_retirada_enmienda_29": {
-        "fila": "RECHAZADA_paso_2 -> DESCARTADA_GATE_2",
-        "motivo": "Contradecia a la enmienda 19, que retira el estado DESCARTADA_GATE_2 y ordena a filtro.py abortar si lo emite. El gate 2 no es vinculante: no existe ninguna salida que deba mapearse a ese estado.",
-        "el_estado_no_se_borra": "DESCARTADA_GATE_2 permanece en estados.lista con emision_permitida false. Lo referencia presupuesto.derivacion y el registro es append-only."
-      },
-      "nota_claves": "Las claves de la tabla son etiquetas internas de filtro.py, no estados del protocolo. Solo los valores pertenecen a la lista cerrada."
-    }
-  },
-  "sellados": [
-    {
-      "variable": "halving_ciclo",
-      "familia": "ciclo_temporal",
-      "estado": "SELLADA_V1",
-      "hallazgo": "Retornos negativos en la ventana 18-24 meses post-halving. No es la narrativa de rally habitualmente citada, sino la contraria.",
-      "p_valor_rango_v1": "0.014 - 0.049",
-      "re_test_permitido": false,
-      "nota_de_sesgo": "Este hallazgo se descubrio bajo las reglas de v1, que tenian sesgo de seleccion conocido y no corregido. Se conserva por su valor operativo y por trazabilidad historica, no como evidencia validada bajo el protocolo v2. No se somete al protocolo v2 ni se re-testea: hacerlo violaria la regla de unicidad del test.",
-      "modulo": "halving.py",
-      "comportamiento": "Ejecuta en silencio. Solo emerge en la interfaz cuando la fecha actual se aproxima a la ventana de riesgo identificada."
-    }
-  ],
-  "integridad": {
-    "metodo": "cadena_de_hashes",
-    "algoritmo": "sha256",
-    "ambito": "registro.json",
-    "construccion": "Cada entrada incluye hash_anterior. El hash de una entrada se calcula sobre su serializacion JSON canonica (claves ordenadas, separadores compactos, UTF-8) excluyendo su propio campo hash.",
-    "genesis": "0000000000000000000000000000000000000000000000000000000000000000",
-    "verificacion": "filtro.py recorre la cadena al arrancar. Si algun hash no coincide, aborta y no ejecuta ningun lote.",
-    "append_only": true,
-    "nota": "Git conserva el historial. La cadena de hashes hace visible una edicion silenciosa de una entrada pasada, que un diff aislado podria pasar por alto.",
-    "anti_truncamiento": {
-      "problema": "Una cadena truncada por el final sigue verificando. El hash encadena hacia atras, no hacia adelante: nada dentro del propio archivo sabe cuantas entradas deberia haber.",
-      "mecanismo": "En cada push, un GitHub Action compara registro.json contra su version en el commit anterior y verifica que la nueva es una extension: mismo prefijo de hashes, cero entradas eliminadas.",
-      "implementacion": "cadena.es_extension(viejo, nuevo)",
-      "comportamiento_si_falla": "El Action falla y bloquea el merge. No es responsabilidad de filtro.py: filtro.py solo ve un archivo, no su historia.",
-      "limitacion_declarada": "Este mecanismo depende de Git. Un borrado del historial de Git completo no es detectable desde dentro del repositorio."
-    },
-    "resolucion_de_entradas": {
-      "regla": "Cuando varias entradas comparten id, la operativa es la de mayor indice en la cadena. Las anteriores se conservan como historial y no se evaluan.",
-      "validacion_de_ficha": "Los campos obligatorios de ficha_congelada se exigen unicamente a la entrada operativa. Una entrada historica incompleta no hace abortar a filtro.py.",
-      "inmutabilidad": {
-        "regla": "La FICHA de una variable solo puede sustituirse mientras la variable este en estado PROPUESTA. En cuanto alcanza EN_TEST, la ficha queda inmutable. Las entradas posteriores con el mismo id solo pueden ser de tipo transicion_de_estado o aclaracion, y filtro.py aborta si alguna de ellas modifica un campo de la ficha.",
-        "motivo": "Sin esta clausula, 'gana la ultima' destruye el sentido de congelar la ficha: bastaria anadir una entrada nueva despues de ver el resultado.",
-        "coste_asumido": "Un error semantico en una ficha descubierto despues de EN_TEST no se puede corregir. Como unicidad_del_test no admite excepciones, esa variable queda perdida. Se acepta: la alternativa abre la puerta a corregir fichas tras ver resultados.",
-        "enmienda_correctora": 27,
-        "problema_corregido": "La redaccion anterior hacia abortar a filtro.py ante TODA entrada posterior a EN_TEST con el mismo id. Como cada transicion de estado exige una entrada nueva con el mismo id, ningun estado posterior a EN_TEST podia registrarse jamas: DESCARTADA_GATE_n, RECHAZADA_PVALOR, EN_CONFIRMACION, CONFIRMADA y RECHAZADA_FORWARD eran inalcanzables, pese a que presupuesto.derivacion los espera. Contradiccion interna entre integridad y presupuesto.",
-        "fecha_corte_bloques": "Se escribe en la entrada de transicion a EN_TEST, antes de ejecutar ningun gate. Es el unico campo de particion que se fija en ese momento y no puede reescribirse despues."
-      },
-      "tipo_entrada": {
-        "cerrado": true,
-        "valores": [
-          "propuesta",
-          "ficha_congelada",
-          "aclaracion",
-          "alta_retroactiva",
-          "transicion_de_estado"
-        ],
-        "ausente_equivale_a": "propuesta",
-        "nota_retrocompatibilidad": "Las entradas 1 a 12 no llevan tipo_entrada. Se interpretan como propuesta. No se editan: el registro es append-only.",
-        "comportamiento_ante_valor_desconocido": "filtro.py aborta, igual que con un estado fuera de la lista cerrada.",
-        "alta_transicion_de_estado": {
-          "enmienda": 27,
-          "descripcion": "Entrada que solo cambia el estado de una variable ya registrada. Lleva el MISMO id, el estado nuevo, la fecha, y ningun otro campo sustantivo.",
-          "campos_permitidos": [
-            "id",
-            "tipo_entrada",
-            "estado",
-            "fecha_registro",
-            "gate_alcanzado",
-            "fecha_corte_bloques",
-            "motivo",
-            "hash_anterior",
-            "hash"
-          ],
-          "prohibicion": "No puede modificar ningun campo de la ficha congelada. Si una entrada de este tipo incluye cualquier otro campo, filtro.py aborta."
-        }
-      },
-      "convencion_elegida": "Mismo id, gana la ultima. Una aclaracion sobre una variable lleva el id de esa variable, nunca un id propio, para que sea descubrible al resolver el id.",
-      "excepciones_documentadas": {
-        "enmienda": 28,
-        "regla": "Las entradas 13 (nasdaq_aclaracion_panel) y 17 (halving_ciclo_aclaracion_pvalor) usan id propio con referencia_entrada_anterior. Son excepciones historicas cerradas: el registro es append-only y no se editan.",
-        "consecuencia_operativa": "Al resolver los ids 'nasdaq' y 'halving_ciclo', filtro.py debe cargar ademas toda entrada cuyo campo referencia_entrada_anterior apunte a ellos, y aplicar sus regla_derivada.",
-        "prohibicion_futura": "Ninguna aclaracion nueva puede usar id propio. filtro.py aborta si aparece una fuera de esas dos."
-      },
-      "lote": {
-        "enmienda": 29,
-        "regla": "lote es una propiedad de la VARIABLE, no de la entrada. Lo fija la PRIMERA entrada de un id y ninguna entrada posterior puede cambiarlo.",
-        "comportamiento_ante_discrepancia": "Si una entrada posterior declara un lote distinto, filtro.py IGNORA ese valor y hace constar la incoherencia en el informe, nombrando la entrada. No aborta: el registro es append-only y estas entradas no se pueden editar.",
-        "relacion_con_gana_la_ultima": "No la contradice. La doctrina ya distingue entre lo que transiciona y lo que queda fijado: el estado gana la ultima, la ficha es inmutable. lote pertenece al segundo grupo y hasta ahora no estaba dicho.",
-        "motivo": "Detectado durante la migracion de la enmienda 29. La entrada 13 (nasdaq_aclaracion_panel) archivo una aclaracion sobre una variable de v1 bajo el lote 2026-Q3, mientras que la entrada 17 (halving_ciclo_aclaracion_pvalor), misma operacion, uso correctamente v1-historico. Dos convenciones distintas para el mismo acto. Al resolver ids, la entrada 13 ganaba como operativa de 'nasdaq' y arrastraba su lote equivocado, lo que hacia que nasdaq (RECHAZADA_PVALOR) contase como presupuesto consumido de 2026-Q3.",
-        "agujero_cerrado": "Sin esta regla, una entrada posterior puede mover cualquier variable de trimestre a posteriori, y con ella su consumo de presupuesto. El caso de la entrada 13 es el sintoma; el agujero es general.",
-        "descartado": "Excluir del conteo los ids cuyas entradas sean aclaraciones con referencia_entrada_anterior a un id distinto. Rechazado: infiere una categoria semantica ('esto no es una variable') de la forma documental de dos entradas, que es el mismo error que la enmienda 29 rechaza en el caso de renombrado_desde. Ademas habria ocultado la incoherencia de la entrada 13 en vez de dejarla visible, y no habria cerrado el agujero general.",
-        "orden_de_resolucion": "1) resolver ids (enmienda 28: las aclaraciones con id propio se pliegan sobre el id referenciado); 2) fijar lote por la primera entrada de cada id resuelto; 3) fijar estado por la ultima; 4) contar presupuesto."
-      }
-    },
-    "modulo_de_escritura": {
-      "unico": "cadena.py",
-      "operaciones_permitidas": [
-        "verificar",
-        "anadir",
-        "es_extension"
-      ],
-      "prohibicion": "No debe existir en el repositorio ninguna funcion capaz de reconstruir registro.json desde cero. Esa capacidad convierte cualquier ejecucion accidental en una perdida silenciosa de entradas.",
-      "accion_de_migracion": "build_registro.py eliminado del repositorio el 2026-09-03 (commit efb792a)."
-    }
-  },
-  "definicion_de_efecto": {
-    "estado": "FIJADA",
-    "fecha_fijacion": "2026-09-03",
-    "inmutable": true,
-    "horizonte_N": {
-      "valor": 30,
-      "unidad": "dias naturales",
-      "justificacion": "Unico horizonte que supero el test de estabilidad entre epocas con ventanas no solapadas (rango.py, 28/08/2026): correlacion de persistencia 0.53 / 0.45 / 0.49 en 2011-2015, 2016-2020 y 2021-2026. Los horizontes de 60, 90 y 180 dias fallaron. El de 7 dias nunca se ha medido en este proyecto.",
-      "prohibicion": "No se evalua la misma variable a varios N para elegir despues el que funciona. N es unico y comun a todo el regimen v2.",
-      "aclaracion_enmienda_26": "N=30 se justifico con rango.py midiendo persistencia de la METRICA CONTINUA entre epocas. Desde la enmienda 18 los gates operan sobre la mascara binaria, por lo que esa justificacion registrada ya no describe exactamente lo que el protocolo hace. NO se recalcula nada: definicion_de_efecto es inmutable y el motor sigue usando N=30 igual. Se anota para que el cabo suelto no se descubra como sorpresa dentro de dos anios."
-    },
-    "convenio_de_retorno": {
-      "tipo": "simple",
-      "formula": "R_N(t) = P(t+N) / P(t) - 1",
-      "escala": "fraccion",
-      "nota_escala": "0.03 significa 3 puntos porcentuales. Toda magnitud del protocolo, incluido M, se expresa en esta misma escala.",
-      "justificacion": "Coherente con el bloque 07 del dashboard, que ya opera en ratios simples. No se componen retornos, por lo que la no aditividad de las medianas no aplica."
-    },
-    "estadistico_theta": {
-      "formula": "theta = mediana(R_N | mascara=1) - mediana(R_N | mascara=0)",
-      "unidad": "fraccion de retorno simple a 30 dias",
-      "naturaleza": "diferencia de localizacion, direccional",
-      "limitacion_declarada": "La diferencia de medianas es ciega a cambios de cola y de dispersion. Una variable cuyo efecto real sea un aumento de la probabilidad de movimientos extremos sin desplazar el centro de la distribucion sera medida como theta ~ 0. Si la hipotesis de una variable es de cola y no de localizacion, debe hacerse constar en su entrada del registro: el motor esta CONGELADO y no puede testear esa forma de efecto."
-    }
-  },
-  "ficha_congelada": {
-    "obligatoria": true,
-    "momento": "en la propuesta, antes de ejecutar ningun test y antes de que existan datos forward",
-    "inmutable_tras_fijacion": true,
-    "comportamiento_filtro_py": "Si una entrada en estado PROPUESTA carece de cualquier campo obligatorio de la ficha, filtro.py aborta y no la transita a EN_TEST.",
-    "campos_obligatorios": [
-      "metrica_continua",
-      "mascara",
-      "horizonte_N",
-      "M",
-      "casilla_dashboard",
-      "casilla_dashboard.funcion_D_theta",
-      "signo_esperado"
-    ],
-    "mascara": {
-      "enmienda": 2,
-      "descripcion": "Regla determinista que convierte la metrica continua en booleano. Se congela entera, no solo el percentil.",
-      "campos_obligatorios": [
-        "q_percentil",
-        "tipo_ventana",
-        "longitud_ventana_dias",
-        "solo_informacion_anterior_a_t",
-        "inclusividad",
-        "warm_up_dias",
-        "warm_up_excluido_del_computo_de_bloques"
-      ],
-      "congelar_percentil_no_valor": {
-        "regla": "Se congela el percentil q y la regla de calculo, no el valor numerico del umbral.",
-        "justificacion": "Un umbral absoluto congelado sobre una metrica con tendencia fuerte activa la mascara casi exclusivamente en una epoca, lo que hace fallar el gate de estabilidad entre epocas por construccion y no por falta de senal.",
-        "condicion": "El calculo del percentil solo puede usar informacion anterior a t. Cualquier uso de la muestra completa es look-ahead e invalida el test."
-      }
-    },
-    "casilla_dashboard": {
-      "enmienda": 3,
-      "regla": "La propuesta debe nombrar la casilla concreta del dashboard que la variable podria mover, y la funcion D(theta) que transforma el efecto en el estado visible de esa casilla.",
-      "justificacion": "Sin esto, ante un resultado que no mueve la casilla A siempre cabe alegar que mueve la casilla B. Eso es seleccion posterior a la evidencia.",
-      "hallazgo_2026_09_03": "Ninguna casilla existente del dashboard es direccional. El bloque 07 declara explicitamente que no indica direccion, y el bloque 02 opera en unidades de percentil-Mayer. Por tanto theta, que es direccional, no puede mover hoy ninguna casilla existente. La casilla se especifica como la que la variable creara si se confirma, con su granularidad fijada en la propuesta."
-    },
-    "nota_rutas": "Un campo con punto indica ruta anidada. filtro.py resuelve la ruta antes de comprobar la presencia.",
-    "signo_esperado": {
-      "obligatorio": true,
-      "valores": [
-        "positivo",
-        "negativo",
-        "bilateral"
-      ],
-      "por_defecto": "bilateral",
-      "regla_unilateral": "Declarar positivo o negativo exige rellenar justificacion_signo con el mecanismo previo que sostiene la direccion. No basta con que parezca razonable.",
-      "prohibicion": "El valor queda firmado antes de ejecutar. No puede modificarse despues, ni siquiera para corregirlo.",
-      "nota_incentivos": "Elegir bilateral no es un fallo ni requiere penalizacion. Su coste es la menor potencia inherente a una hipotesis menos especifica. Forzar una direccion para ganar potencia es peor que no declararla."
-    },
-    "alcance": {
-      "enmienda": 29,
-      "regla": "La ficha congelada contiene UNICAMENTE definicion de medida: como se mide la variable y como se juzgara el efecto. Prohibido incluir condiciones operativas y estados de disponibilidad de datos.",
-      "justificacion": "Una definicion de medida no caduca. Una condicion operativa si, y al vivir dentro de un documento inmutable no hay donde actualizarla. Una referencia a una ruta de la doctrina hace que la ficha dependa de la estructura de otro archivo que puede cambiar.",
-      "prohibicion_de_referencias": {
-        "enmienda": 30,
-        "sustituye_a": "la redaccion sintactica de la enmienda 29",
-        "texto_sustituido": "Ninguna ficha puede nombrar una ruta de v2.json. Si una ficha contiene una ruta, filtro.py aborta y la nombra. No se resuelve, no se traduce, no se sigue renombrado_desde.",
-        "regla": "Ninguna ficha puede DEPENDER de la estructura de v2.json. Toda cadena contenida en una ficha que coincida con la sintaxis de una ruta doctrinal es texto inerte: filtro.py no la resuelve, no la traduce, no la interpreta como selector, puntero o alias, y no sigue renombrado_desde. La presencia, ausencia o modificacion de una ruta citada textualmente no altera en nada la ejecucion de la ficha.",
-        "no_es_causa_de_aborto": "La mera aparicion de una ruta en un campo de ficha NO hace abortar a filtro.py, en ningun campo y a ninguna profundidad. La enmienda 29 abortaba por aparicion textual; esta enmienda aborta por dependencia.",
-        "causa_de_aborto": "filtro.py aborta si alguna cadena procedente de registro.json se utiliza como camino para resolver contenido de v2.json.",
-        "justificacion": "La independencia estructural es una propiedad del comportamiento del motor, no del texto de la ficha. Si el motor es incapaz de usar esas cadenas, la ficha no puede depender de ellas por construccion. Una prohibicion sintactica protege contra un peligro que el motor ya no puede materializar y a cambio impide al registro documentar la eliminacion de una ruta, que es una funcion legitima y necesaria de la auditoria.",
-        "sin_clasificacion_de_campos": "Esta regla no distingue campos narrativos de campos de medida. Se aplica igual a todos. Clasificar campos para darles trato distinto queda expresamente descartado: fue la via rechazada en el analisis previo por abrir deriva de clasificacion."
-      },
-      "campos_que_no_pertenecen_a_la_ficha": [
-        "bloqueo_ejecucion"
-      ],
-      "sustituido_por": "ficha_congelada.marcadores_pendientes",
-      "inventario_de_referencias": {
-        "enmienda": 30,
-        "regla": "filtro.py lista en cada informe toda cadena de una ficha que coincida con la sintaxis de una ruta doctrinal, junto a si esa ruta existe o no en la v2.json del pin de version. Es un inventario, no un diagnostico.",
-        "sin_severidad": "Las entradas del inventario no son errores ni advertencias y no llevan nivel de severidad. Una ruta que no resuelve no es una anomalia: puede ser una referencia historica correcta. Se declara asi para evitar que un informe con alertas permanentes deje de leerse.",
-        "no_bloquea": "El inventario nunca hace abortar a filtro.py ni condiciona ninguna transicion de estado.",
-        "precedente_interno": "Mismo patron que integridad.resolucion_de_entradas.lote.comportamiento_ante_discrepancia (hace constar sin abortar) y que la enmienda 19 (gate 2 descriptivo no vinculante).",
-        "alcance_del_detector": "El detector reconoce unicamente cadenas que empiezan por una clave de primer nivel de v2.json. Una cita a una ruta anidada cuyo primer segmento no sea clave raiz (por ejemplo 'gates_cualitativos.parametros...', que vive bajo 'protocolo') NO aparece en el inventario. Alcance heredado del detector de la enmienda 29 y conservado sin ampliar: ampliarlo a claves de cualquier profundidad produciria falsos positivos sobre rutas internas de la propia ficha (por ejemplo 'metrica_continua.fuente'). Se declara para que la ausencia de una cita en el inventario no se lea como prueba de que no existe.",
-        "consecuencia_asumida": "El inventario es una ayuda de auditoria de cobertura parcial, no un censo garantizado. No bloquea nada, por lo que su incompletitud no puede producir un falso PASA."
-      },
-      "aislamiento_del_resolver": {
-        "enmienda": 30,
-        "regla": "El resolver de rutas de filtro.py solo admite caminos literales del codigo o caminos leidos de la propia v2.json. Ninguna cadena procedente de registro.json puede llegar a el como camino sobre la doctrina.",
-        "direccion_permitida": "doctrina -> ficha. La comprobacion de campos obligatorios resuelve caminos definidos en la doctrina SOBRE una entrada del registro. Es legitima y no crea dependencia.",
-        "direccion_prohibida": "ficha -> doctrina. Resolver sobre v2.json un camino tomado de una entrada del registro convierte la cita textual en dependencia real.",
-        "funcion_del_inventario": "El inventario comprueba EXISTENCIA, nunca obtiene el valor. La funcion que lo implementa devuelve un booleano y no puede devolver contenido de la doctrina.",
-        "motivo": "Sin esta clausula la garantia de no-resolucion es solo una promesa escrita. Con ella es una propiedad del codigo, verificable en revision. Riesgo senalado de forma independiente por las cuatro revisiones externas del 04/09/2026.",
-        "estado_verificado_2026_09_04": "filtro.py v2 ya cumple esta invariante: todas las llamadas al resolver sobre la doctrina usan literales del codigo, y la unica llamada sobre una entrada del registro usa un camino procedente de la doctrina."
-      }
-    },
-    "marcadores_pendientes": {
-      "enmienda": 29,
-      "regla": "Ningun campo de la entrada operativa de una variable puede contener un marcador que empiece por PENDIENTE_ en el momento de transitar a EN_TEST. filtro.py aborta y nombra el campo exacto.",
-      "ambito": "recursivo sobre todos los campos de la entrada operativa, a cualquier profundidad",
-      "prefijo": "PENDIENTE_",
-      "justificacion": "Sustituye a las clausulas bloqueo_ejecucion escritas a mano dentro de cada ficha. Es mas fuerte: se aplica a toda variable presente y futura, no solo a la que se acordo de escribirla, y no nombra ninguna ruta, por lo que no puede quedar desactualizada por un renombrado.",
-      "cobertura_verificada_ssr": "metrica_continua.fuente = PENDIENTE_DEFINICION sigue bloqueando la transicion de SSR a EN_TEST por esta regla, sin necesidad de clausula propia en la ficha.",
-      "no_cubre": "Los bloqueos de alcance global no viven en las fichas. fuente_de_precio.snapshot.estado = PENDIENTE_PRIMER_LOTE afecta a todo lote y lo comprueba filtro.py sobre la doctrina, no sobre la ficha.",
-      "prohibicion_prospectiva": {
-        "enmienda": 31,
-        "fecha_efecto": "2026-09-05",
-        "prospectiva": true,
-        "regla": "Ninguna entrada con tipo_entrada propuesta, ficha_congelada o alta_retroactiva y fecha_registro igual o posterior a fecha_efecto puede contener una cadena que empiece por el prefijo dentro de un campo de campos_de_definicion_de_medida, a cualquier profundidad.",
-        "momento_de_la_comprobacion": "antes de escribir la entrada en el registro, no en la transicion a EN_TEST",
-        "implementacion": {
-          "validacion_previa": "filtro.py --validar-entrada FICHERO.json comprueba una entrada candidata contra esta regla y devuelve codigo de salida distinto de cero si la incumple. Debe ejecutarse antes de cadena.anadir.",
-          "red_de_seguridad": "Si una entrada infractora llegase al registro, filtro.py ABORTA en fase 1 nombrando entrada y campo. No es un bloqueo por variable: es un defecto estructural del registro y ningun lote puede ejecutarse.",
-          "por_que_no_en_cadena_py": "cadena.py declara en su cabecera que no contiene ninguna regla del protocolo, solo la aritmetica de hashes. Meter aqui una regla doctrinal rompe esa separacion y crea un segundo lugar donde vive la doctrina. La combinacion de validacion previa mas aborto global tiene la misma fuerza practica sin ese coste."
-        },
-        "diferencia_con_la_regla_general": "marcadores_pendientes sigue vigente sin cambios: cubre todos los campos a cualquier profundidad y bloquea la transicion a EN_TEST. Esta clausula es mas estrecha en alcance de campos y mas dura en consecuencia.",
-        "no_retroactiva": "Las entradas anteriores a fecha_efecto no se reevaluan ni se editan. El registro es append-only. La entrada 18 (fecha_registro 2026-09-04) queda expresamente fuera.",
-        "justificacion": "Una fuente de datos no es un metadato: es parte de la definicion de la medida. Firmar una ficha con la fuente sin definir crea una variable que nace sin salida dentro de la doctrina, porque limite_de_la_sustitucion prohibe despues corregir ese mismo campo. El caso SSR es el sintoma; el agujero es general. Consenso unanime de las cuatro revisiones externas del 2026-09-04."
-      }
-    },
-    "migracion_de_fichas": {
-      "enmienda": 29,
-      "regla": "Cuando una enmienda renombre o elimine una clave de la doctrina, toda ficha en estado PROPUESTA que la referencie debe sustituirse antes de cualquier evaluacion. La sustitucion se registra como entrada nueva.",
-      "limite_de_la_sustitucion": "Una ficha sustitutiva solo puede diferir de la anterior en los campos que la enmienda obliga a tocar, en motivo_sustitucion y en los hashes. Todo campo de definicion de medida (metrica_continua, mascara, horizonte_N, M, unidad_theta, signo_esperado, casilla_dashboard, naturaleza_de_la_hipotesis, dias_episodio) debe ser identico. filtro.py compara ambas entradas y aborta si difiere alguno.",
-      "justificacion_del_limite": "La mutabilidad en PROPUESTA es necesaria, pero sin limite medible se convierte en la puerta de atras que permite retocar una ficha alegando cambio doctrinal. El limite es verificable por codigo.",
-      "prohibido_tras_en_test": "Si la variable ya alcanzo EN_TEST no hay sustitucion posible. filtro.py aborta de forma permanente. Es el coste asumido en integridad.resolucion_de_entradas.inmutabilidad."
-    },
-    "campos_de_definicion_de_medida": {
-      "enmienda": 31,
-      "naturaleza": "codificacion, no cambio de contenido",
-      "lista": [
-        "metrica_continua",
-        "mascara",
-        "horizonte_N",
-        "M",
-        "unidad_theta",
-        "signo_esperado",
-        "casilla_dashboard",
-        "naturaleza_de_la_hipotesis",
-        "dias_episodio"
-      ],
-      "regla": "Esta lista es la unica fuente de verdad sobre que campos de una ficha son de definicion de medida. La usan migracion_de_fichas.limite_de_la_sustitucion y marcadores_pendientes.prohibicion_prospectiva.",
-      "motivo": "filtro.py derivaba la lista partiendo el texto en prosa de limite_de_la_sustitucion por el primer parentesis. Una reescritura del parrafo cambiaba en silencio el alcance de una prohibicion. Verificado por el script de migracion: la lista literal es identica a la que ese parseo produce.",
-      "comportamiento_filtro_py": "Se lee esta lista. Queda prohibido derivar la lista de ningun texto en prosa.",
-      "no_cambia_el_limite_de_la_sustitucion": "El texto de limite_de_la_sustitucion se conserva intacto como justificacion. Deja de ser la fuente de la que el codigo extrae la lista."
-    },
-    "retirada_en_propuesta": {
-      "enmienda": 31,
-      "condiciones_estrictas": {
-        "nunca_alcanzo_EN_TEST": "Ninguna entrada del id puede haber tenido estado EN_TEST ni ningun estado de presupuesto.derivacion.estados_que_cuentan_como_consumido. filtro.py aborta si lo encuentra.",
-        "sin_datos_adquiridos": "No puede existir ningun snapshot de datos asociado al id, ni hash de snapshot, ni theta_B2 distinto de null. filtro.py aborta si theta_B2 no es null.",
-        "estado_actual_PROPUESTA": "La entrada operativa del id debe estar en PROPUESTA en el momento de la retirada."
-      },
-      "forma": {
-        "tipo_entrada": "transicion_de_estado",
-        "campos_obligatorios_adicionales": [
-          "motivo",
-          "declaracion"
-        ],
-        "prohibido": "No puede modificar ningun campo de la ficha. Rigen los campos_permitidos de integridad.resolucion_de_entradas.tipo_entrada.alta_transicion_de_estado mas los dos anteriores."
-      },
-      "terminalidad": "Ninguna entrada posterior con el mismo id puede cambiar el estado. filtro.py aborta. El id queda muerto de forma permanente.",
-      "reproposicion": {
-        "permitida": true,
-        "condicion": "Solo mediante una ficha NUEVA con id distinto, que no resuelva al id retirado por el mecanismo de excepciones de la enmienda 28.",
-        "campo_obligatorio": "sustituye_a_id_retirado",
-        "prohibicion_de_forma": "La ficha nueva NO puede usar referencia_entrada_anterior apuntando al id retirado: eso la plegaria sobre el id muerto al resolver ids. sustituye_a_id_retirado es trazabilidad, no resolucion, y filtro.py nunca lo usa para plegar ids.",
-        "verificacion": "filtro.py aborta si sustituye_a_id_retirado apunta a un id que no esta en RETIRADA_EN_PROPUESTA.",
-        "declaracion_de_sesgo_obligatoria": "La ficha nueva debe declarar en declaracion_de_sesgo que campos de medida difieren de la retirada y por que. Sin ese campo filtro.py aborta.",
-        "una_sola_vez": {
-          "regla": "Una ficha que lleve sustituye_a_id_retirado no puede a su vez ser retirada. filtro.py aborta si una transicion a RETIRADA_EN_PROPUESTA apunta a un id cuya ficha contiene ese campo.",
-          "efecto": "Cada CADENA DE SUCESION DECLARADA dispone de una sola correccion. Cierra el bucle retirar-reproponer-retirar dentro de esa cadena.",
-          "descartado": "Hacer que la retirada consuma presupuesto del trimestre. Rechazado: castiga corregir un error, que es el incentivo contrario al que persigue el protocolo.",
-          "_texto_sustituido_enmienda_31": "Cada variable subyacente dispone de una sola correccion. Cierra el bucle retirar-reproponer-retirar sin castigar el error honesto de una vez.",
-          "alcance_real": {
-            "enmienda": 32,
-            "garantia": "El protocolo garantiza unicidad de IDENTIDAD FORMAL DECLARADA. No garantiza unicidad de concepto ni de constructo.",
-            "no_garantia": "Dos fichas con ids distintos que midan lo mismo en espiritu son, para el motor, dos variables distintas. La deteccion de equivalencia conceptual queda FUERA del enforcement automatico: es un control de auditoria, no una propiedad del sistema.",
-            "motivo_de_la_reformulacion": "La redaccion de la enmienda 31 afirmaba que cada variable subyacente dispone de una sola correccion. El mecanismo no implementa eso: implementa una sola sucesion por cadena declarada. Afirmar la propiedad mas fuerte era prometer algo que el sistema no puede demostrar, que es justo el defecto que el resto del protocolo evita."
-          },
-          "elusion_conocida": {
-            "descripcion": "El freno se ata a la PRESENCIA del campo sustituye_a_id_retirado. Nada impide reproponer la misma medida con un id nuevo omitiendo ese campo y presentandola como variable nueva.",
-            "detectable_por_codigo": false,
-            "no_se_cierra_porque": "Identidad por significado, cero intervencion humana y cero clasificacion semantica son tres propiedades incompatibles entre si. Cualquier regla que decida cuando dos medidas son 'la misma' es clasificacion semantica, que es la via ya descartada expresamente en ficha_congelada.alcance.prohibicion_de_referencias.sin_clasificacion_de_campos por abrir deriva de clasificacion.",
-            "descartado_concept_key": "Se evaluo exigir una clave canonica de concepto declarada por el autor. Rechazado: es una etiqueta declarada, luego tiene exactamente la misma debilidad que sustituye_a_id_retirado, y ademas introduce la clasificacion semantica ya descartada.",
-            "descartada_normalizacion_previa": "Se evaluo normalizar los campos de medida (recortar espacios, unificar mayusculas, ordenar listas) antes de calcular su hash. Rechazado: decidir que diferencias 'no son sustanciales' es clasificacion semantica por la puerta de atras, y haria el hash menos verificable, no mas.",
-            "revision_externa": "Consenso unanime de cuatro modelos externos el 2026-09-05: la visibilidad en la cadena de hashes es un control detectivo, no preventivo, y no frena a un autor que sea tambien su unico auditor."
-          }
-        }
-      },
-      "coste_asumido_declarado": "Retirar y reproponer es la unica via legitima de corregir un campo de medida en PROPUESTA, y por tanto tambien una puerta trasera potencial a limite_de_la_sustitucion. No se cierra con una prohibicion sino con dos frenos verificables: visibilidad obligatoria (retirada, motivo, id sucesor y declaracion de sesgo en la cadena de hashes y en cada informe) y el limite de una sola vez.",
-      "retirada_estrategica": {
-        "enmienda": 32,
-        "problema": "Como la retirada no consume presupuesto, funciona como una opcion de abandono gratuita: mirar los datos de forma informal, intuir que la variable va a fallar, retirarla y reproponer una version retocada.",
-        "por_que_no_lo_impide_sin_datos_adquiridos": "La condicion sin_datos_adquiridos solo comprueba que no exista theta_B2 ni snapshot asociado. Mirar una serie sin registrar nada no deja rastro en el registro.",
-        "prevenible_por_codigo": false,
-        "mitigacion_real": "No esta en esta capa. La garantia del sistema frente a este riesgo es la misma que frente al resto de la seleccion: la confirmacion forward sobre datos que no existian cuando la variable fue propuesta. Una retirada estrategica no compra nada alli, porque la ventana forward se juzga sobre datos futuros que el autor no puede haber mirado. Ver meta.declaracion_obligatoria.",
-        "se_declara_no_se_resuelve": "Se hace constar en el mismo registro que potencia_medida y que notas_de_migracion.theta_v1_no_comparable: son limitaciones conocidas del sistema, declaradas para que ningun informe futuro pueda presentarlas como si no existieran."
-      }
-    },
-    "hash_de_medida": {
-      "enmienda": 32,
-      "definicion": "SHA-256 de la serializacion canonica del subconjunto de campos de campos_de_definicion_de_medida.lista presentes en una ficha.",
-      "canonizacion": "La MISMA que registro.json -> meta.canonizacion: claves ordenadas, separadores compactos, UTF-8. No se define ninguna convencion nueva. No se aplica ninguna normalizacion previa del contenido.",
-      "calculado_no_almacenado": {
-        "regla": "El hash NO se escribe en la ficha. filtro.py lo calcula en cada ejecucion a partir del contenido.",
-        "motivo": "Un hash almacenado puede divergir del contenido que dice resumir, y obliga a una comprobacion adicional que puede fallar. Un hash derivado no puede mentir."
-      },
-      "solo_fichas_completas": {
-        "regla": "Solo se calcula sobre entradas que contengan TODOS los campos de la lista. Las fichas incompletas no producen hash y no entran en la comparacion.",
-        "motivo": "Una ficha se construye por etapas. Comparar hashes de subconjuntos distintos de campos no significa nada."
-      },
-      "regla_de_colision": {
-        "entre_ids_distintos": "Si dos ids RESUELTOS distintos producen el mismo hash de medida, filtro.py ABORTA y nombra ambos. Es una reproposicion exacta de una medida ya registrada.",
-        "dentro_del_mismo_id": "Esperado y correcto: limite_de_la_sustitucion exige que una ficha sustitutiva tenga los campos de medida identicos a la anterior. No es colision."
-      },
-      "que_protege": "La reproposicion EXACTA de una medida ya registrada, con o sin sustituye_a_id_retirado. Refuerza protocolo.unicidad_del_test.",
-      "que_NO_protege": "NO implementa una_sola_vez. El proposito legitimo de retirar y reproponer es cambiar campos de medida, luego el hash nuevo nunca colisiona con el retirado. Y una reproposicion abusiva con un retoque minimo tampoco colisiona. Se declara para que nadie lea esta regla como si cerrase la elusion_conocida.",
-      "cobertura_medida_2026_09_05": "0 de las 11 variables ya testeadas. Las entradas 1 a 11, 13, 14 y 17 son de regimen v1 y no contienen ningun campo de definicion de medida, por lo que no producen hash. La cobertura es exclusivamente prospectiva y arranca desde una base vacia. Medido por script sobre el registro de 18 entradas."
-    }
-  },
-  "estimador_de_robustez": {
-    "enmienda": 5,
-    "estado": "ACTIVO",
-    "estimadores": [
-      "hodges_lehmann",
-      "media_recortada_10pct"
-    ],
-    "ambito": "informe de lote unicamente",
-    "afecta_a_veredicto": false,
-    "prohibicion": "No participa en ningun criterio de pasa/no-pasa, ni en los gates, ni en el p-valor, ni en los tres criterios de confirmacion forward. Por eso no constituye un cambio de motor y no exige v3.",
-    "proposito": "Responder a la pregunta de auditoria: la conclusion depende demasiado de haber elegido la mediana como estadistico?",
-    "regla_de_divergencia": "Si el estimador de robustez y theta divergen en signo, se hace constar en el informe. No cambia el veredicto."
-  },
-  "notas_de_migracion": {
-    "theta_v1_no_comparable": {
-      "hallazgo": "El horizonte del retorno usado en los tests de v1 no es recuperable del repositorio: 'resultado' era un argumento de paso4_significancia y no existe ninguna llamada registrada.",
-      "consecuencia": "Los theta de v1 y los de v2 no son comparables. Cualquier lectura cruzada de magnitudes entre ambos regimenes es invalida.",
-      "regla": "Ningun informe puede comparar magnitudes de efecto entre entradas con regimen v1 y regimen v2."
-    },
-    "frontera_con_regimen_py": {
-      "regla": "regimen.py queda FUERA del alcance de este protocolo.",
-      "justificacion": "v2.json gobierna la validacion de variables candidatas. regimen.py calibra y audita el panel. Si se mezclan, cada retoque del dashboard se convierte en una enmienda de doctrina y la doctrina deja de ser utilizable.",
-      "consecuencia": "Las constantes de regimen.py no son reglas de protocolo y no requieren vivir en este archivo."
-    },
-    "renombrado_pendiente": {
-      "accion": "registro.py -> diario.py",
-      "motivo": "Convivir un modulo importable llamado registro con un archivo registro.json es una fuente segura de confusion futura.",
-      "estado": "PENDIENTE"
-    },
-    "rediseno_de_la_capa_de_gates": {
-      "enmiendas": [
-        18,
-        19,
-        22,
-        23,
-        25
-      ],
-      "declaracion": "Esto ya NO es la migracion literal desde filtro.py v1 que prometia la enmienda 6. Es un rediseno de la capa de gates: cambia la entrada de los gates, cambia el metodo de fijacion de umbrales, un gate deja de ser vinculante y otro pasa a ser alcanzable por primera vez.",
-      "por_que_sigue_siendo_v2_y_no_v3": "El motor sigue intacto: permutacion por bloques mas diferencia de medianas, con el mismo N, la misma particion y el mismo p-valor. Solo cambia la capa de cribado previa. Por eso es 2.2.0 y no exige un regimen v3, que obligaria a no reutilizar nada de v2.",
-      "parametros_de_v1_retirados": [
-        "UMBRAL=0.04",
-        "min_obs=100",
-        "minimo_pp=3.0",
-        "EPOCAS de calendario",
-        "desfases (0,1,2,3,5)",
-        "retencion_minima=0.4"
-      ]
-    }
-  },
-  "potencia_medida": {
-    "enmienda": 19,
-    "estado": "OBLIGATORIO_EN_INFORME",
-    "texto_literal": "Esta capa de gates no es un cribado permisivo. Medida por simulacion sobre un bloque_1 de 1387 dias con mascara activa el 20% del tiempo, detecta aproximadamente el 39% de un efecto real de theta=0.084 y deja pasar el 15% del ruido puro. Un efecto real puede no atravesarla. Que una variable sea descartada aqui no demuestra que no exista.",
-    "cifras": {
-      "configuracion": "bloque_1 1387 dias, mascara 20% racha media 30 dias, percentil 50",
-      "ruido_puro_que_pasa": 0.152,
-      "deteccion_theta_0034": 0.199,
-      "deteccion_theta_0056": 0.257,
-      "deteccion_theta_0084": 0.389,
-      "deteccion_theta_0147": 0.563
-    },
-    "limitacion_declarada": "Estas cifras dependen del modelo sintetico de senal usado en potencia_gates_v2.py (deriva diaria constante mientras la mascara esta activa, precio GARCH tipo BTC). Son SUPUESTOS declarados, no datos observados. El resultado del gate 2 es el mas robusto porque se sigue de la geometria del solapamiento y no de esos parametros."
-  },
-  "fuente_de_precio": {
-    "enmienda": 20,
-    "estado": "FIJADA",
-    "inmutable": true,
-    "serie": "BTC/USD, cierre diario, Bitstamp",
-    "justificacion_divisa": "BTC/EUR meteria el movimiento del EUR/USD dentro de la variable objetivo.",
-    "justificacion_exchange": "N=30 se justifico en rango.py sobre datos de Bitstamp. Cambiar de fuente invalidaria esa justificacion.",
-    "hora_de_corte": "00:00:00 UTC del dia siguiente (cierre de la vela diaria UTC)",
-    "zona_horaria": "UTC",
-    "dias_faltantes": "Se arrastra el ultimo cierre disponible un maximo de 2 dias consecutivos. Un hueco de 3 dias o mas parte la serie y filtro.py aborta.",
-    "duplicados": "Ante dos registros para la misma fecha se conserva el ultimo por marca de tiempo de la fuente y se anota en el informe.",
-    "outliers": {
-      "regla": "No se eliminan outliers. Ningun cierre se descarta ni se winsoriza.",
-      "fijada_antes_de_mirar_datos": true,
-      "justificacion": "Los movimientos extremos de BTC son el fenomeno, no un error de medida. Cualquier regla de limpieza definida despues de ver la serie es seleccion."
-    },
-    "snapshot": {
-      "obligatorio": true,
-      "regla": "Cada lote congela un unico snapshot CSV de la serie y registra su SHA-256 en la doctrina antes de ejecutar ningun test.",
-      "sha256": "32c0b8ea8a66f01181032c3cb5b66c10ede867b12f6779d7bea8b19258627e49",
-      "estado": "CONGELADO",
-      "congelacion": {
-        "fecha": "2026-09-05",
-        "fichero": "snapshot_precio_btcusd.csv",
-        "rango": "2015-01-01 a 2026-09-03",
-        "filas": 4264,
-        "dias_sin_dato": 0,
-        "duplicados_resueltos": 0,
-        "columnas": "fecha,cierre",
-        "final_de_linea": "LF",
-        "script": "snapshot_precio.py",
-        "vela_incompleta_descartada": "La API devolvio ademas la vela del 2026-09-04, que a la hora de la descarga aun no habia cerrado (cierra a las 00:00 UTC del 2026-09-05). Se descarto por la fecha de corte declarada en el script, no a mano.",
-        "eleccion_de_la_fecha_de_corte": "2026-09-03 es la ultima vela diaria UTC completa en el momento de fijar la constante. Se declara como constante en el script y no se deriva de la fecha de ejecucion: si dependiese de cuando se lanza, el snapshot no seria reproducible.",
-        "limitacion_declarada": "snapshot.sha256 es un campo escalar, pero la regla dice que cada lote congela su propio snapshot. Mientras solo exista un lote v2 activo no hay conflicto. Un segundo lote exigira convertir este bloque en una estructura por lote, y eso si sera una enmienda."
-      }
-    },
-    "control_descriptivo": "Validacion visual contra Coinbase como control, sin re-test y sin efecto sobre ningun veredicto."
-  },
-  "calibracion": {
-    "enmienda": 22,
+ "meta": {
+  "nombre": "Contexto-BTC — Protocolo de validacion v2",
+  "version_esquema": "2.7.0",
+  "fecha_creacion": "2026-09-03",
+  "archivo_registro_asociado": "registro.json",
+  "declaracion_obligatoria": "Batch-PRDS actua como cribado de descubrimiento. La garantia real de control de falsos positivos descansa en la confirmacion forward sobre datos que no existian cuando la variable fue propuesta.",
+  "regla_de_impresion": "La declaracion_obligatoria y el bloque potencia_medida deben imprimirse literalmente en cada salida de filtro.py y en cada informe de lote. No son comentarios: son parte de la salida. Sin potencia_medida, un lector puede leer 'capa de gates' y suponer un cribado permisivo que no es.",
+  "precedencia": "Este archivo es la fuente de verdad del protocolo. Ninguna regla vive dentro del codigo. Si filtro.py y este archivo discrepan, filtro.py debe abortar, no adaptarse.",
+  "enmiendas": [
+   {
+    "n": 1,
+    "titulo": "definicion_de_efecto",
+    "fecha": "2026-09-03",
+    "motivo": "theta no tenia unidades declaradas en ninguna parte del protocolo."
+   },
+   {
+    "n": 2,
+    "titulo": "mascara en la ficha congelada",
+    "fecha": "2026-09-03",
+    "motivo": "Sin congelar la mascara, theta_B2 y theta_F no son comparables. Consenso de cuatro revisiones externas independientes."
+   },
+   {
+    "n": 3,
+    "titulo": "casilla y funcion D(theta) nombradas en la propuesta",
+    "fecha": "2026-09-03",
+    "motivo": "Impide elegir a posteriori la casilla del dashboard que hace M mas pequeno."
+   },
+   {
+    "n": 4,
+    "titulo": "separacion entre trimestres forward",
+    "fecha": "2026-09-03",
+    "motivo": "Los retornos a N dias cerca del borde de un trimestre se solapan con el siguiente y rompen su independencia."
+   },
+   {
+    "n": 5,
+    "titulo": "estimador de robustez secundario",
+    "fecha": "2026-09-03",
+    "motivo": "Consenso de cuatro revisiones externas. Va en el informe, no dentro del motor, para no violar motor:CONGELADO."
+   },
+   {
+    "n": 6,
+    "titulo": "umbrales de gate migrados a la doctrina",
+    "fecha": "2026-09-03",
+    "motivo": "Vivian hardcodeados en filtro.py y no existian en la doctrina, por lo que el codigo no podia leerlos de ningun sitio."
+   },
+   {
+    "n": 7,
+    "titulo": "dias_episodio >= N",
+    "fecha": "2026-09-03",
+    "motivo": "Con N=30 y separacion fija de 21 dias, dos episodios 'independientes' a 22 dias comparten 8 dias de retorno futuro."
+   },
+   {
+    "n": 8,
+    "titulo": "mapeo de salida de filtro.py a la lista cerrada",
+    "fecha": "2026-09-03",
+    "motivo": "filtro.py emitia PASA/RECHAZADA/PROVISIONAL, ninguno en la lista cerrada. El codigo abortaria ante su propia salida."
+   },
+   {
+    "n": 9,
+    "titulo": "alta del estado NULO_V1",
+    "fecha": "2026-09-03",
+    "motivo": "probabilidad_contexto no encajaba en ninguna casilla existente. Excepcion documentada a estados.cerrado."
+   },
+   {
+    "n": 10,
+    "titulo": "presupuesto derivado del registro",
+    "fecha": "2026-09-03",
+    "motivo": "presupuesto_por_trimestre vive fuera de la cadena de hashes y es editable sin romperla."
+   },
+   {
+    "n": 11,
+    "titulo": "anti-truncamiento por Action",
+    "fecha": "2026-09-03",
+    "motivo": "La cadena detecta modificacion de entradas pasadas pero no borrado de las ultimas."
+   },
+   {
+    "n": 12,
+    "titulo": "pin de version y traza SHA-256",
+    "fecha": "2026-09-03",
+    "motivo": "filtro.py no tenia forma de detectar que la doctrina cambio bajo sus pies."
+   },
+   {
+    "n": 13,
+    "titulo": "resolucion de entradas duplicadas",
+    "fecha": "2026-09-03",
+    "motivo": "El registro usaba dos convenciones contradictorias y filtro.py abortaria ante la entrada 12 de SSR."
+   },
+   {
+    "n": 14,
+    "titulo": "cadena.py como unico modulo de escritura",
+    "fecha": "2026-09-03",
+    "motivo": "build_registro.py reconstruia desde cero y estaba desfasado: 12 entradas frente a 15 reales."
+   },
+   {
+    "n": 15,
+    "titulo": "entorno de ejecucion con persistencia",
+    "fecha": "2026-09-03",
+    "motivo": "En disco efimero una entrada anadida se pierde en el siguiente deploy sin error visible."
+   },
+   {
+    "n": 16,
+    "titulo": "signo_esperado y capa de interpretacion",
+    "fecha": "2026-09-03",
+    "motivo": "La cola del test se elegia tras ver el signo observado. Error tipo I medido 0.095 a nominal 0.05."
+   },
+   {
+    "n": 17,
+    "titulo": "aclaracion del p_valor_rango_v1 de halving_ciclo",
+    "fecha": "2026-09-03",
+    "motivo": "El rango registrado se calculo con la convencion de cola de v1 y no es comparable con p-valores de v2."
+   },
+   {
+    "n": 18,
+    "titulo": "gates sobre la mascara binaria",
     "fecha": "2026-09-04",
-    "script": "calibracion_gates_v2.py y potencia_gates_v2.py",
-    "semilla": 20260904,
-    "metodo": "Series sinteticas de precio con volatilidad agrupada tipo BTC y mascara binaria con rachas generada de forma independiente del precio. Se mide que proporcion de ruido puro atraviesa cada gate, y por separado que proporcion de senal real inyectada de fuerza conocida lo atraviesa.",
-    "supuestos_declarados": [
-      "precio GARCH(1,1) alpha=0.08 beta=0.90, desviacion tipica diaria 3.5%",
-      "mascara Markov de 2 estados, activa 20%, racha media 30 dias",
-      "no se uso ninguna serie real de BTC: se calibra la distribucion nula, no el historico"
+    "motivo": "Los gates filtraban con la metrica continua mientras el motor decide con la mascara: cribaban por una hipotesis distinta de la que emite el veredicto. Detectado por tres revisiones externas de forma independiente."
+   },
+   {
+    "n": 19,
+    "titulo": "gate 2 degradado a descriptivo no vinculante",
+    "fecha": "2026-09-04",
+    "motivo": "Potencia medida nula. Frente a una senal real de regimen de theta=0.087 pasa el 51.4%, frente a ruido puro el 53.8%. No discrimina: destruye la mitad de los hallazgos reales sin comprar especificidad. SSR esta declarada en su ficha como variable de regimen, luego es exactamente el caso donde el gate no funciona."
+   },
+   {
+    "n": 20,
+    "titulo": "fuente de precio congelada",
+    "fecha": "2026-09-04",
+    "motivo": "El protocolo definia el retorno objetivo sin decir de que serie de precio se calcula. Sin fuente, hora de corte y tratamiento de huecos congelados, dos ejecuciones del mismo test pueden diferir."
+   },
+   {
+    "n": 21,
+    "titulo": "base fija y permanente del gate 3",
+    "fecha": "2026-09-04",
+    "motivo": "Con base creciente, un mismo Delta-R2 deja de significar lo mismo en anios distintos y una variable podria morir por el orden en que se descubrio, lo que es inaceptable bajo unicidad_del_test."
+   },
+   {
+    "n": 22,
+    "titulo": "umbrales de gates 1 y 3 por nulo de rotacion, percentil 50",
+    "fecha": "2026-09-04",
+    "motivo": "Los umbrales heredados no estaban medidos contra la entrada que el motor usa: el 0.04 dejaba pasar el 74% del ruido puro aplicado a la mascara binaria. Un umbral fijo tampoco es homogeneo entre longitudes de historia. Se congela el percentil y el procedimiento, no el numero."
+   },
+   {
+    "n": 23,
+    "titulo": "minimos en observaciones efectivas, no en dias crudos",
+    "fecha": "2026-09-04",
+    "motivo": "Con retornos solapados a 30 dias, 50 dias crudos equivalen a 1.7 observaciones independientes. Los minimos se derivan de minimo_por_bloque_anios, que ya estaba fijado en 3, y no son numeros nuevos."
+   },
+   {
+    "n": 24,
+    "titulo": "tramos en lugar de epocas de calendario",
+    "fecha": "2026-09-04",
+    "motivo": "definicion_de_epocas llevaba bloqueo_activo con valor null y filtro.py debia abortar. Las epocas de calendario de v1 chocaban con corte_proporcional_por_variable: una variable cuyo bloque_1 no abarcase tres epocas fallaba por construccion, no por falta de evidencia."
+   },
+   {
+    "n": 25,
+    "titulo": "separacion de los gates 1 y 4",
+    "fecha": "2026-09-04",
+    "motivo": "El gate 1 exigia signo Y magnitud, por lo que DESCARTADA_GATE_4 era un estado que nunca podia emitirse. Confirmado por tres revisiones externas sin matices."
+   },
+   {
+    "n": 26,
+    "titulo": "aclaracion sobre la justificacion de N=30",
+    "fecha": "2026-09-04",
+    "motivo": "N se justifico midiendo persistencia de la metrica continua entre epocas. Con los gates ahora sobre la mascara, esa justificacion registrada ya no describe exactamente lo que el protocolo hace. No se recalcula nada: se anota para que no se descubra dentro de dos anios."
+   },
+   {
+    "n": 27,
+    "titulo": "ciclo de vida de las entradas del registro",
+    "fecha": "2026-09-04",
+    "motivo": "La clausula de inmutabilidad hacia abortar a filtro.py ante toda entrada posterior a EN_TEST con el mismo id, pero presupuesto.derivacion espera estados posteriores a EN_TEST. Ningun estado posterior a EN_TEST podia registrarse: contradiccion interna entre integridad y presupuesto."
+   },
+   {
+    "n": 28,
+    "titulo": "convencion unica de aclaraciones",
+    "fecha": "2026-09-04",
+    "motivo": "convencion_elegida fija 'mismo id, gana la ultima' pero la entrada 17 se creo despues usando la convencion descartada. Una aclaracion con id propio es invisible al resolver el id de la variable aclarada, por lo que su regla_derivada no es descubrible por codigo."
+   },
+   {
+    "n": 29,
+    "titulo": "alcance de la ficha congelada, autoridad del presupuesto y limpieza de vocabulario",
+    "fecha": "2026-09-04",
+    "motivo": "La ficha de SSR contenia una clausula operativa (bloqueo_ejecucion) que referenciaba una ruta de la doctrina eliminada por la enmienda 24. El sintoma era una ruta rota; la causa es que la ficha congelada mezclaba definicion de medida, que no caduca, con condiciones operativas transitorias, que si caducan. Se separan ambas cosas y la condicion pasa a la doctrina en forma que no puede quedar desactualizada.",
+    "descartado": "Resolver rutas obsoletas desde el codigo siguiendo renombrado_desde. Rechazado por cuatro revisiones externas independientes: renombrado_desde prueba genealogia documental, no equivalencia semantica, y el renombrado de la enmienda 24 tambien cambio la definicion de los sub-periodos. Ademas contradice meta.precedencia: el codigo aborta, no se adapta.",
+    "partes": [
+     "alcance de ficha_congelada y regla de marcadores PENDIENTE",
+     "autoridad unica del presupuesto",
+     "limpieza de vocabulario de la enmienda 24",
+     "lote inmutable, fijado por la primera entrada del id"
     ],
-    "hallazgos": {
-      "umbral_v1_invalido": "El umbral heredado 0.04 deja pasar el 74% del ruido puro cuando se aplica a la mascara binaria. Aplicado a la entrada binaria no es un filtro.",
-      "umbral_fijo_no_homogeneo": "Un umbral fijo de 0.15 corresponde al percentil 70 con 3 anios de bloque_1 y al percentil 92 con 10 anios. La misma regla escrita significa exigencias distintas segun la historia disponible.",
-      "techo_estructural": "Los gates sin parametro libre (2 y 4) dejaban pasar conjuntamente el 16.9% del ruido. Ningun umbral podia hacer la capa mas permisiva que ese techo.",
-      "gate_2_sin_potencia": "Frente a senal real de regimen: 51.4% de paso. Frente a ruido puro: 53.8%. Frente a senal puramente anticipatoria desplazada 30 dias: 75.6%.",
-      "validacion_del_nulo_por_rotacion": "El nulo generado rotando la mascara reproduce la tabla sintetica: gate 1 percentil 50 = 0.0861 por rotacion frente a 0.0888 sintetico, sobre bloque_1 de 1387 dias."
-    },
-    "eleccion_del_percentil": {
-      "valor": 50,
-      "justificacion": "El liston se pone bajo a proposito. El control real de falsos positivos vive en la confirmacion forward sobre datos que no existian al proponer la variable, no en estos gates. El coste de un falso negativo aqui es irreversible por unicidad_del_test; el de un falso positivo es que muera en el forward. La medicion de potencia mostro que subir de percentil 50 a 75 baja la deteccion de un efecto real de theta=0.084 del 39% al 30%, a cambio de bajar el ruido del 15% al 7%. Con la asimetria declarada, ese intercambio no compensa.",
-      "descartado": "Percentil 70-80, que era la banda de partida del encargo, antes de medir la potencia."
-    }
+    "hallazgo_durante_la_migracion": "La parte 4 no estaba prevista. Aparecio al comprobar que el presupuesto derivado seguia cuadrando tras la migracion: no cuadraba, y ya no cuadraba en 2.2.0 antes de tocar nada. filtro.py v2 habria abortado en el arranque."
+   },
+   {
+    "n": 30,
+    "titulo": "la prohibicion de referencias pasa de sintactica a funcional",
+    "fecha": "2026-09-04",
+    "motivo": "La enmienda 29 quiso impedir que una ficha DEPENDA de la estructura de v2.json, pero escribio la prueba como 'ninguna ficha puede nombrar una ruta', que es una prueba sobre el texto y no sobre la dependencia. La entrada 18 la incumple en cuatro citas, una de ellas a una ruta eliminada por la enmienda 24 que se cita precisamente para dejar constancia de que murio. Un registro de auditoria de cambios doctrinales necesita poder nombrar lo que cambio. Ademas la via de sustituir la ficha esta cerrada por migracion_de_fichas.limite_de_la_sustitucion, que exige identidad en naturaleza_de_la_hipotesis. La garantia real ya estaba escrita en la ultima frase de la propia regla 29 y se eleva aqui a clausula principal."
+   },
+   {
+    "n": 31,
+    "titulo": "retirada en propuesta, prohibicion prospectiva de marcadores PENDIENTE_ y lista literal de campos de definicion de medida",
+    "fecha": "2026-09-05",
+    "alta_en_el_indice": "enmienda 33",
+    "nota_indice": "La enmienda se aplico en el cuerpo del fichero (estados.lista RETIRADA_EN_PROPUESTA, ficha_congelada.marcadores_pendientes.prohibicion_prospectiva, ficha_congelada.campos_de_definicion_de_medida y ficha_congelada.retirada_en_propuesta) pero no se anadio a este indice. Se da de alta ahora sin reescribir ninguna de esas clausulas. El titulo se deriva de ellas, no se inventa."
+   },
+   {
+    "n": 32,
+    "titulo": "hash de medida calculado y no almacenado, alcance real de la unicidad y declaracion de la retirada estrategica",
+    "fecha": "2026-09-05",
+    "alta_en_el_indice": "enmienda 33",
+    "nota_indice": "Mismo caso que la 31. Clausulas afectadas: ficha_congelada.hash_de_medida, ficha_congelada.retirada_en_propuesta.reproposicion.una_sola_vez.alcance_real y ficha_congelada.retirada_en_propuesta.retirada_estrategica."
+   },
+   {
+    "n": 33,
+    "titulo": "elegibilidad de EN_TEST para ejecucion, campos estructurados en la entrada de transicion y controles prometidos no ejecutados",
+    "fecha": "2026-09-06",
+    "motivo": "Al preparar la primera ejecucion real del lote 2026-Q3 se midio que el orden que la doctrina prescribe era inejecutable. La doctrina exige escribir la transicion a EN_TEST antes de ejecutar ningun gate, pero filtro.py solo admitia a ejecucion variables en estado PROPUESTA: escrita la transicion, el motor reportaba cero candidatas y terminaba sin ejecutar nada y sin abortar. Ademas, la ficha de ssr_capstables declara que el sha256 del snapshot se registra en la entrada de transicion, pero la lista cerrada de esa entrada no contenia ningun campo donde escribirlo.",
+    "origen_externo": "Cinco revisiones externas independientes el 2026-09-06. Unanimidad en dos puntos: no usar el campo motivo como contenedor de datos estructurados, y enmendar antes de ejecutar en lugar de elegir entre parches. Cuatro de cinco rechazaron ejecutar contra una copia previa del registro. Cuatro de cinco senalaron que fijar fecha_corte_bloques en una entrada de aclaracion es reinterpretacion mientras la doctrina lo asigne a la transicion.",
+    "naturaleza": "Solo anade. No reescribe ningun texto previo. No altera ningun gate, umbral, mascara, particion ni criterio estadistico. Una enmienda escrita antes del test que relajase cualquiera de esas cosas no seria una enmienda sino una propuesta nueva.",
+    "momento": "Encadenada antes de que exista ningun resultado del test de ssr_capstables. Escrita despues, no valdria nada.",
+    "partes": [
+     "1. Alta en el indice de las enmiendas 31 y 32, aplicadas en el cuerpo y ausentes de meta.enmiendas.",
+     "2. estados.elegibilidad_para_ejecucion: el motor admite PROPUESTA o EN_TEST sin gate_alcanzado, y aborta si termina sin ejecutar una variable que estaba en ese segundo caso.",
+     "3. integridad.resolucion_de_entradas.ficha_operativa: la ficha es la ultima entrada que no sea de tipo transicion_de_estado. El estado lo sigue fijando la ultima entrada.",
+     "4. Dos campos nuevos en la lista cerrada de la entrada de transicion, y prohibicion expresa de usar motivo como contenedor de datos.",
+     "5. Implementacion de dos controles que la doctrina afirmaba y el motor no ejecutaba: campos extra en una transicion, y coincidencia entre la fecha de corte derivada y la registrada. El primero se aplica de forma prospectiva y destapo un defecto preexistente en la entrada 19, que queda declarado y no se puede corregir."
+    ]
+   }
+  ],
+  "compatibilidad": {
+   "regla": "filtro.py declara una constante DOCTRINA_COMPATIBLE con el valor mayor.menor de version_esquema que sabe interpretar. Si no coincide con este archivo, aborta antes de leer nada mas.",
+   "granularidad": "mayor.menor. El tercer numero (parche) se ignora y queda reservado a correcciones sin efecto semantico: erratas, comentarios, reordenacion de claves.",
+   "traza": "filtro.py imprime el SHA-256 de v2.json en cada salida, junto a la declaracion_obligatoria. Cada informe queda anclado a un estado exacto de la doctrina.",
+   "cierre_del_hueco_de_parche": "La granularidad mayor.menor deja abierto quien decide que es un parche. Lo cierra la traza: un cambio semantico disfrazado de parche produce un SHA-256 distinto en el informe siguiente y queda visible.",
+   "consecuencia_asumida": "Toda enmienda que cambie mayor.menor obliga a tocar filtro.py. Es deliberado: fuerza a que codigo y doctrina no se separen en silencio.",
+   "no_es_politica_nueva": "meta.precedencia ya ordena a filtro.py abortar si discrepa de la doctrina. Esta enmienda solo hace esa orden verificable por maquina."
+  },
+  "entorno_de_ejecucion": {
+   "regla": "filtro.py solo se ejecuta en un entorno con persistencia en Git. Prohibida su ejecucion en entornos de disco efimero.",
+   "entorno_designado": "GitHub Actions, con commit de vuelta al repositorio.",
+   "streamlit": "El dashboard LEE registro.json desde el repositorio. Nunca escribe.",
+   "motivo": "En disco efimero, una entrada anadida se pierde en el siguiente deploy sin error visible."
   }
+ },
+ "motor": {
+  "identificador": "batch_prds",
+  "estado": "CONGELADO",
+  "origen_decision": "Decision 5 del cierre de diseno v2",
+  "nota": "No se sustituye ni se reparametriza el motor. Cualquier cambio de motor exige una version nueva de protocolo (v3) y no se aplica retroactivamente a variables ya testeadas."
+ },
+ "protocolo": {
+  "particion_datos": {
+   "metodo": "corte_proporcional_por_variable",
+   "bloque_1": {
+    "porcion": "primer 50% de la historia disponible de la variable",
+    "uso": "los 4 gates cualitativos de filtro.py",
+    "contaminado_por_seleccion": true
+   },
+   "bloque_2": {
+    "porcion": "50% restante",
+    "uso": "calculo del p-valor por permutacion con ventanas no solapadas",
+    "contaminado_por_seleccion": false,
+    "nota": "Es la unica estimacion limpia disponible en el momento del test. Por eso es la linea base de magnitud en la fase forward."
+   },
+   "minimo_por_bloque_anios": 3,
+   "si_no_alcanza_minimo": {
+    "estado_asignado": "PENDIENTE_REVISION",
+    "consume_presupuesto": false,
+    "entra_en_correccion_BY": false
+   },
+   "registro_obligatorio": "La fecha de corte concreta se registra en la entrada de cada experimento. No se recalcula despues."
+  },
+  "gates_cualitativos": {
+   "cantidad": 4,
+   "lista": [
+    "magnitud_en_tramos",
+    "anticipacion",
+    "contribucion_incremental_R2",
+    "coherencia_de_signo_en_tramos"
+   ],
+   "bloque_usado": "bloque_1",
+   "advertencia": "Los gates son seleccion no corregida y la correccion BY no los cubre. Esta es la razon exacta de la declaracion_obligatoria. Ademas su potencia es baja: ver potencia_medida.",
+   "parametros": {
+    "origen": "Recalibrados el 2026-09-04 contra ruido puro y contra senal real inyectada. Ya NO son los de filtro.py v1: los de v1 se habian calibrado contra la metrica continua y no describen la entrada binaria.",
+    "metodo_de_umbral": {
+     "enmienda": 22,
+     "nombre": "nulo_por_rotacion",
+     "regla": "El umbral de los gates 1 y 3 no es un numero congelado. Es el percentil congelado de la distribucion obtenida rotando circularmente la mascara de la propia variable frente al resto de series, manteniendo todo lo demas fijo.",
+     "percentil": 50,
+     "n_rotaciones": 300,
+     "semilla": 0,
+     "que_se_rota": "la mascara, no el retorno",
+     "justificacion_de_que_se_rota": "Rotar el retorno rompe tambien su alineacion con la base del gate 3 y contamina R2(base). Rotar la mascara preserva la relacion base-retorno y rompe solo la que se testea.",
+     "en_lenguaje_llano": "La variable debe superar lo que supera la mitad de las versiones barajadas de si misma.",
+     "ventaja": "No finge una ley universal, no exige definir observaciones efectivas para el umbral, se adapta sola a la longitud de la historia y a la velocidad de la mascara, y no depende de los supuestos sinteticos de la calibracion.",
+     "limitacion_declarada": "Con mascaras muy lentas, de racha media en torno a 90 dias, el nulo por rotacion es inestable entre realizaciones. Si la racha media de la mascara supera los 60 dias, filtro.py lo hace constar en el informe junto al umbral obtenido."
+    },
+    "magnitud_en_tramos": {
+     "gate": 1,
+     "enmiendas": [
+      18,
+      22,
+      23,
+      24,
+      25
+     ],
+     "vinculante": true,
+     "renombrado_desde": "estabilidad_entre_epocas",
+     "estadistico": "spearman(mascara, retorno_N) por tramo; rank-biserial",
+     "criterio": "|mediana de las correlaciones de los tramos| >= umbral",
+     "exige_signo": false,
+     "nota_signo": "El signo lo exige el gate 4 en exclusiva. Antes el gate 1 exigia ambas cosas y hacia inalcanzable al gate 4.",
+     "umbral": "nulo_por_rotacion, percentil 50",
+     "observaciones_efectivas_minimas_por_tramo": 12,
+     "derivacion_del_minimo": "floor(365 * minimo_por_bloque_anios / (n_tramos * N)) = floor(365*3/(3*30)) = 12",
+     "unidad_del_minimo": "dias con dato en el tramo divididos por N. NO dias con mascara activa.",
+     "por_que_no_dias_activos": "Con una mascara lenta, entre el 33% y el 42% de los tramos de 365 dias tienen menos de 30 dias activos. Filtrarlos haria inevaluable por construccion a una variable de regimen, que es el fallo que la enmienda 24 viene a corregir. Ademas el umbral se calibra sobre el nulo completo, incluidos los tramos ralos: anadir ese filtro cambiaria el nulo e invalidaria el umbral."
+    },
+    "anticipacion": {
+     "gate": 2,
+     "enmienda": 19,
+     "vinculante": false,
+     "ambito": "informe de lote unicamente",
+     "afecta_a_veredicto": false,
+     "estadistico": "|theta_fwd| frente a |theta_bwd|, ambos sobre la mascara",
+     "theta_fwd": "mediana(P(t+N)/P(t)-1 | mascara=1) - mediana(... | mascara=0)",
+     "theta_bwd": "mediana(P(t)/P(t-N)-1 | mascara=1) - mediana(... | mascara=0)",
+     "se_reporta": "el cociente |theta_fwd| / |theta_bwd| y su lectura en lenguaje llano",
+     "motivo_de_la_degradacion": "Potencia medida nula frente a variables de regimen: 51.4% de paso con senal real de theta=0.087 contra 53.8% con ruido puro. Cuando la mascara es persistente, la ventana hacia atras esta tan contaminada por el efecto como la ventana hacia adelante y la comparacion es un empate.",
+     "cuando_si_discrimina": "Con senal puramente anticipatoria desplazada 30 dias pasa el 75.6%. El gate distingue anticipacion de regimen, no senal de ruido.",
+     "sustituye_a": "el test de retencion de correlacion a 1-5 dias de v1, que con retorno a 30 dias solapado retenia ~97% de la correlacion por pura mecanica del solapamiento",
+     "desaparecen_de_la_doctrina": [
+      "desfases_evaluados",
+      "retencion_minima"
+     ]
+    },
+    "contribucion_incremental_R2": {
+     "gate": 3,
+     "enmiendas": [
+      18,
+      21,
+      22,
+      23
+     ],
+     "vinculante": true,
+     "regresor_nuevo": "la mascara binaria",
+     "justificacion_regresor": "Consenso de las cuatro revisiones externas. El gate debe medir la aportacion de la variable en la forma exacta en que el motor la usa.",
+     "base": {
+      "fija_para_siempre": true,
+      "no_crece_al_confirmarse_variables": true,
+      "series": {
+       "mayer": "P(t) / SMA200(t)",
+       "vol30": "desviacion tipica de los retornos diarios de los ultimos 30 dias",
+       "mom30": "P(t)/P(t-30) - 1"
+      },
+      "justificacion": "Con base creciente, un Delta-R2 del 2% en 2026 y otro en 2028 dejan de significar lo mismo, y una variable podria morir solo por el orden en que se descubrio. Inaceptable bajo unicidad_del_test.",
+      "aportacion_sobre_panel_vivo": "Se mide y se reporta como dato descriptivo del informe, igual que estimador_de_robustez. Nunca como criterio de admision."
+     },
+     "umbral": "nulo_por_rotacion, percentil 50",
+     "umbral_v1_retirado": {
+      "valor": 3.0,
+      "motivo": "No estaba medido. Sobre la mascara binaria dejaba pasar entre el 16% y el 21% del ruido segun la longitud del bloque_1; sobre la metrica continua dejaba pasar el 0.1%. El mismo numero significaba cosas opuestas segun la entrada."
+     },
+     "observaciones_efectivas_minimas": 36,
+     "derivacion_del_minimo": "floor(365 * minimo_por_bloque_anios / N) = floor(365*3/30) = 36",
+     "sustituye_a": "el minimo de 50 dias crudos, que con retornos solapados equivale a ~1.7 observaciones independientes"
+    },
+    "coherencia_de_signo_en_tramos": {
+     "gate": 4,
+     "enmiendas": [
+      18,
+      24,
+      25
+     ],
+     "vinculante": true,
+     "criterio": "signo identico de la correlacion en los 3 tramos del bloque_1",
+     "unico_gate_que_exige_signo": true,
+     "sin_parametro_libre": true,
+     "tasa_bajo_ruido_medida": 0.241,
+     "advertencia_obligatoria": "Tres tramos con signo identico ocurre por azar con probabilidad 1/4. Es un cribado, no evidencia de estabilidad."
+    },
+    "definicion_de_tramos": {
+     "enmienda": 24,
+     "valor": "tres sub-periodos de igual longitud dentro del bloque_1 de cada variable",
+     "estado": "FIJADA",
+     "bloqueo_activo": false,
+     "n_tramos": 3,
+     "renombrado_desde": "epocas",
+     "que_mide_realmente": "Persistencia temporal dentro del bloque_1. NO supervivencia a regimenes de mercado reales: los tramos son cortes por longitud, no por regimen.",
+     "por_que_no_mas_de_tres": "Con 3.8 anios y mascara al 20%, cinco tramos dejan alrededor de dos episodios independientes por tramo. Inservible.",
+     "descartado": "La lista fija de epocas de calendario de v1 (2011-2014, 2015-2017, 2018-2020, 2021-2023, 2024-2026), que chocaba con corte_proporcional_por_variable."
+    }
+   },
+   "cantidad_vinculantes": 3,
+   "lista_vinculantes": [
+    "magnitud_en_tramos",
+    "contribucion_incremental_R2",
+    "coherencia_de_signo_en_tramos"
+   ],
+   "lista_descriptivos": [
+    "anticipacion"
+   ],
+   "nota_numeracion": "La numeracion gate 1 a gate 4 se conserva pese a que el gate 2 deja de ser vinculante. Renumerar romperia la correspondencia con los estados DESCARTADA_GATE_n de la lista cerrada.",
+   "entrada": {
+    "enmienda": 18,
+    "regla": "Todos los gates operan sobre la MASCARA BINARIA congelada en la ficha, nunca sobre la metrica continua.",
+    "justificacion": "El motor decide con la mascara. Filtrar con el valor continuo cribaba por una hipotesis distinta de la que emite el veredicto.",
+    "nota_estadistica": "Spearman sobre variable binaria ES la correlacion rank-biserial, monotonamente equivalente a Cliff's delta. No cambia el estadistico, solo la entrada.",
+    "diagnostico_continuo": "El mismo calculo sobre la metrica continua se registra en el informe como diagnostico. No puede salvar ni condenar a ninguna variable."
+   },
+   "nota_lista": "Nombres alineados con gates_cualitativos.parametros por la enmienda 29. Los nombres anteriores (estabilidad_entre_epocas, anticipacion_no_contemporaneidad, coherencia_de_signo) quedan en renombrado_desde de cada bloque de parametros, solo como trazabilidad documental. No son alias resolubles por codigo."
+  },
+  "unicidad_del_test": {
+   "regla": "Una variable se testea una sola vez, en el trimestre en que entra.",
+   "re_test_permitido": false,
+   "excepciones": [],
+   "nota": "No hay mecanismo de reapertura. Una variable descartada queda descartada de forma permanente bajo este protocolo.",
+   "nota_retirada_en_propuesta": "RETIRADA_EN_PROPUESTA no es una excepcion a esta regla. Una variable retirada antes de EN_TEST no fue testeada, luego reproponerla no es un re-test. La lista excepciones permanece vacia."
+  },
+  "ventana_temporal": {
+   "regla": "La ventana de datos del test termina en la fecha_propuesta de la variable.",
+   "derivacion": "automatica",
+   "fuente": "campo fecha_propuesta de la entrada del registro",
+   "edicion_manual_permitida": false,
+   "comportamiento_filtro_py": "Si los datos cargados contienen observaciones posteriores a fecha_propuesta, filtro.py aborta la ejecucion. No trunca en silencio.",
+   "justificacion": "Si la fecha de fin de ventana se pudiera escribir a mano despues de mirar los datos, la regla no protegeria de nada."
+  },
+  "correccion_multiple": {
+   "metodo": "benjamini_yekutieli",
+   "q_nominal": 0.2,
+   "ambito": "dentro del lote trimestral",
+   "m_efectivo": {
+    "formula": "m = max(3, numero de p-valores efectivamente calculados en el lote)",
+    "cuentan": [
+     "variables que llegaron a producir p-valor en el bloque 2"
+    ],
+    "no_cuentan": [
+     "variables descartadas en cualquiera de los 4 gates",
+     "variables en PENDIENTE_REVISION por historia insuficiente"
+    ],
+    "justificacion_suelo_3": "Decision 6: no hay minimo de lote real. El suelo de 3 existe solo para que la correccion BY no sea trivial en lotes muy pequenos."
+   }
+  },
+  "test_de_permutacion": {
+   "origen": "Migrado literalmente desde paso4_significancia de filtro.py v1.",
+   "bloque_usado": "bloque_2",
+   "metodo": "permutacion por bloques contiguos",
+   "n_permutaciones": 2000,
+   "semilla": 0,
+   "observaciones_enmascaradas_minimas": 20,
+   "episodios_independientes_minimos": 8,
+   "dias_episodio": {
+    "regla": "dias_episodio = max(21, N)",
+    "valor_bajo_N_30": 30,
+    "enmienda": 7,
+    "justificacion": "Con N=30 y separacion de 21 dias, dos episodios contados como independientes a 22 dias de distancia comparten 8 dias de retorno futuro. La separacion no puede ser menor que el horizonte del retorno.",
+    "efecto_conocido": "Reduce el recuento de episodios y endurece el test. Se acepta el endurecimiento."
+   },
+   "si_no_alcanza_minimos": {
+    "estado_asignado": "PENDIENTE_REVISION",
+    "consume_presupuesto": false,
+    "entra_en_correccion_BY": false
+   },
+   "capa_de_interpretacion": {
+    "fuera_del_motor": true,
+    "justificacion_frontera": "El motor congelado genera la distribucion nula y el estadistico observado. Convertir ese par en un p-valor depende de la hipotesis pre-registrada, y esa conversion vive fuera del motor. Consenso de tres revisiones externas independientes.",
+    "regla": "El p-valor se calcula segun el signo_esperado declarado en la ficha, nunca segun el signo observado.",
+    "formulas": {
+     "positivo": "p = media(difs >= real)",
+     "negativo": "p = media(difs <= real)",
+     "bilateral": "p = media(abs(difs) >= abs(real))"
+    },
+    "prohibicion_duplicacion": "Prohibido calcular el bilateral como 2 x cola menor.",
+    "evidencia_de_calibracion": {
+     "metodo": "Simulacion bajo H0 con datos sinteticos: 400 repeticiones, mascara independiente de los retornos, retornos a 30 dias solapados con colas gruesas, esquema de remuestreo identico al del motor.",
+     "tasa_error_tipo_I_medida_a_nominal_0.05": {
+      "cola_segun_signo_observado_v1": 0.095,
+      "dos_por_cola_menor": 0.068,
+      "valor_absoluto": 0.043
+     },
+     "conclusion": "Solo la formula de valor absoluto queda calibrada. La convencion de v1 duplica el error nominal. La duplicacion de la cola menor lo deja un 36 por ciento por encima del nominal.",
+     "naturaleza_de_la_evidencia": "Simulacion sobre datos sinteticos. Es evidencia sobre el esquema de remuestreo, no sobre ninguna serie real."
+    },
+    "orden": "La correccion se aplica ANTES de la correccion Benjamini-Yekutieli del lote. BY recibe el p-valor que representa la hipotesis realmente registrada."
+   }
+  }
+ },
+ "presupuesto": {
+  "propuestas_maximas_por_trimestre": 12,
+  "familias_nuevas_maximas_por_trimestre": 2,
+  "minimo_de_lote": null,
+  "nota_familias": "Las familias ya presentes en catalogo_familias no consumen la cuota de familias nuevas. La cuota se aplica solo al alta de familias que no existian.",
+  "nota_consumo": "Una propuesta consume presupuesto en el momento en que se le asigna estado EN_TEST. Las que caen en PENDIENTE_REVISION antes de testearse no lo consumen.",
+  "derivacion": {
+   "regla": "filtro.py NO lee presupuesto_por_trimestre como fuente de verdad. Deriva el consumo contando entradas del registro y aborta si el valor derivado no coincide con el almacenado.",
+   "motivo": "presupuesto_por_trimestre vive fuera del array entradas, que es lo unico que entra en la cadena de hashes. Es editable sin romper la cadena.",
+   "formula": "consumo(lote) = numero de ids DISTINTOS con ese lote cuya entrada operativa tenga un estado de la lista estados_que_cuentan_como_consumido. El tipo_entrada NO interviene en el conteo: se cuenta el id, no la entrada.",
+   "estados_que_cuentan_como_consumido": [
+    "EN_TEST",
+    "DESCARTADA_GATE_1",
+    "DESCARTADA_GATE_2",
+    "DESCARTADA_GATE_3",
+    "DESCARTADA_GATE_4",
+    "RECHAZADA_PVALOR",
+    "EN_CONFIRMACION",
+    "CONFIRMADA",
+    "RECHAZADA_FORWARD"
+   ],
+   "tipos_de_entrada_que_no_consumen": [
+    "Campo retirado por la enmienda 27: el tipo de entrada ya no interviene en el conteo, solo el estado de la entrada operativa."
+   ],
+   "lotes_exentos": [
+    "v1-historico"
+   ],
+   "motivo_exclusiones": "Una aclaracion, un alta retroactiva o una ficha congelada no son un test nuevo: completan o anotan una propuesta ya registrada. Sin esta exclusion, nasdaq_aclaracion_panel (lote 2026-Q3, estado RECHAZADA_PVALOR) contaria como presupuesto consumido y no lo es.",
+   "comportamiento_si_discrepan": "filtro.py aborta y reporta ambos valores.",
+   "verificacion_2026Q3": "Con la formula de la enmienda 27 y el orden de resolucion de la enmienda 29, el consumo derivado de 2026-Q3 es 0: la entrada operativa de SSR esta en PROPUESTA, y nasdaq resuelve al lote v1-historico, que es exento. Coincide con el contador almacenado. Verificado por script el 2026-09-04.",
+   "enmienda_correctora": 27,
+   "problema_corregido": "La formula anterior contaba entradas 'de tipo propuesta' que alcanzasen EN_TEST. La entrada operativa de SSR es de tipo ficha_congelada, por lo que al pasar SSR a EN_TEST el consumo derivado habria seguido siendo 0 mientras el contador almacenado decia 1, y filtro.py habria abortado.",
+   "orden_de_resolucion": "El conteo opera sobre ids RESUELTOS, no sobre entradas crudas, y toma el lote segun integridad.resolucion_de_entradas.lote. Ver el orden de los cuatro pasos alli. Sin ese orden, el consumo derivado de 2026-Q3 da 1 en lugar de 0."
+  },
+  "autoridad": {
+   "enmienda": 29,
+   "regla": "Los maximos (propuestas_maximas_por_trimestre y familias_nuevas_maximas_por_trimestre) viven exclusivamente en v2.json. Se retiran de registro.json.",
+   "motivo": "presupuesto_por_trimestre vive fuera del array entradas, luego fuera de la cadena de hashes. Un valor duplicado ahi no es un snapshot forense: es un segundo parametro editable sin romper nada. Conservarlo como 'prueba historica' era falso, porque no esta firmado.",
+   "que_permanece_en_registro_json": [
+    "propuestas_usadas",
+    "familias_nuevas_usadas"
+   ],
+   "por_que_permanecen": "presupuesto.derivacion los necesita: filtro.py deriva el consumo del array entradas y aborta si no coincide con el contador almacenado. Ese contraste es el mecanismo de la enmienda 10 y se conserva intacto.",
+   "comportamiento_filtro_py": "Si registro.json contiene todavia un campo de maximos, filtro.py aborta: indica que la migracion de la enmienda 29 no se aplico."
+  }
+ },
+ "catalogo_familias": {
+  "cerrado": false,
+  "ampliable": "maximo 2 familias nuevas por trimestre",
+  "familias": [
+   {
+    "id": "valoracion_onchain",
+    "descripcion": "Metricas de valoracion derivadas de datos de cadena",
+    "alta": "2026-09-03"
+   },
+   {
+    "id": "flujos_derivados",
+    "descripcion": "Flujos de capital y posicionamiento en derivados",
+    "alta": "2026-09-03"
+   },
+   {
+    "id": "macro",
+    "descripcion": "Variables macroeconomicas y de mercados tradicionales",
+    "alta": "2026-09-03"
+   },
+   {
+    "id": "red_mineria",
+    "descripcion": "Salud y economia de la red y de la mineria",
+    "alta": "2026-09-03"
+   },
+   {
+    "id": "sentimiento",
+    "descripcion": "Indicadores de sentimiento y encuesta",
+    "alta": "2026-09-03"
+   },
+   {
+    "id": "ciclo_temporal",
+    "descripcion": "Estructura temporal y de ciclo",
+    "alta": "2026-09-03"
+   },
+   {
+    "id": "liquidez_stablecoins",
+    "descripcion": "Liquidez disponible en stablecoins y ratios asociados",
+    "alta": "2026-09-03"
+   }
+  ]
+ },
+ "confirmacion_forward": {
+  "_modifica_decision_original": true,
+  "_decision_original_texto": "Confirmacion forward: 5 trimestres (antes 4), signo estable + magnitud >=50%.",
+  "_motivo_modificacion": "La evaluacion trimestre a trimestre con descarte por cualquier fallo produce una tasa de falso descarte de entre el 41% y el 94% sobre senales reales pero ruidosas, segun el ruido por trimestre. Tres revisiones externas independientes coincidieron en rechazarla. La evaluacion agregada mantiene la exigencia sobre la senal y elimina el castigo al ruido.",
+  "_fecha_modificacion": "2026-09-03",
+  "ventana": {
+   "trimestres": 5,
+   "fija": true,
+   "extension_permitida": false,
+   "descarte_anticipado_permitido": false,
+   "nota": "No hay contador, no hay trimestres 'validos' acumulados, no hay limite de 8. Una variable en confirmacion completa siempre los 5 trimestres antes de recibir veredicto."
+  },
+  "estimacion": {
+   "metodo": "efecto agregado unico sobre los 5 trimestres conjuntos",
+   "simbolo": "theta_F",
+   "evaluacion_por_trimestre": false,
+   "nota": "Los trimestres individuales se registran para auditoria, pero no se juzgan uno a uno. Un trimestre aislado de BTC es una observacion demasiado ruidosa para decidir nada."
+  },
+  "criterios_de_confirmacion": {
+   "todos_obligatorios": true,
+   "criterios": [
+    {
+     "id": "signo_agregado",
+     "regla": "signo(theta_F) == signo(theta_B2)"
+    },
+    {
+     "id": "magnitud",
+     "regla": "abs(theta_F) >= max(0.5 * abs(theta_B2), M)",
+     "linea_base": "theta_B2, la estimacion del bloque 2",
+     "linea_base_prohibida": [
+      "estimacion del bloque 1",
+      "estimacion sobre la ventana completa del test",
+      "cualquier promedio ponderado que de peso al bloque 1"
+     ],
+     "justificacion_linea_base": "El bloque 1 participo en la seleccion mediante los 4 gates, por lo que su magnitud esta inflada. La ventana completa hereda ese sesgo. El bloque 2 es la unica porcion no contaminada."
+    },
+    {
+     "id": "consistencia_minima",
+     "regla": "al menos 3 de los 5 trimestres presentan el signo esperado",
+     "justificacion": "Impide que un unico trimestre extremo arrastre el agregado y disfrace una relacion inexistente. Es la unica salvaguarda que mira los trimestres por separado, y esta prefijada."
+    }
+   ]
+  },
+  "umbral_absoluto_M": {
+   "valor": 0.03,
+   "estado": "FIJADO",
+   "unidad_theta": "fraccion de retorno simple a 30 dias",
+   "criterio_de_fijacion": "M es el efecto mas pequeno capaz de cambiar una casilla visible del dashboard. Una senal real cuyo efecto no mueve ninguna decision del sistema es, para este sistema, indistinguible de ruido.",
+   "momento_de_fijacion": "en el momento de la propuesta de la variable, antes de que existan datos forward",
+   "inmutable_tras_fijacion": true,
+   "bloqueo": {
+    "activo": false,
+    "regla": "Levantado al fijarse el valor el 2026-09-03.",
+    "justificacion_historica": "El criterio relativo del 50% por si solo es insuficiente: si theta_B2 salio pequeno por ruido, el liston resultante es trivial; si salio grande por ruido, el 50% se supera pese a una regresion severa a la media."
+   },
+   "fecha_fijacion": "2026-09-03",
+   "derivacion": {
+    "casilla_ancla": "bloque 07, rango esperado a 30 dias",
+    "metodo": "M = menor salto de estado distinto de cero en la tabla RANGOS_POR_CUARTIL de rango.py",
+    "calculo": "amplitud p50 pasa de 0.22 (cuartil 'baja') a 0.25 (cuartil 'alta'). Salto = 0.03.",
+    "descartado_bloque_02": "Los cortes 85/65/35/15 del percentil de Mayer los declara arbitrarios el propio codigo, y estan en unidades de percentil-Mayer, no de retorno.",
+    "descartado_dimensionamiento": "Su salto de 0.015 es aguas abajo del bloque 07: hereda los mismos cuartiles con redondeo mas fino, y usarlo contaria la misma granularidad dos veces.",
+    "descartado_resolucion_de_pixel": "Usar el ultimo digito mostrado produciria un M trivial. El criterio es el cambio de ESTADO visible, no la resolucion de impresion."
+   },
+   "alcance": {
+    "valor_por_defecto_del_regimen": true,
+    "override_por_variable": "Una entrada puede fijar un M distinto solo si documenta en su ficha la casilla y la derivacion concretas, por el mismo metodo, en el momento de la propuesta.",
+    "nota": "La granularidad del dashboard es una propiedad del dashboard, no de la variable, por lo que el valor comun es el caso normal."
+   }
+  },
+  "separacion_entre_trimestres": {
+   "enmienda": 4,
+   "problema": "Una senal emitida en los ultimos N dias de un trimestre tiene su retorno a N dias dentro del trimestre siguiente. Los cinco trimestres dejan de ser observaciones independientes justo en los bordes.",
+   "regla": "Las senales emitidas dentro de los ultimos N dias naturales de cada trimestre no se asignan a ese trimestre ni al siguiente: se excluyen del computo de consistencia_minima.",
+   "efecto_sobre_theta_F": "El efecto agregado theta_F se calcula sobre las senales retenidas, no sobre las excluidas.",
+   "efecto_conocido": "Reduce el numero de senales utilizables en la ventana forward. Se acepta."
+  }
+ },
+ "estados": {
+  "cerrado": true,
+  "comportamiento_ante_estado_desconocido": "filtro.py aborta. No se admiten etiquetas fuera de esta lista.",
+  "lista": [
+   {
+    "id": "PROPUESTA",
+    "descripcion": "Registrada en el lote, aun no testeada"
+   },
+   {
+    "id": "EN_TEST",
+    "descripcion": "Consumiendo presupuesto, atravesando gates"
+   },
+   {
+    "id": "DESCARTADA_GATE_1",
+    "descripcion": "Fallo el gate 1: magnitud en tramos",
+    "nota_enmienda_29": "Descripcion actualizada. Las epocas de calendario desaparecieron con la enmienda 24 y el gate 1 dejo de exigir signo con la enmienda 25. El identificador del estado no cambia: el registro es append-only."
+   },
+   {
+    "id": "DESCARTADA_GATE_2",
+    "descripcion": "Fallo anticipacion: efecto contemporaneo, no anticipatorio",
+    "emision_permitida": false,
+    "retirado_por_enmienda": 19,
+    "nota": "El gate 2 deja de ser vinculante, por lo que este estado ya no puede emitirse. Se conserva en la lista cerrada porque el registro es append-only y presupuesto.derivacion lo referencia. filtro.py aborta si lo emite."
+   },
+   {
+    "id": "DESCARTADA_GATE_3",
+    "descripcion": "Fallo contribucion incremental de R2"
+   },
+   {
+    "id": "DESCARTADA_GATE_4",
+    "descripcion": "Fallo coherencia de signo",
+    "nota": "Alcanzable desde la enmienda 25. Antes era inalcanzable porque el gate 1 ya exigia signo."
+   },
+   {
+    "id": "PENDIENTE_REVISION",
+    "descripcion": "Historia insuficiente. No consume presupuesto ni entra en BY"
+   },
+   {
+    "id": "RECHAZADA_PVALOR",
+    "descripcion": "No supera el umbral BY del lote"
+   },
+   {
+    "id": "EN_CONFIRMACION",
+    "descripcion": "Superado el cribado, en ventana forward de 5 trimestres"
+   },
+   {
+    "id": "CONFIRMADA",
+    "descripcion": "Supera los 3 criterios de confirmacion forward"
+   },
+   {
+    "id": "RECHAZADA_FORWARD",
+    "descripcion": "No supera alguno de los 3 criterios forward"
+   },
+   {
+    "id": "SELLADA_V1",
+    "descripcion": "Hallazgo heredado de v1. No se re-testea ni se reabre"
+   },
+   {
+    "id": "DESCARTADA_PREVIA",
+    "descripcion": "Descartada antes de entrar en test, por decision documentada"
+   },
+   {
+    "id": "NULO_V1",
+    "descripcion": "Experimento formal ejecutado bajo v1 con protocolo congelado previo, sin candidata cualificada. El test no llego a abrirse.",
+    "alta": "2026-09-03",
+    "enmienda": 9,
+    "nota": "Excepcion documentada a estados.cerrado. Se anade antes de ejecutar ningun lote v2."
+   },
+   {
+    "id": "RETIRADA_EN_PROPUESTA",
+    "descripcion": "Variable retirada antes de testearse, por decision documentada. No es un resultado de test.",
+    "alta": "2026-09-05",
+    "enmienda": 31,
+    "terminal": true,
+    "consume_presupuesto": false,
+    "admisible_a_EN_TEST": false,
+    "declaracion_obligatoria": "Este estado NO expresa ningun juicio sobre la variable. No es evidencia de ausencia de efecto, no es un resultado de test y no puede citarse como tal en ningun informe. No abre ninguna excepcion a protocolo.unicidad_del_test: ese protocolo gobierna tests ejecutados, y aqui no se ejecuto ninguno.",
+    "nota_excepcion_a_estados_cerrado": "Segunda excepcion documentada a estados.cerrado, tras NULO_V1 (enmienda 9). Se anade antes de ejecutar ningun lote v2."
+   }
+  ],
+  "mapeo_salida_filtro_py": {
+   "enmienda": 8,
+   "problema": "filtro.py v1 emitia PASA, RECHAZADA y PROVISIONAL, etiquetas ausentes de la lista cerrada. Bajo la regla de estado desconocido, el codigo abortaria ante su propia salida.",
+   "regla": "filtro.py no emite etiquetas propias. Traduce su resultado interno a la lista cerrada antes de escribir nada en el registro.",
+   "tabla": {
+    "PASA": "EN_CONFIRMACION (solo si supera ademas el umbral BY del lote; en caso contrario RECHAZADA_PVALOR)",
+    "PROVISIONAL": "PENDIENTE_REVISION",
+    "RECHAZADA_paso_1": "DESCARTADA_GATE_1",
+    "RECHAZADA_paso_3": "DESCARTADA_GATE_3",
+    "RECHAZADA_coherencia_signo": "DESCARTADA_GATE_4"
+   },
+   "fila_retirada_enmienda_29": {
+    "fila": "RECHAZADA_paso_2 -> DESCARTADA_GATE_2",
+    "motivo": "Contradecia a la enmienda 19, que retira el estado DESCARTADA_GATE_2 y ordena a filtro.py abortar si lo emite. El gate 2 no es vinculante: no existe ninguna salida que deba mapearse a ese estado.",
+    "el_estado_no_se_borra": "DESCARTADA_GATE_2 permanece en estados.lista con emision_permitida false. Lo referencia presupuesto.derivacion y el registro es append-only."
+   },
+   "nota_claves": "Las claves de la tabla son etiquetas internas de filtro.py, no estados del protocolo. Solo los valores pertenecen a la lista cerrada."
+  },
+  "elegibilidad_para_ejecucion": {
+   "enmienda": 33,
+   "regla": "El motor admite a ejecucion de gates una variable cuyo estado sea PROPUESTA, o EN_TEST con gate_alcanzado ausente o nulo. El segundo caso es exactamente la variable cuya entrada de transicion ya esta escrita y cuyo test todavia no se ha ejecutado.",
+   "motivo": "integridad.resolucion_de_entradas.inmutabilidad.fecha_corte_bloques exige escribir la transicion antes de ejecutar ningun gate. Con la regla anterior de elegibilidad ese orden era inejecutable.",
+   "comportamiento_si_no_se_ejecuta": "Si un lote contiene una variable en EN_TEST sin gate_alcanzado y el motor termina sin haberla ejecutado, aborta. Un fallo de gobernanza que termina en silencio es peor que uno que bloquea: puede confundirse con una ejecucion correcta sin senal.",
+   "no_relaja_nada": "Esta clausula no toca ningun gate, umbral, mascara, particion ni criterio estadistico. Solo hace ejecutable el orden que la doctrina ya prescribia.",
+   "presupuesto": "El consumo sigue rigiendose por presupuesto.nota_consumo: se consume al asignar EN_TEST, es decir al escribir la transicion, que ahora es anterior a la ejecucion. Cierra de paso la via de ejecutar sin consumir cuota."
+  }
+ },
+ "sellados": [
+  {
+   "variable": "halving_ciclo",
+   "familia": "ciclo_temporal",
+   "estado": "SELLADA_V1",
+   "hallazgo": "Retornos negativos en la ventana 18-24 meses post-halving. No es la narrativa de rally habitualmente citada, sino la contraria.",
+   "p_valor_rango_v1": "0.014 - 0.049",
+   "re_test_permitido": false,
+   "nota_de_sesgo": "Este hallazgo se descubrio bajo las reglas de v1, que tenian sesgo de seleccion conocido y no corregido. Se conserva por su valor operativo y por trazabilidad historica, no como evidencia validada bajo el protocolo v2. No se somete al protocolo v2 ni se re-testea: hacerlo violaria la regla de unicidad del test.",
+   "modulo": "halving.py",
+   "comportamiento": "Ejecuta en silencio. Solo emerge en la interfaz cuando la fecha actual se aproxima a la ventana de riesgo identificada."
+  }
+ ],
+ "integridad": {
+  "metodo": "cadena_de_hashes",
+  "algoritmo": "sha256",
+  "ambito": "registro.json",
+  "construccion": "Cada entrada incluye hash_anterior. El hash de una entrada se calcula sobre su serializacion JSON canonica (claves ordenadas, separadores compactos, UTF-8) excluyendo su propio campo hash.",
+  "genesis": "0000000000000000000000000000000000000000000000000000000000000000",
+  "verificacion": "filtro.py recorre la cadena al arrancar. Si algun hash no coincide, aborta y no ejecuta ningun lote.",
+  "append_only": true,
+  "nota": "Git conserva el historial. La cadena de hashes hace visible una edicion silenciosa de una entrada pasada, que un diff aislado podria pasar por alto.",
+  "anti_truncamiento": {
+   "problema": "Una cadena truncada por el final sigue verificando. El hash encadena hacia atras, no hacia adelante: nada dentro del propio archivo sabe cuantas entradas deberia haber.",
+   "mecanismo": "En cada push, un GitHub Action compara registro.json contra su version en el commit anterior y verifica que la nueva es una extension: mismo prefijo de hashes, cero entradas eliminadas.",
+   "implementacion": "cadena.es_extension(viejo, nuevo)",
+   "comportamiento_si_falla": "El Action falla y bloquea el merge. No es responsabilidad de filtro.py: filtro.py solo ve un archivo, no su historia.",
+   "limitacion_declarada": "Este mecanismo depende de Git. Un borrado del historial de Git completo no es detectable desde dentro del repositorio."
+  },
+  "resolucion_de_entradas": {
+   "regla": "Cuando varias entradas comparten id, la operativa es la de mayor indice en la cadena. Las anteriores se conservan como historial y no se evaluan.",
+   "validacion_de_ficha": "Los campos obligatorios de ficha_congelada se exigen unicamente a la entrada operativa. Una entrada historica incompleta no hace abortar a filtro.py.",
+   "inmutabilidad": {
+    "regla": "La FICHA de una variable solo puede sustituirse mientras la variable este en estado PROPUESTA. En cuanto alcanza EN_TEST, la ficha queda inmutable. Las entradas posteriores con el mismo id solo pueden ser de tipo transicion_de_estado o aclaracion, y filtro.py aborta si alguna de ellas modifica un campo de la ficha.",
+    "motivo": "Sin esta clausula, 'gana la ultima' destruye el sentido de congelar la ficha: bastaria anadir una entrada nueva despues de ver el resultado.",
+    "coste_asumido": "Un error semantico en una ficha descubierto despues de EN_TEST no se puede corregir. Como unicidad_del_test no admite excepciones, esa variable queda perdida. Se acepta: la alternativa abre la puerta a corregir fichas tras ver resultados.",
+    "enmienda_correctora": 27,
+    "problema_corregido": "La redaccion anterior hacia abortar a filtro.py ante TODA entrada posterior a EN_TEST con el mismo id. Como cada transicion de estado exige una entrada nueva con el mismo id, ningun estado posterior a EN_TEST podia registrarse jamas: DESCARTADA_GATE_n, RECHAZADA_PVALOR, EN_CONFIRMACION, CONFIRMADA y RECHAZADA_FORWARD eran inalcanzables, pese a que presupuesto.derivacion los espera. Contradiccion interna entre integridad y presupuesto.",
+    "fecha_corte_bloques": "Se escribe en la entrada de transicion a EN_TEST, antes de ejecutar ningun gate. Es el unico campo de particion que se fija en ese momento y no puede reescribirse despues.",
+    "fecha_corte_bloques_control": {
+     "enmienda": 33,
+     "regla": "filtro.py deriva la particion de los datos y de sus propios parametros. Debe comparar la fecha de corte que deriva con la registrada en la entrada de transicion y abortar si difieren.",
+     "motivo": "El campo estaba escrito en el registro y no lo leia nadie. Un campo de precompromiso que ningun control consume es decorativo: podria divergir del valor realmente usado sin que nada lo detectase.",
+     "no_invierte_la_autoridad": "El valor registrado no sustituye a la derivacion. El motor sigue derivando la particion; el campo actua como comprobacion de que lo derivado coincide con lo comprometido de antemano."
+    }
+   },
+   "tipo_entrada": {
+    "cerrado": true,
+    "valores": [
+     "propuesta",
+     "ficha_congelada",
+     "aclaracion",
+     "alta_retroactiva",
+     "transicion_de_estado"
+    ],
+    "ausente_equivale_a": "propuesta",
+    "nota_retrocompatibilidad": "Las entradas 1 a 12 no llevan tipo_entrada. Se interpretan como propuesta. No se editan: el registro es append-only.",
+    "comportamiento_ante_valor_desconocido": "filtro.py aborta, igual que con un estado fuera de la lista cerrada.",
+    "alta_transicion_de_estado": {
+     "enmienda": 27,
+     "descripcion": "Entrada que solo cambia el estado de una variable ya registrada. Lleva el MISMO id, el estado nuevo, la fecha, y ningun otro campo sustantivo.",
+     "campos_permitidos": [
+      "id",
+      "tipo_entrada",
+      "estado",
+      "fecha_registro",
+      "gate_alcanzado",
+      "fecha_corte_bloques",
+      "sha256_snapshot_metrica",
+      "declaraciones_de_ejecucion",
+      "motivo",
+      "hash_anterior",
+      "hash"
+     ],
+     "prohibicion": "No puede modificar ningun campo de la ficha congelada. Si una entrada de este tipo incluye cualquier otro campo, filtro.py aborta.",
+     "ampliacion_enmienda_33": {
+      "campos_anadidos": [
+       "sha256_snapshot_metrica",
+       "declaraciones_de_ejecucion"
+      ],
+      "motivo": "La ficha de ssr_capstables declara que el sha256 del snapshot se registra en la entrada de transicion, pero no habia campo donde escribirlo. La unica alternativa era esconderlo dentro de motivo.",
+      "prohibicion_expresa_del_campo_motivo": "motivo es texto libre para explicar una decision. Queda prohibido usarlo como contenedor de datos estructurados: hashes, fechas, listas, tablas o declaraciones que otro campo deberia albergar. Si un dato necesita quedar registrado y no tiene campo, se amplia la lista cerrada por enmienda. Esconderlo en un campo de texto preserva la forma de la lista y vacia su funcion, que es que una entrada sea verificable por maquina y no por lectura humana.",
+      "declaraciones_de_ejecucion": {
+       "naturaleza": "Objeto documental. Recoge lo que hubo que decidir o medir para poder ejecutar, y que no pertenece a la definicion de la medida.",
+       "no_es_campo_de_medida": "No figura en ficha_congelada.campos_de_definicion_de_medida.lista, no participa en hash_de_medida y no condiciona ninguna transicion de estado.",
+       "prohibicion": "No puede contener ninguna clave que coincida con un campo de la ficha congelada. No es una via para redefinir la medida ni para anadirle nada."
+      }
+     },
+     "control_de_campos_implementado": {
+      "enmienda": 33,
+      "regla": "filtro.py comprueba la lista cerrada en toda entrada de tipo transicion_de_estado y aborta como defecto estructural si aparece cualquier campo fuera de ella.",
+      "nota": "Hasta esta enmienda la doctrina afirmaba este control y el motor no lo ejecutaba. La ausencia de comprobacion en el codigo nunca autorizo a omitir el requisito doctrinal, pero tampoco lo garantizaba.",
+      "aplicacion_prospectiva": {
+       "regla": "El control bloquea solo las entradas de transicion escritas a partir de esta enmienda. El registro tenia 21 entradas cuando se escribio; las entradas 1 a 21 quedan fuera del bloqueo y se reportan como incidencia en cada ejecucion.",
+       "entradas_previas_a_la_enmienda": 21,
+       "motivo": "El registro es append-only: una entrada anterior no se puede corregir. Aplicar el control hacia atras dejaria el registro permanentemente inejecutable por un defecto que nadie puede reparar. Es el mismo criterio de ficha_congelada.marcadores_pendientes.prohibicion_prospectiva.",
+       "defecto_preexistente_declarado": {
+        "entrada": 19,
+        "id": "stablecoin_supply_ratio",
+        "campo_fuera_de_la_lista": "declaracion",
+        "hallazgo": "Detectado por el propio control nada mas implementarlo, el 2026-09-06. Nadie lo habia visto porque nadie lo comprobaba.",
+        "alcance": "Es la retirada en propuesta de la entrada 18. Su contenido es documental: no define ninguna medida, no participa en hash_de_medida y no condiciona ningun test. El defecto es de forma, no de fondo.",
+        "consecuencia": "Queda declarado aqui y visible en cada ejecucion. No se corrige porque no se puede corregir."
+       }
+      }
+     }
+    }
+   },
+   "convencion_elegida": "Mismo id, gana la ultima. Una aclaracion sobre una variable lleva el id de esa variable, nunca un id propio, para que sea descubrible al resolver el id.",
+   "excepciones_documentadas": {
+    "enmienda": 28,
+    "regla": "Las entradas 13 (nasdaq_aclaracion_panel) y 17 (halving_ciclo_aclaracion_pvalor) usan id propio con referencia_entrada_anterior. Son excepciones historicas cerradas: el registro es append-only y no se editan.",
+    "consecuencia_operativa": "Al resolver los ids 'nasdaq' y 'halving_ciclo', filtro.py debe cargar ademas toda entrada cuyo campo referencia_entrada_anterior apunte a ellos, y aplicar sus regla_derivada.",
+    "prohibicion_futura": "Ninguna aclaracion nueva puede usar id propio. filtro.py aborta si aparece una fuera de esas dos."
+   },
+   "lote": {
+    "enmienda": 29,
+    "regla": "lote es una propiedad de la VARIABLE, no de la entrada. Lo fija la PRIMERA entrada de un id y ninguna entrada posterior puede cambiarlo.",
+    "comportamiento_ante_discrepancia": "Si una entrada posterior declara un lote distinto, filtro.py IGNORA ese valor y hace constar la incoherencia en el informe, nombrando la entrada. No aborta: el registro es append-only y estas entradas no se pueden editar.",
+    "relacion_con_gana_la_ultima": "No la contradice. La doctrina ya distingue entre lo que transiciona y lo que queda fijado: el estado gana la ultima, la ficha es inmutable. lote pertenece al segundo grupo y hasta ahora no estaba dicho.",
+    "motivo": "Detectado durante la migracion de la enmienda 29. La entrada 13 (nasdaq_aclaracion_panel) archivo una aclaracion sobre una variable de v1 bajo el lote 2026-Q3, mientras que la entrada 17 (halving_ciclo_aclaracion_pvalor), misma operacion, uso correctamente v1-historico. Dos convenciones distintas para el mismo acto. Al resolver ids, la entrada 13 ganaba como operativa de 'nasdaq' y arrastraba su lote equivocado, lo que hacia que nasdaq (RECHAZADA_PVALOR) contase como presupuesto consumido de 2026-Q3.",
+    "agujero_cerrado": "Sin esta regla, una entrada posterior puede mover cualquier variable de trimestre a posteriori, y con ella su consumo de presupuesto. El caso de la entrada 13 es el sintoma; el agujero es general.",
+    "descartado": "Excluir del conteo los ids cuyas entradas sean aclaraciones con referencia_entrada_anterior a un id distinto. Rechazado: infiere una categoria semantica ('esto no es una variable') de la forma documental de dos entradas, que es el mismo error que la enmienda 29 rechaza en el caso de renombrado_desde. Ademas habria ocultado la incoherencia de la entrada 13 en vez de dejarla visible, y no habria cerrado el agujero general.",
+    "orden_de_resolucion": "1) resolver ids (enmienda 28: las aclaraciones con id propio se pliegan sobre el id referenciado); 2) fijar lote por la primera entrada de cada id resuelto; 3) fijar estado por la ultima; 4) contar presupuesto."
+   },
+   "ficha_operativa": {
+    "enmienda": 33,
+    "regla": "La ficha operativa de una variable es la ultima entrada de su id que NO sea de tipo transicion_de_estado. El estado lo sigue fijando la ultima entrada, sea del tipo que sea.",
+    "motivo": "El motor tomaba la ultima entrada como ficha. Escrita una transicion a EN_TEST, que por su lista cerrada no lleva ningun campo de ficha, la variable se quedaba sin mascara, sin horizonte y sin fecha de fin de ventana. La doctrina ya distinguia las dos cosas: el estado gana la ultima, la ficha es inmutable.",
+    "alcance": "No cambia cual es la ficha en ninguna variable ya registrada: a fecha de esta enmienda no existe ninguna entrada de tipo transicion_de_estado en el registro.",
+    "no_debilita_la_inmutabilidad": "Sigue vigente que la ficha solo puede sustituirse en estado PROPUESTA y que queda inmutable al alcanzar EN_TEST. Esta clausula dice cual es la ficha, no permite cambiarla."
+   }
+  },
+  "modulo_de_escritura": {
+   "unico": "cadena.py",
+   "operaciones_permitidas": [
+    "verificar",
+    "anadir",
+    "es_extension"
+   ],
+   "prohibicion": "No debe existir en el repositorio ninguna funcion capaz de reconstruir registro.json desde cero. Esa capacidad convierte cualquier ejecucion accidental en una perdida silenciosa de entradas.",
+   "accion_de_migracion": "build_registro.py eliminado del repositorio el 2026-09-03 (commit efb792a)."
+  }
+ },
+ "definicion_de_efecto": {
+  "estado": "FIJADA",
+  "fecha_fijacion": "2026-09-03",
+  "inmutable": true,
+  "horizonte_N": {
+   "valor": 30,
+   "unidad": "dias naturales",
+   "justificacion": "Unico horizonte que supero el test de estabilidad entre epocas con ventanas no solapadas (rango.py, 28/08/2026): correlacion de persistencia 0.53 / 0.45 / 0.49 en 2011-2015, 2016-2020 y 2021-2026. Los horizontes de 60, 90 y 180 dias fallaron. El de 7 dias nunca se ha medido en este proyecto.",
+   "prohibicion": "No se evalua la misma variable a varios N para elegir despues el que funciona. N es unico y comun a todo el regimen v2.",
+   "aclaracion_enmienda_26": "N=30 se justifico con rango.py midiendo persistencia de la METRICA CONTINUA entre epocas. Desde la enmienda 18 los gates operan sobre la mascara binaria, por lo que esa justificacion registrada ya no describe exactamente lo que el protocolo hace. NO se recalcula nada: definicion_de_efecto es inmutable y el motor sigue usando N=30 igual. Se anota para que el cabo suelto no se descubra como sorpresa dentro de dos anios."
+  },
+  "convenio_de_retorno": {
+   "tipo": "simple",
+   "formula": "R_N(t) = P(t+N) / P(t) - 1",
+   "escala": "fraccion",
+   "nota_escala": "0.03 significa 3 puntos porcentuales. Toda magnitud del protocolo, incluido M, se expresa en esta misma escala.",
+   "justificacion": "Coherente con el bloque 07 del dashboard, que ya opera en ratios simples. No se componen retornos, por lo que la no aditividad de las medianas no aplica."
+  },
+  "estadistico_theta": {
+   "formula": "theta = mediana(R_N | mascara=1) - mediana(R_N | mascara=0)",
+   "unidad": "fraccion de retorno simple a 30 dias",
+   "naturaleza": "diferencia de localizacion, direccional",
+   "limitacion_declarada": "La diferencia de medianas es ciega a cambios de cola y de dispersion. Una variable cuyo efecto real sea un aumento de la probabilidad de movimientos extremos sin desplazar el centro de la distribucion sera medida como theta ~ 0. Si la hipotesis de una variable es de cola y no de localizacion, debe hacerse constar en su entrada del registro: el motor esta CONGELADO y no puede testear esa forma de efecto."
+  }
+ },
+ "ficha_congelada": {
+  "obligatoria": true,
+  "momento": "en la propuesta, antes de ejecutar ningun test y antes de que existan datos forward",
+  "inmutable_tras_fijacion": true,
+  "comportamiento_filtro_py": "Si una entrada en estado PROPUESTA carece de cualquier campo obligatorio de la ficha, filtro.py aborta y no la transita a EN_TEST.",
+  "campos_obligatorios": [
+   "metrica_continua",
+   "mascara",
+   "horizonte_N",
+   "M",
+   "casilla_dashboard",
+   "casilla_dashboard.funcion_D_theta",
+   "signo_esperado"
+  ],
+  "mascara": {
+   "enmienda": 2,
+   "descripcion": "Regla determinista que convierte la metrica continua en booleano. Se congela entera, no solo el percentil.",
+   "campos_obligatorios": [
+    "q_percentil",
+    "tipo_ventana",
+    "longitud_ventana_dias",
+    "solo_informacion_anterior_a_t",
+    "inclusividad",
+    "warm_up_dias",
+    "warm_up_excluido_del_computo_de_bloques"
+   ],
+   "congelar_percentil_no_valor": {
+    "regla": "Se congela el percentil q y la regla de calculo, no el valor numerico del umbral.",
+    "justificacion": "Un umbral absoluto congelado sobre una metrica con tendencia fuerte activa la mascara casi exclusivamente en una epoca, lo que hace fallar el gate de estabilidad entre epocas por construccion y no por falta de senal.",
+    "condicion": "El calculo del percentil solo puede usar informacion anterior a t. Cualquier uso de la muestra completa es look-ahead e invalida el test."
+   }
+  },
+  "casilla_dashboard": {
+   "enmienda": 3,
+   "regla": "La propuesta debe nombrar la casilla concreta del dashboard que la variable podria mover, y la funcion D(theta) que transforma el efecto en el estado visible de esa casilla.",
+   "justificacion": "Sin esto, ante un resultado que no mueve la casilla A siempre cabe alegar que mueve la casilla B. Eso es seleccion posterior a la evidencia.",
+   "hallazgo_2026_09_03": "Ninguna casilla existente del dashboard es direccional. El bloque 07 declara explicitamente que no indica direccion, y el bloque 02 opera en unidades de percentil-Mayer. Por tanto theta, que es direccional, no puede mover hoy ninguna casilla existente. La casilla se especifica como la que la variable creara si se confirma, con su granularidad fijada en la propuesta."
+  },
+  "nota_rutas": "Un campo con punto indica ruta anidada. filtro.py resuelve la ruta antes de comprobar la presencia.",
+  "signo_esperado": {
+   "obligatorio": true,
+   "valores": [
+    "positivo",
+    "negativo",
+    "bilateral"
+   ],
+   "por_defecto": "bilateral",
+   "regla_unilateral": "Declarar positivo o negativo exige rellenar justificacion_signo con el mecanismo previo que sostiene la direccion. No basta con que parezca razonable.",
+   "prohibicion": "El valor queda firmado antes de ejecutar. No puede modificarse despues, ni siquiera para corregirlo.",
+   "nota_incentivos": "Elegir bilateral no es un fallo ni requiere penalizacion. Su coste es la menor potencia inherente a una hipotesis menos especifica. Forzar una direccion para ganar potencia es peor que no declararla."
+  },
+  "alcance": {
+   "enmienda": 29,
+   "regla": "La ficha congelada contiene UNICAMENTE definicion de medida: como se mide la variable y como se juzgara el efecto. Prohibido incluir condiciones operativas y estados de disponibilidad de datos.",
+   "justificacion": "Una definicion de medida no caduca. Una condicion operativa si, y al vivir dentro de un documento inmutable no hay donde actualizarla. Una referencia a una ruta de la doctrina hace que la ficha dependa de la estructura de otro archivo que puede cambiar.",
+   "prohibicion_de_referencias": {
+    "enmienda": 30,
+    "sustituye_a": "la redaccion sintactica de la enmienda 29",
+    "texto_sustituido": "Ninguna ficha puede nombrar una ruta de v2.json. Si una ficha contiene una ruta, filtro.py aborta y la nombra. No se resuelve, no se traduce, no se sigue renombrado_desde.",
+    "regla": "Ninguna ficha puede DEPENDER de la estructura de v2.json. Toda cadena contenida en una ficha que coincida con la sintaxis de una ruta doctrinal es texto inerte: filtro.py no la resuelve, no la traduce, no la interpreta como selector, puntero o alias, y no sigue renombrado_desde. La presencia, ausencia o modificacion de una ruta citada textualmente no altera en nada la ejecucion de la ficha.",
+    "no_es_causa_de_aborto": "La mera aparicion de una ruta en un campo de ficha NO hace abortar a filtro.py, en ningun campo y a ninguna profundidad. La enmienda 29 abortaba por aparicion textual; esta enmienda aborta por dependencia.",
+    "causa_de_aborto": "filtro.py aborta si alguna cadena procedente de registro.json se utiliza como camino para resolver contenido de v2.json.",
+    "justificacion": "La independencia estructural es una propiedad del comportamiento del motor, no del texto de la ficha. Si el motor es incapaz de usar esas cadenas, la ficha no puede depender de ellas por construccion. Una prohibicion sintactica protege contra un peligro que el motor ya no puede materializar y a cambio impide al registro documentar la eliminacion de una ruta, que es una funcion legitima y necesaria de la auditoria.",
+    "sin_clasificacion_de_campos": "Esta regla no distingue campos narrativos de campos de medida. Se aplica igual a todos. Clasificar campos para darles trato distinto queda expresamente descartado: fue la via rechazada en el analisis previo por abrir deriva de clasificacion."
+   },
+   "campos_que_no_pertenecen_a_la_ficha": [
+    "bloqueo_ejecucion"
+   ],
+   "sustituido_por": "ficha_congelada.marcadores_pendientes",
+   "inventario_de_referencias": {
+    "enmienda": 30,
+    "regla": "filtro.py lista en cada informe toda cadena de una ficha que coincida con la sintaxis de una ruta doctrinal, junto a si esa ruta existe o no en la v2.json del pin de version. Es un inventario, no un diagnostico.",
+    "sin_severidad": "Las entradas del inventario no son errores ni advertencias y no llevan nivel de severidad. Una ruta que no resuelve no es una anomalia: puede ser una referencia historica correcta. Se declara asi para evitar que un informe con alertas permanentes deje de leerse.",
+    "no_bloquea": "El inventario nunca hace abortar a filtro.py ni condiciona ninguna transicion de estado.",
+    "precedente_interno": "Mismo patron que integridad.resolucion_de_entradas.lote.comportamiento_ante_discrepancia (hace constar sin abortar) y que la enmienda 19 (gate 2 descriptivo no vinculante).",
+    "alcance_del_detector": "El detector reconoce unicamente cadenas que empiezan por una clave de primer nivel de v2.json. Una cita a una ruta anidada cuyo primer segmento no sea clave raiz (por ejemplo 'gates_cualitativos.parametros...', que vive bajo 'protocolo') NO aparece en el inventario. Alcance heredado del detector de la enmienda 29 y conservado sin ampliar: ampliarlo a claves de cualquier profundidad produciria falsos positivos sobre rutas internas de la propia ficha (por ejemplo 'metrica_continua.fuente'). Se declara para que la ausencia de una cita en el inventario no se lea como prueba de que no existe.",
+    "consecuencia_asumida": "El inventario es una ayuda de auditoria de cobertura parcial, no un censo garantizado. No bloquea nada, por lo que su incompletitud no puede producir un falso PASA."
+   },
+   "aislamiento_del_resolver": {
+    "enmienda": 30,
+    "regla": "El resolver de rutas de filtro.py solo admite caminos literales del codigo o caminos leidos de la propia v2.json. Ninguna cadena procedente de registro.json puede llegar a el como camino sobre la doctrina.",
+    "direccion_permitida": "doctrina -> ficha. La comprobacion de campos obligatorios resuelve caminos definidos en la doctrina SOBRE una entrada del registro. Es legitima y no crea dependencia.",
+    "direccion_prohibida": "ficha -> doctrina. Resolver sobre v2.json un camino tomado de una entrada del registro convierte la cita textual en dependencia real.",
+    "funcion_del_inventario": "El inventario comprueba EXISTENCIA, nunca obtiene el valor. La funcion que lo implementa devuelve un booleano y no puede devolver contenido de la doctrina.",
+    "motivo": "Sin esta clausula la garantia de no-resolucion es solo una promesa escrita. Con ella es una propiedad del codigo, verificable en revision. Riesgo senalado de forma independiente por las cuatro revisiones externas del 04/09/2026.",
+    "estado_verificado_2026_09_04": "filtro.py v2 ya cumple esta invariante: todas las llamadas al resolver sobre la doctrina usan literales del codigo, y la unica llamada sobre una entrada del registro usa un camino procedente de la doctrina."
+   }
+  },
+  "marcadores_pendientes": {
+   "enmienda": 29,
+   "regla": "Ningun campo de la entrada operativa de una variable puede contener un marcador que empiece por PENDIENTE_ en el momento de transitar a EN_TEST. filtro.py aborta y nombra el campo exacto.",
+   "ambito": "recursivo sobre todos los campos de la entrada operativa, a cualquier profundidad",
+   "prefijo": "PENDIENTE_",
+   "justificacion": "Sustituye a las clausulas bloqueo_ejecucion escritas a mano dentro de cada ficha. Es mas fuerte: se aplica a toda variable presente y futura, no solo a la que se acordo de escribirla, y no nombra ninguna ruta, por lo que no puede quedar desactualizada por un renombrado.",
+   "cobertura_verificada_ssr": "metrica_continua.fuente = PENDIENTE_DEFINICION sigue bloqueando la transicion de SSR a EN_TEST por esta regla, sin necesidad de clausula propia en la ficha.",
+   "no_cubre": "Los bloqueos de alcance global no viven en las fichas. fuente_de_precio.snapshot.estado = PENDIENTE_PRIMER_LOTE afecta a todo lote y lo comprueba filtro.py sobre la doctrina, no sobre la ficha.",
+   "prohibicion_prospectiva": {
+    "enmienda": 31,
+    "fecha_efecto": "2026-09-05",
+    "prospectiva": true,
+    "regla": "Ninguna entrada con tipo_entrada propuesta, ficha_congelada o alta_retroactiva y fecha_registro igual o posterior a fecha_efecto puede contener una cadena que empiece por el prefijo dentro de un campo de campos_de_definicion_de_medida, a cualquier profundidad.",
+    "momento_de_la_comprobacion": "antes de escribir la entrada en el registro, no en la transicion a EN_TEST",
+    "implementacion": {
+     "validacion_previa": "filtro.py --validar-entrada FICHERO.json comprueba una entrada candidata contra esta regla y devuelve codigo de salida distinto de cero si la incumple. Debe ejecutarse antes de cadena.anadir.",
+     "red_de_seguridad": "Si una entrada infractora llegase al registro, filtro.py ABORTA en fase 1 nombrando entrada y campo. No es un bloqueo por variable: es un defecto estructural del registro y ningun lote puede ejecutarse.",
+     "por_que_no_en_cadena_py": "cadena.py declara en su cabecera que no contiene ninguna regla del protocolo, solo la aritmetica de hashes. Meter aqui una regla doctrinal rompe esa separacion y crea un segundo lugar donde vive la doctrina. La combinacion de validacion previa mas aborto global tiene la misma fuerza practica sin ese coste."
+    },
+    "diferencia_con_la_regla_general": "marcadores_pendientes sigue vigente sin cambios: cubre todos los campos a cualquier profundidad y bloquea la transicion a EN_TEST. Esta clausula es mas estrecha en alcance de campos y mas dura en consecuencia.",
+    "no_retroactiva": "Las entradas anteriores a fecha_efecto no se reevaluan ni se editan. El registro es append-only. La entrada 18 (fecha_registro 2026-09-04) queda expresamente fuera.",
+    "justificacion": "Una fuente de datos no es un metadato: es parte de la definicion de la medida. Firmar una ficha con la fuente sin definir crea una variable que nace sin salida dentro de la doctrina, porque limite_de_la_sustitucion prohibe despues corregir ese mismo campo. El caso SSR es el sintoma; el agujero es general. Consenso unanime de las cuatro revisiones externas del 2026-09-04."
+   }
+  },
+  "migracion_de_fichas": {
+   "enmienda": 29,
+   "regla": "Cuando una enmienda renombre o elimine una clave de la doctrina, toda ficha en estado PROPUESTA que la referencie debe sustituirse antes de cualquier evaluacion. La sustitucion se registra como entrada nueva.",
+   "limite_de_la_sustitucion": "Una ficha sustitutiva solo puede diferir de la anterior en los campos que la enmienda obliga a tocar, en motivo_sustitucion y en los hashes. Todo campo de definicion de medida (metrica_continua, mascara, horizonte_N, M, unidad_theta, signo_esperado, casilla_dashboard, naturaleza_de_la_hipotesis, dias_episodio) debe ser identico. filtro.py compara ambas entradas y aborta si difiere alguno.",
+   "justificacion_del_limite": "La mutabilidad en PROPUESTA es necesaria, pero sin limite medible se convierte en la puerta de atras que permite retocar una ficha alegando cambio doctrinal. El limite es verificable por codigo.",
+   "prohibido_tras_en_test": "Si la variable ya alcanzo EN_TEST no hay sustitucion posible. filtro.py aborta de forma permanente. Es el coste asumido en integridad.resolucion_de_entradas.inmutabilidad."
+  },
+  "campos_de_definicion_de_medida": {
+   "enmienda": 31,
+   "naturaleza": "codificacion, no cambio de contenido",
+   "lista": [
+    "metrica_continua",
+    "mascara",
+    "horizonte_N",
+    "M",
+    "unidad_theta",
+    "signo_esperado",
+    "casilla_dashboard",
+    "naturaleza_de_la_hipotesis",
+    "dias_episodio"
+   ],
+   "regla": "Esta lista es la unica fuente de verdad sobre que campos de una ficha son de definicion de medida. La usan migracion_de_fichas.limite_de_la_sustitucion y marcadores_pendientes.prohibicion_prospectiva.",
+   "motivo": "filtro.py derivaba la lista partiendo el texto en prosa de limite_de_la_sustitucion por el primer parentesis. Una reescritura del parrafo cambiaba en silencio el alcance de una prohibicion. Verificado por el script de migracion: la lista literal es identica a la que ese parseo produce.",
+   "comportamiento_filtro_py": "Se lee esta lista. Queda prohibido derivar la lista de ningun texto en prosa.",
+   "no_cambia_el_limite_de_la_sustitucion": "El texto de limite_de_la_sustitucion se conserva intacto como justificacion. Deja de ser la fuente de la que el codigo extrae la lista."
+  },
+  "retirada_en_propuesta": {
+   "enmienda": 31,
+   "condiciones_estrictas": {
+    "nunca_alcanzo_EN_TEST": "Ninguna entrada del id puede haber tenido estado EN_TEST ni ningun estado de presupuesto.derivacion.estados_que_cuentan_como_consumido. filtro.py aborta si lo encuentra.",
+    "sin_datos_adquiridos": "No puede existir ningun snapshot de datos asociado al id, ni hash de snapshot, ni theta_B2 distinto de null. filtro.py aborta si theta_B2 no es null.",
+    "estado_actual_PROPUESTA": "La entrada operativa del id debe estar en PROPUESTA en el momento de la retirada."
+   },
+   "forma": {
+    "tipo_entrada": "transicion_de_estado",
+    "campos_obligatorios_adicionales": [
+     "motivo",
+     "declaracion"
+    ],
+    "prohibido": "No puede modificar ningun campo de la ficha. Rigen los campos_permitidos de integridad.resolucion_de_entradas.tipo_entrada.alta_transicion_de_estado mas los dos anteriores."
+   },
+   "terminalidad": "Ninguna entrada posterior con el mismo id puede cambiar el estado. filtro.py aborta. El id queda muerto de forma permanente.",
+   "reproposicion": {
+    "permitida": true,
+    "condicion": "Solo mediante una ficha NUEVA con id distinto, que no resuelva al id retirado por el mecanismo de excepciones de la enmienda 28.",
+    "campo_obligatorio": "sustituye_a_id_retirado",
+    "prohibicion_de_forma": "La ficha nueva NO puede usar referencia_entrada_anterior apuntando al id retirado: eso la plegaria sobre el id muerto al resolver ids. sustituye_a_id_retirado es trazabilidad, no resolucion, y filtro.py nunca lo usa para plegar ids.",
+    "verificacion": "filtro.py aborta si sustituye_a_id_retirado apunta a un id que no esta en RETIRADA_EN_PROPUESTA.",
+    "declaracion_de_sesgo_obligatoria": "La ficha nueva debe declarar en declaracion_de_sesgo que campos de medida difieren de la retirada y por que. Sin ese campo filtro.py aborta.",
+    "una_sola_vez": {
+     "regla": "Una ficha que lleve sustituye_a_id_retirado no puede a su vez ser retirada. filtro.py aborta si una transicion a RETIRADA_EN_PROPUESTA apunta a un id cuya ficha contiene ese campo.",
+     "efecto": "Cada CADENA DE SUCESION DECLARADA dispone de una sola correccion. Cierra el bucle retirar-reproponer-retirar dentro de esa cadena.",
+     "descartado": "Hacer que la retirada consuma presupuesto del trimestre. Rechazado: castiga corregir un error, que es el incentivo contrario al que persigue el protocolo.",
+     "_texto_sustituido_enmienda_31": "Cada variable subyacente dispone de una sola correccion. Cierra el bucle retirar-reproponer-retirar sin castigar el error honesto de una vez.",
+     "alcance_real": {
+      "enmienda": 32,
+      "garantia": "El protocolo garantiza unicidad de IDENTIDAD FORMAL DECLARADA. No garantiza unicidad de concepto ni de constructo.",
+      "no_garantia": "Dos fichas con ids distintos que midan lo mismo en espiritu son, para el motor, dos variables distintas. La deteccion de equivalencia conceptual queda FUERA del enforcement automatico: es un control de auditoria, no una propiedad del sistema.",
+      "motivo_de_la_reformulacion": "La redaccion de la enmienda 31 afirmaba que cada variable subyacente dispone de una sola correccion. El mecanismo no implementa eso: implementa una sola sucesion por cadena declarada. Afirmar la propiedad mas fuerte era prometer algo que el sistema no puede demostrar, que es justo el defecto que el resto del protocolo evita."
+     },
+     "elusion_conocida": {
+      "descripcion": "El freno se ata a la PRESENCIA del campo sustituye_a_id_retirado. Nada impide reproponer la misma medida con un id nuevo omitiendo ese campo y presentandola como variable nueva.",
+      "detectable_por_codigo": false,
+      "no_se_cierra_porque": "Identidad por significado, cero intervencion humana y cero clasificacion semantica son tres propiedades incompatibles entre si. Cualquier regla que decida cuando dos medidas son 'la misma' es clasificacion semantica, que es la via ya descartada expresamente en ficha_congelada.alcance.prohibicion_de_referencias.sin_clasificacion_de_campos por abrir deriva de clasificacion.",
+      "descartado_concept_key": "Se evaluo exigir una clave canonica de concepto declarada por el autor. Rechazado: es una etiqueta declarada, luego tiene exactamente la misma debilidad que sustituye_a_id_retirado, y ademas introduce la clasificacion semantica ya descartada.",
+      "descartada_normalizacion_previa": "Se evaluo normalizar los campos de medida (recortar espacios, unificar mayusculas, ordenar listas) antes de calcular su hash. Rechazado: decidir que diferencias 'no son sustanciales' es clasificacion semantica por la puerta de atras, y haria el hash menos verificable, no mas.",
+      "revision_externa": "Consenso unanime de cuatro modelos externos el 2026-09-05: la visibilidad en la cadena de hashes es un control detectivo, no preventivo, y no frena a un autor que sea tambien su unico auditor."
+     }
+    }
+   },
+   "coste_asumido_declarado": "Retirar y reproponer es la unica via legitima de corregir un campo de medida en PROPUESTA, y por tanto tambien una puerta trasera potencial a limite_de_la_sustitucion. No se cierra con una prohibicion sino con dos frenos verificables: visibilidad obligatoria (retirada, motivo, id sucesor y declaracion de sesgo en la cadena de hashes y en cada informe) y el limite de una sola vez.",
+   "retirada_estrategica": {
+    "enmienda": 32,
+    "problema": "Como la retirada no consume presupuesto, funciona como una opcion de abandono gratuita: mirar los datos de forma informal, intuir que la variable va a fallar, retirarla y reproponer una version retocada.",
+    "por_que_no_lo_impide_sin_datos_adquiridos": "La condicion sin_datos_adquiridos solo comprueba que no exista theta_B2 ni snapshot asociado. Mirar una serie sin registrar nada no deja rastro en el registro.",
+    "prevenible_por_codigo": false,
+    "mitigacion_real": "No esta en esta capa. La garantia del sistema frente a este riesgo es la misma que frente al resto de la seleccion: la confirmacion forward sobre datos que no existian cuando la variable fue propuesta. Una retirada estrategica no compra nada alli, porque la ventana forward se juzga sobre datos futuros que el autor no puede haber mirado. Ver meta.declaracion_obligatoria.",
+    "se_declara_no_se_resuelve": "Se hace constar en el mismo registro que potencia_medida y que notas_de_migracion.theta_v1_no_comparable: son limitaciones conocidas del sistema, declaradas para que ningun informe futuro pueda presentarlas como si no existieran."
+   }
+  },
+  "hash_de_medida": {
+   "enmienda": 32,
+   "definicion": "SHA-256 de la serializacion canonica del subconjunto de campos de campos_de_definicion_de_medida.lista presentes en una ficha.",
+   "canonizacion": "La MISMA que registro.json -> meta.canonizacion: claves ordenadas, separadores compactos, UTF-8. No se define ninguna convencion nueva. No se aplica ninguna normalizacion previa del contenido.",
+   "calculado_no_almacenado": {
+    "regla": "El hash NO se escribe en la ficha. filtro.py lo calcula en cada ejecucion a partir del contenido.",
+    "motivo": "Un hash almacenado puede divergir del contenido que dice resumir, y obliga a una comprobacion adicional que puede fallar. Un hash derivado no puede mentir."
+   },
+   "solo_fichas_completas": {
+    "regla": "Solo se calcula sobre entradas que contengan TODOS los campos de la lista. Las fichas incompletas no producen hash y no entran en la comparacion.",
+    "motivo": "Una ficha se construye por etapas. Comparar hashes de subconjuntos distintos de campos no significa nada."
+   },
+   "regla_de_colision": {
+    "entre_ids_distintos": "Si dos ids RESUELTOS distintos producen el mismo hash de medida, filtro.py ABORTA y nombra ambos. Es una reproposicion exacta de una medida ya registrada.",
+    "dentro_del_mismo_id": "Esperado y correcto: limite_de_la_sustitucion exige que una ficha sustitutiva tenga los campos de medida identicos a la anterior. No es colision."
+   },
+   "que_protege": "La reproposicion EXACTA de una medida ya registrada, con o sin sustituye_a_id_retirado. Refuerza protocolo.unicidad_del_test.",
+   "que_NO_protege": "NO implementa una_sola_vez. El proposito legitimo de retirar y reproponer es cambiar campos de medida, luego el hash nuevo nunca colisiona con el retirado. Y una reproposicion abusiva con un retoque minimo tampoco colisiona. Se declara para que nadie lea esta regla como si cerrase la elusion_conocida.",
+   "cobertura_medida_2026_09_05": "0 de las 11 variables ya testeadas. Las entradas 1 a 11, 13, 14 y 17 son de regimen v1 y no contienen ningun campo de definicion de medida, por lo que no producen hash. La cobertura es exclusivamente prospectiva y arranca desde una base vacia. Medido por script sobre el registro de 18 entradas."
+  }
+ },
+ "estimador_de_robustez": {
+  "enmienda": 5,
+  "estado": "ACTIVO",
+  "estimadores": [
+   "hodges_lehmann",
+   "media_recortada_10pct"
+  ],
+  "ambito": "informe de lote unicamente",
+  "afecta_a_veredicto": false,
+  "prohibicion": "No participa en ningun criterio de pasa/no-pasa, ni en los gates, ni en el p-valor, ni en los tres criterios de confirmacion forward. Por eso no constituye un cambio de motor y no exige v3.",
+  "proposito": "Responder a la pregunta de auditoria: la conclusion depende demasiado de haber elegido la mediana como estadistico?",
+  "regla_de_divergencia": "Si el estimador de robustez y theta divergen en signo, se hace constar en el informe. No cambia el veredicto."
+ },
+ "notas_de_migracion": {
+  "theta_v1_no_comparable": {
+   "hallazgo": "El horizonte del retorno usado en los tests de v1 no es recuperable del repositorio: 'resultado' era un argumento de paso4_significancia y no existe ninguna llamada registrada.",
+   "consecuencia": "Los theta de v1 y los de v2 no son comparables. Cualquier lectura cruzada de magnitudes entre ambos regimenes es invalida.",
+   "regla": "Ningun informe puede comparar magnitudes de efecto entre entradas con regimen v1 y regimen v2."
+  },
+  "frontera_con_regimen_py": {
+   "regla": "regimen.py queda FUERA del alcance de este protocolo.",
+   "justificacion": "v2.json gobierna la validacion de variables candidatas. regimen.py calibra y audita el panel. Si se mezclan, cada retoque del dashboard se convierte en una enmienda de doctrina y la doctrina deja de ser utilizable.",
+   "consecuencia": "Las constantes de regimen.py no son reglas de protocolo y no requieren vivir en este archivo."
+  },
+  "renombrado_pendiente": {
+   "accion": "registro.py -> diario.py",
+   "motivo": "Convivir un modulo importable llamado registro con un archivo registro.json es una fuente segura de confusion futura.",
+   "estado": "PENDIENTE"
+  },
+  "rediseno_de_la_capa_de_gates": {
+   "enmiendas": [
+    18,
+    19,
+    22,
+    23,
+    25
+   ],
+   "declaracion": "Esto ya NO es la migracion literal desde filtro.py v1 que prometia la enmienda 6. Es un rediseno de la capa de gates: cambia la entrada de los gates, cambia el metodo de fijacion de umbrales, un gate deja de ser vinculante y otro pasa a ser alcanzable por primera vez.",
+   "por_que_sigue_siendo_v2_y_no_v3": "El motor sigue intacto: permutacion por bloques mas diferencia de medianas, con el mismo N, la misma particion y el mismo p-valor. Solo cambia la capa de cribado previa. Por eso es 2.2.0 y no exige un regimen v3, que obligaria a no reutilizar nada de v2.",
+   "parametros_de_v1_retirados": [
+    "UMBRAL=0.04",
+    "min_obs=100",
+    "minimo_pp=3.0",
+    "EPOCAS de calendario",
+    "desfases (0,1,2,3,5)",
+    "retencion_minima=0.4"
+   ]
+  }
+ },
+ "potencia_medida": {
+  "enmienda": 19,
+  "estado": "OBLIGATORIO_EN_INFORME",
+  "texto_literal": "Esta capa de gates no es un cribado permisivo. Medida por simulacion sobre un bloque_1 de 1387 dias con mascara activa el 20% del tiempo, detecta aproximadamente el 39% de un efecto real de theta=0.084 y deja pasar el 15% del ruido puro. Un efecto real puede no atravesarla. Que una variable sea descartada aqui no demuestra que no exista.",
+  "cifras": {
+   "configuracion": "bloque_1 1387 dias, mascara 20% racha media 30 dias, percentil 50",
+   "ruido_puro_que_pasa": 0.152,
+   "deteccion_theta_0034": 0.199,
+   "deteccion_theta_0056": 0.257,
+   "deteccion_theta_0084": 0.389,
+   "deteccion_theta_0147": 0.563
+  },
+  "limitacion_declarada": "Estas cifras dependen del modelo sintetico de senal usado en potencia_gates_v2.py (deriva diaria constante mientras la mascara esta activa, precio GARCH tipo BTC). Son SUPUESTOS declarados, no datos observados. El resultado del gate 2 es el mas robusto porque se sigue de la geometria del solapamiento y no de esos parametros."
+ },
+ "fuente_de_precio": {
+  "enmienda": 20,
+  "estado": "FIJADA",
+  "inmutable": true,
+  "serie": "BTC/USD, cierre diario, Bitstamp",
+  "justificacion_divisa": "BTC/EUR meteria el movimiento del EUR/USD dentro de la variable objetivo.",
+  "justificacion_exchange": "N=30 se justifico en rango.py sobre datos de Bitstamp. Cambiar de fuente invalidaria esa justificacion.",
+  "hora_de_corte": "00:00:00 UTC del dia siguiente (cierre de la vela diaria UTC)",
+  "zona_horaria": "UTC",
+  "dias_faltantes": "Se arrastra el ultimo cierre disponible un maximo de 2 dias consecutivos. Un hueco de 3 dias o mas parte la serie y filtro.py aborta.",
+  "duplicados": "Ante dos registros para la misma fecha se conserva el ultimo por marca de tiempo de la fuente y se anota en el informe.",
+  "outliers": {
+   "regla": "No se eliminan outliers. Ningun cierre se descarta ni se winsoriza.",
+   "fijada_antes_de_mirar_datos": true,
+   "justificacion": "Los movimientos extremos de BTC son el fenomeno, no un error de medida. Cualquier regla de limpieza definida despues de ver la serie es seleccion."
+  },
+  "snapshot": {
+   "obligatorio": true,
+   "regla": "Cada lote congela un unico snapshot CSV de la serie y registra su SHA-256 en la doctrina antes de ejecutar ningun test.",
+   "sha256": "32c0b8ea8a66f01181032c3cb5b66c10ede867b12f6779d7bea8b19258627e49",
+   "estado": "CONGELADO",
+   "congelacion": {
+    "fecha": "2026-09-05",
+    "fichero": "snapshot_precio_btcusd.csv",
+    "rango": "2015-01-01 a 2026-09-03",
+    "filas": 4264,
+    "dias_sin_dato": 0,
+    "duplicados_resueltos": 0,
+    "columnas": "fecha,cierre",
+    "final_de_linea": "LF",
+    "script": "snapshot_precio.py",
+    "vela_incompleta_descartada": "La API devolvio ademas la vela del 2026-09-04, que a la hora de la descarga aun no habia cerrado (cierra a las 00:00 UTC del 2026-09-05). Se descarto por la fecha de corte declarada en el script, no a mano.",
+    "eleccion_de_la_fecha_de_corte": "2026-09-03 es la ultima vela diaria UTC completa en el momento de fijar la constante. Se declara como constante en el script y no se deriva de la fecha de ejecucion: si dependiese de cuando se lanza, el snapshot no seria reproducible.",
+    "limitacion_declarada": "snapshot.sha256 es un campo escalar, pero la regla dice que cada lote congela su propio snapshot. Mientras solo exista un lote v2 activo no hay conflicto. Un segundo lote exigira convertir este bloque en una estructura por lote, y eso si sera una enmienda."
+   }
+  },
+  "control_descriptivo": "Validacion visual contra Coinbase como control, sin re-test y sin efecto sobre ningun veredicto."
+ },
+ "calibracion": {
+  "enmienda": 22,
+  "fecha": "2026-09-04",
+  "script": "calibracion_gates_v2.py y potencia_gates_v2.py",
+  "semilla": 20260904,
+  "metodo": "Series sinteticas de precio con volatilidad agrupada tipo BTC y mascara binaria con rachas generada de forma independiente del precio. Se mide que proporcion de ruido puro atraviesa cada gate, y por separado que proporcion de senal real inyectada de fuerza conocida lo atraviesa.",
+  "supuestos_declarados": [
+   "precio GARCH(1,1) alpha=0.08 beta=0.90, desviacion tipica diaria 3.5%",
+   "mascara Markov de 2 estados, activa 20%, racha media 30 dias",
+   "no se uso ninguna serie real de BTC: se calibra la distribucion nula, no el historico"
+  ],
+  "hallazgos": {
+   "umbral_v1_invalido": "El umbral heredado 0.04 deja pasar el 74% del ruido puro cuando se aplica a la mascara binaria. Aplicado a la entrada binaria no es un filtro.",
+   "umbral_fijo_no_homogeneo": "Un umbral fijo de 0.15 corresponde al percentil 70 con 3 anios de bloque_1 y al percentil 92 con 10 anios. La misma regla escrita significa exigencias distintas segun la historia disponible.",
+   "techo_estructural": "Los gates sin parametro libre (2 y 4) dejaban pasar conjuntamente el 16.9% del ruido. Ningun umbral podia hacer la capa mas permisiva que ese techo.",
+   "gate_2_sin_potencia": "Frente a senal real de regimen: 51.4% de paso. Frente a ruido puro: 53.8%. Frente a senal puramente anticipatoria desplazada 30 dias: 75.6%.",
+   "validacion_del_nulo_por_rotacion": "El nulo generado rotando la mascara reproduce la tabla sintetica: gate 1 percentil 50 = 0.0861 por rotacion frente a 0.0888 sintetico, sobre bloque_1 de 1387 dias."
+  },
+  "eleccion_del_percentil": {
+   "valor": 50,
+   "justificacion": "El liston se pone bajo a proposito. El control real de falsos positivos vive en la confirmacion forward sobre datos que no existian al proponer la variable, no en estos gates. El coste de un falso negativo aqui es irreversible por unicidad_del_test; el de un falso positivo es que muera en el forward. La medicion de potencia mostro que subir de percentil 50 a 75 baja la deteccion de un efecto real de theta=0.084 del 39% al 30%, a cambio de bajar el ruido del 15% al 7%. Con la asimetria declarada, ese intercambio no compensa.",
+   "descartado": "Percentil 70-80, que era la banda de partida del encargo, antes de medir la potencia."
+  }
+ }
 }

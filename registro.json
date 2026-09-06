@@ -6,14 +6,14 @@
   "append_only": true,
   "algoritmo_hash": "sha256",
   "genesis": "0000000000000000000000000000000000000000000000000000000000000000",
-  "ultimo_hash": "a1b5b876d114e5d11f3b521d6a5df2bd1e9c8eef61a9566e0e7af0b03ba15738",
-  "n_entradas": 21,
+  "ultimo_hash": "6a993fc9d97e2f1ef3b197d8e86cd48d1a59c889d3db8252f07ac22eb946c0f7",
+  "n_entradas": 22,
   "regla": "Ninguna entrada se edita ni se borra. Una correccion se registra como entrada nueva que referencia la anterior. filtro.py verifica la cadena completa al arrancar y aborta si esta rota.",
   "canonizacion": "json.dumps(entrada_sin_hash, sort_keys=True, separators=(',',':'), ensure_ascii=False).encode('utf-8')"
  },
  "presupuesto_por_trimestre": {
   "2026-Q3": {
-   "propuestas_usadas": 0,
+   "propuestas_usadas": 1,
    "familias_nuevas_usadas": 0,
    "nota": "SSR pertenece a una familia del catalogo inicial, por lo que no consume cuota de familia nueva.",
    "nota_enmienda_29": "Los maximos viven solo en v2.json (presupuesto.autoridad). Aqui quedan unicamente los contadores de uso, que filtro.py contrasta contra el valor derivado del array entradas."
@@ -721,6 +721,158 @@
    "estado_sin_cambios": true,
    "hash_anterior": "e31a1e92b03234ed747823b07b6c59aa347a52426e2049c3949435008c258be4",
    "hash": "a1b5b876d114e5d11f3b521d6a5df2bd1e9c8eef61a9566e0e7af0b03ba15738"
+  },
+  {
+   "id": "ssr_capstables",
+   "tipo_entrada": "transicion_de_estado",
+   "estado": "EN_TEST",
+   "fecha_registro": "2026-09-06",
+   "gate_alcanzado": null,
+   "fecha_corte_bloques": "2023-03-31",
+   "sha256_snapshot_metrica": "10dcabcf818fc4c0b553dda9ab5cfaffc11a93b3f22eb8c190f01140d5ebf788",
+   "declaraciones_de_ejecucion": {
+    "a_tabla_d6": {
+     "universo_candidato": 100,
+     "fuera": 18,
+     "dentro": 82,
+     "reparto": "81 tokens resueltos en sesiones previas (14 FUERA + 67 DENTRO) y 19 resueltos en la sesion del 2026-09-06 (4 FUERA + 9 DENTRO acreditados + 6 DENTRO no acreditados).",
+     "fuera_previos": [
+      "21",
+      "23",
+      "109",
+      "129",
+      "132",
+      "172",
+      "173",
+      "213",
+      "237",
+      "241",
+      "243",
+      "244",
+      "272",
+      "282"
+     ],
+     "fuera_resueltos_en_esta_sesion": {
+      "306": "GUSD Gate — el emisor declara rendimiento base diario al tenedor",
+      "339": "reUSD Re Protocol — el precio del token crece a diario",
+      "125": "eUSD v2 Lybra — rebase al tenedor",
+      "283": "USDU Unitas — el emisor lo declara devengador nativo"
+     },
+     "dentro_acreditados_en_esta_sesion": [
+      "33",
+      "284",
+      "316",
+      "341",
+      "342",
+      "354",
+      "389",
+      "400",
+      "430"
+     ],
+     "trazabilidad": "La lista FUERA esta congelada en paso1_descarga.py (FUERA_PREVIOS y FUERA_NUEVOS). La lista DENTRO es el conjunto de id_proveedor presentes en el snapshot de matriz, 82 tokens."
+    },
+    "b_no_acreditados": {
+     "n": 6,
+     "lista": {
+      "340": "rwaUSDi",
+      "13": "YUSD",
+      "328": "MUST",
+      "398": "USDV Valtorum",
+      "332": "pmUSD",
+      "407": "UUSD"
+     },
+     "criterio": "Entran. La ausencia de evidencia no acredita la exclusion.",
+     "consecuencia": "Su peso maximo en la serie queda acotado y declarado en el apartado d."
+    },
+    "c_protocolo_documental_d6": {
+     "estado": "congelado antes de esta sesion y aplicado tal cual, sin reinterpretacion",
+     "estandar_probatorio": "La descripcion del emisor acredita, incluida la reproducida literalmente por un agregador. La etiqueta de un tercero no acredita.",
+     "niveles": "Nivel 3 NO EJECUTADO. Ver apartado e.",
+     "revision_externa": "Los casos 328 (MUST) y 340 (rwaUSDi) se sometieron a revision externa. Unanimidad en que entran."
+    },
+    "d_cotas": {
+     "medidas_para_los_6_no_acreditados": {
+      "global": {
+       "valor_pct": 0.2523,
+       "fecha": "2026-08-24"
+      },
+      "bloque_1": {
+       "valor_pct": 0.1613,
+       "fecha": "2022-05-04"
+      },
+      "bloque_2": {
+       "valor_pct": 0.2523,
+       "fecha": "2026-08-24"
+      }
+     },
+     "congeladas_en_el_protocolo": {
+      "global_pct": 0.91,
+      "por_bloque_pct": 0.26
+     },
+     "regla": "Las medidas se declaran JUNTO A las congeladas, no las sustituyen. Las congeladas siguen siendo el compromiso del protocolo."
+    },
+    "e_nivel_3": {
+     "ejecutado": false,
+     "motivo": "El protocolo documental congelado no lo exige para cerrar la clasificacion. Se declara su no ejecucion en lugar de omitirla."
+    },
+    "f_asimetria_de_procedencia": {
+     "por_diseno_conocido_pct": 77,
+     "por_protocolo_documental_pct": 23,
+     "lectura": "Tres cuartas partes del universo se clasifican por conocimiento previo del diseno del token y una cuarta parte por aplicacion del protocolo documental. Las dos vias no tienen la misma fuerza probatoria y la mezcla queda declarada, no homogeneizada."
+    },
+    "g_sin_gecko_id": {
+     "n": 6,
+     "lista": [
+      "33",
+      "54",
+      "314",
+      "328",
+      "340",
+      "389"
+     ],
+     "consecuencia": "No son deduplicables por gecko_id. D7 no puede pronunciarse sobre ellos.",
+     "nota": "Son 6 y no 7: el id 21 (flexUSD) queda excluido por D6 y no entra en la matriz."
+    },
+    "h_d7": {
+     "activaciones": 0,
+     "verificacion": "Comprobado dia a dia sobre las 85.494 filas de la matriz. Ningun par de tokens comparte gecko_id ningun dia."
+    },
+    "i_incidencia_de_cobertura_omni": {
+     "1_hecho_medido": "DefiLlama no cubre la cadena Omni. USDT figura con 0,1 M USD el 2017-11-29 y no supera el umbral de 100 M hasta el 2019-04-11. El universo del dia de arranque, 2018-10-27, son USDC (124,7 M) y PAX (109,0 M).",
+     "2_alcance_de_calendario": {
+      "contaminacion_directa": "2018-10-27 a 2019-04-10",
+      "propagacion_por_ventana_movil_365d": "hasta 2020-04-09",
+      "afecta_a_bloque_1": "166 de 1252 dias (13,3%)",
+      "afecta_al_tramo_1": "166 de 417 dias (39,8%)",
+      "bloque_2": "Ninguna ventana de bloque_2 alcanza fechas anteriores al 2022-04-01. La estimacion del efecto esta limpia."
+     },
+     "3_canal_de_veto": "Verificado en filtro.py: los gates 1, 3 y 4 son vinculantes sobre bloque_1 y el test de permutacion sobre bloque_2 solo se ejecuta si pasan. El gate 4 exige coherencia de signo entre los tres tramos, y el tramo 1 es uno de ellos. Por tanto la contaminacion puede impedir el paso, no falsear la estimacion del efecto.",
+     "4_lo_que_no_se_hizo_y_por_que": "No se cambia fuente, universo, arranque ni parametros. No se ejecuta analisis de sensibilidad. Decision tomada tras consulta a cinco modelos externos, cuatro a favor y uno en contra: declarar y ejecutar. NO se adquiere derecho alguno a re-proponer si los gates rechazan: seria una puerta de escape asimetrica contraria a protocolo.unicidad_del_test."
+    },
+    "j_verificacion_de_borde": {
+     "dias_utiles_derivados": 2504,
+     "dias_utiles_declarados_en_la_ficha": 2503,
+     "diferencia": "un dia, por convencion de borde de la ventana",
+     "regla_aplicada": "Se declara el resultado derivado. No se corrige la ficha congelada.",
+     "particion_derivada": {
+      "inicio_util": "2019-10-27",
+      "fecha_corte_bloques": "2023-03-31",
+      "dias_bloque_1": 1252,
+      "dias_bloque_2": 1252,
+      "anios_bloque_1": 3.43,
+      "anios_bloque_2": 3.43
+     },
+     "arranque_de_la_serie": "2018-10-27, con dos o mas tokens. Coincide con el declarado en la ficha."
+    },
+    "k_evidencia_de_ficheros": {
+     "snapshot_matriz_json_sha256": "10dcabcf818fc4c0b553dda9ab5cfaffc11a93b3f22eb8c190f01140d5ebf788",
+     "serie_ssr_csv_sha256": "744c2ddb3173891cd8f5dfde6d2efeb4d5e3b75c0c96338b19bd4017b02a683b",
+     "nota": "filtro.py verifica el snapshot de precio contra la doctrina, pero no verifica estos dos. Quedan como evidencia documental. Cerrar ese hueco es una mejora pendiente posterior al test."
+    }
+   },
+   "motivo": "Transicion de ssr_capstables a EN_TEST para el lote 2026-Q3. Se escribe antes de ejecutar ningun gate. Fija la fecha de corte de bloques y el sha256 del snapshot de la metrica como precompromiso: filtro.py deriva la particion por su cuenta y aborta si no coincide con la registrada aqui. No modifica la ficha congelada (entrada 20) ni la aclaracion del numerador (entrada 21), que no se reabren. Consume la primera propuesta del presupuesto 2026-Q3.",
+   "hash_anterior": "a1b5b876d114e5d11f3b521d6a5df2bd1e9c8eef61a9566e0e7af0b03ba15738",
+   "hash": "6a993fc9d97e2f1ef3b197d8e86cd48d1a59c889d3db8252f07ac22eb946c0f7"
   }
  ]
 }
