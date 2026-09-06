@@ -16,7 +16,9 @@ o a un fichero aparte. La escritura es un paso separado, via cadena.anadir.
 
 Uso:
     python filtro.py --lote 2026-Q3 --precio snapshot.csv \
-        --metrica stablecoin_supply_ratio=ssr.csv [--informe informe.json]
+        --metrica stablecoin_supply_ratio=ssr.csv \
+        [--snapshot-metrica stablecoin_supply_ratio=matriz.csv] \
+        [--informe informe.json]
     python filtro.py --lote 2026-Q3 --solo-comprobar
 """
 
@@ -24,6 +26,7 @@ import argparse
 import hashlib
 import json
 import math
+import os
 import sys
 from datetime import datetime, timezone
 
@@ -32,7 +35,7 @@ import pandas as pd
 
 import cadena
 
-DOCTRINA_COMPATIBLE = "2.8"  # enmienda 34
+DOCTRINA_COMPATIBLE = "2.9"  # enmienda 35
 
 # Hueco declarado de la doctrina: estados.mapeo_salida_filtro_py.tabla traduce
 # la etiqueta interna PASA a EN_CONFIRMACION "solo si supera ademas el umbral BY
@@ -75,6 +78,18 @@ def sha256_fichero(path):
         for bloque in iter(lambda: f.read(65536), b""):
             h.update(bloque)
     return h.hexdigest()
+
+
+def _sha_motor():
+    """
+    Enmienda 35. SHA-256 del fichero que se esta ejecutando: el que la entrada de
+    transicion registra como sha256_motor. Es el ejecutor, no una version futura
+    del fichero.
+    """
+    try:
+        return sha256_fichero(os.path.abspath(__file__))
+    except OSError as e:
+        return f"no calculable ({e})"
 
 
 def _cargar_json(path):
@@ -245,6 +260,10 @@ def fase1_resolver(doc, reg):
     _prob_tr, _inc_tr = _campos_de_transicion(entradas, doc)
     estructurales += _prob_tr
     incidencias += _inc_tr
+    # enmienda 35: obligatoriedad condicional de las enmiendas 34 y 35.
+    _prob_oc, _inc_oc = _obligatoriedad_condicional(entradas, doc)
+    estructurales += _prob_oc
+    incidencias += _inc_oc
     if estructurales:
         abortar(
             "defecto estructural del registro (enmienda 31):\n  - "
@@ -539,6 +558,105 @@ def _campos_de_transicion(entradas, doc):
     return problemas, incidencias
 
 
+def _exigencias_condicionales(doc):
+    """
+    Enmienda 35. Construye el mapa de obligatoriedad condicional LEYENDOLO de la
+    doctrina. Cero constantes: ni los campos, ni los estados que los exigen, ni
+    el corte de aplicacion prospectiva estan escritos aqui.
+
+    Recorre todo objeto 'ampliacion_enmienda_NN' de alta_transicion_de_estado que
+    declare un bloque 'obligatoriedad_condicional'.
+
+    Hueco de doctrina: las dos ampliaciones vigentes nombran la lista de estados
+    con claves distintas (la 34 'estados_de_resultado_de_test', la 35
+    'estados_que_lo_exigen'). Para no codificar ningun nombre de clave se toma la
+    unica lista de cadenas que haya dentro del bloque. Si hubiera mas de una, o
+    ninguna, el motor aborta en vez de elegir por su cuenta.
+    """
+    base = ruta(
+        doc,
+        "integridad.resolucion_de_entradas.tipo_entrada.alta_transicion_de_estado",
+    )
+
+    exigencias = []
+    for clave in sorted(k for k in base if k.startswith("ampliacion_enmienda_")):
+        amp = base[clave]
+        if not isinstance(amp, dict):
+            continue
+        oc = amp.get("obligatoriedad_condicional")
+        if not isinstance(oc, dict):
+            continue
+
+        listas = [
+            v for v in oc.values()
+            if isinstance(v, list) and v and all(isinstance(x, str) for x in v)
+        ]
+        if len(listas) != 1:
+            abortar(
+                f"{clave}.obligatoriedad_condicional declara {len(listas)} listas "
+                f"de estados. El motor no elige cual es la buena "
+                f"(implementacion_en_el_motor.cero_reglas_en_el_codigo)"
+            )
+
+        campos = amp.get("campos_anadidos")
+        if not campos:
+            abortar(f"{clave} exige campos condicionalmente pero no declara "
+                    f"campos_anadidos")
+
+        prosp = amp.get("aplicacion_prospectiva") or {}
+        if "entradas_previas_a_la_enmienda" not in prosp:
+            abortar(f"{clave} no declara aplicacion_prospectiva."
+                    f"entradas_previas_a_la_enmienda")
+
+        exigencias.append({
+            "origen": clave,
+            "campos": list(campos),
+            "estados": set(listas[0]),
+            "corte": int(prosp["entradas_previas_a_la_enmienda"]),
+        })
+
+    return exigencias
+
+
+def _obligatoriedad_condicional(entradas, doc):
+    """
+    Enmienda 35. Automatiza la obligatoriedad condicional que la enmienda 34
+    declaro expresamente NO automatizada, y la que la propia 35 introduce.
+
+    Prospectivo, con el corte propio de cada enmienda: una entrada posterior al
+    corte que incumpla es un bloqueo; una anterior se reporta como incidencia y
+    no se corrige (el registro es append-only).
+
+    Devuelve (problemas, incidencias).
+    """
+    tipo_ausente = ruta(
+        doc, "integridad.resolucion_de_entradas.tipo_entrada.ausente_equivale_a"
+    )
+    exigencias = _exigencias_condicionales(doc)
+
+    problemas, incidencias = [], []
+    for i, e in enumerate(entradas, start=1):
+        if e.get("tipo_entrada", tipo_ausente) != "transicion_de_estado":
+            continue
+        estado = e.get("estado")
+        for x in exigencias:
+            if estado not in x["estados"]:
+                continue
+            faltan = [c for c in x["campos"] if not e.get(c)]
+            if not faltan:
+                continue
+            texto = (f"entrada {i} ({e.get('id')}): estado {estado} sin "
+                     f"{faltan} ({x['origen']}.obligatoriedad_condicional)")
+            if i > x["corte"]:
+                problemas.append(texto)
+            else:
+                incidencias.append(
+                    texto + f" (entrada {i} <= corte {x['corte']} de esa "
+                            f"enmienda, declarada, no corregible)"
+                )
+    return problemas, incidencias
+
+
 def _existe_ruta(doc, camino):
     """
     ficha_congelada.alcance.aislamiento_del_resolver.
@@ -775,7 +893,18 @@ def cargar_precio(path, doc):
                "hasta": str(s.index.max().date())}
 
 
-def cargar_metrica(path, fecha_fin):
+def cargar_metrica(path, fecha_fin, sha_declarado=None):
+    # Enmienda 35: el CSV que el motor consume de verdad se comprueba contra el
+    # ancla escrita en la transicion a EN_TEST, antes de calcular nada con el.
+    if sha_declarado:
+        sha_real = sha256_fichero(path)
+        if sha_real != sha_declarado:
+            abortar(
+                f"la serie de la metrica no coincide con sha256_serie_metrica de "
+                f"la entrada de transicion: declarado {sha_declarado[:16]}..., "
+                f"leido {sha_real[:16]}... ({path})"
+            )
+
     df = pd.read_csv(path)
     cols = {c.lower(): c for c in df.columns}
     col_f = cols.get("fecha") or cols.get("date")
@@ -1280,6 +1409,24 @@ def ejecutar(args):
     ret = retorno_N(precio, N)
 
     rutas_metrica = dict(x.split("=", 1) for x in (args.metrica or []))
+
+    # Enmienda 35: artefacto bruto por argumento propio. El motor no lo abre ni
+    # supone que forma tiene; solo comprueba su SHA-256 contra el ancla de la
+    # entrada. Un id que no se esta testeando es un aborto: aportar un fichero
+    # que nadie va a comprobar es peor que no aportarlo.
+    # Nota declarada: --metrica ignora en silencio los id no admitidos. Esa
+    # asimetria se deja como esta; corregirla seria alterar el comportamiento de
+    # un argumento existente, y la enmienda 35 solo anade.
+    rutas_snapshot = dict(x.split("=", 1) for x in (args.snapshot_metrica or []))
+    ids_candidatas = {v["id"] for v in candidatas}
+    sobran_snap = sorted(set(rutas_snapshot) - ids_candidatas)
+    if sobran_snap:
+        abortar(
+            f"--snapshot-metrica aporta artefacto para {sobran_snap}, que no "
+            f"esta(n) admitida(s) a EN_TEST en el lote {args.lote}. No hay ancla "
+            f"contra la que comprobarlo"
+        )
+
     resultados, pvalores = {}, {}
 
     for v in candidatas:
@@ -1288,8 +1435,29 @@ def ejecutar(args):
         if vid not in rutas_metrica:
             abortar(f"falta --metrica {vid}=<csv> para la variable admitida '{vid}'")
 
+        ent_tr = v["entrada_operativa"]
+
+        # Enmienda 35, regimen de sha256_snapshot_metrica: opcional declararlo,
+        # pero si la entrada lo trae, el fichero es exigible y se comprueba.
+        sha_snap = ent_tr.get("sha256_snapshot_metrica")
+        if sha_snap:
+            if vid not in rutas_snapshot:
+                abortar(
+                    f"[{vid}] la entrada de transicion declara "
+                    f"sha256_snapshot_metrica y no se aporta "
+                    f"--snapshot-metrica {vid}=<fichero>"
+                )
+            sha_snap_real = sha256_fichero(rutas_snapshot[vid])
+            if sha_snap_real != sha_snap:
+                abortar(
+                    f"[{vid}] el snapshot bruto no coincide con "
+                    f"sha256_snapshot_metrica: declarado {sha_snap[:16]}..., "
+                    f"leido {sha_snap_real[:16]}..."
+                )
+
         fecha_fin = pd.Timestamp(ficha["fecha_fin_ventana_test"])
-        metrica = cargar_metrica(rutas_metrica[vid], fecha_fin)
+        metrica = cargar_metrica(rutas_metrica[vid], fecha_fin,
+                                 ent_tr.get("sha256_serie_metrica"))
         mask, meta_mask = construir_mascara(metrica, ficha)
         mask = mask[mask.index <= fecha_fin]
 
@@ -1404,6 +1572,11 @@ def ejecutar(args):
             "sorteo de desplazamientos del nulo por rotacion, ni que hacer con las "
             "rotaciones cuya realizacion es indefinida (se descartan y se cuenta cuantas "
             "quedan).",
+            "alta_transicion_de_estado.ampliacion_enmienda_34 nombra su lista de "
+            "estados 'estados_de_resultado_de_test' y la ampliacion_enmienda_35 la "
+            "nombra 'estados_que_lo_exigen'. Para no codificar nombres de clave, el "
+            "motor toma la unica lista de cadenas de cada bloque "
+            "obligatoriedad_condicional, y aborta si hay mas de una.",
             "La doctrina no define que ocurre si un tramo del bloque_1 no tiene ninguna "
             "observacion con la mascara activa: la correlacion queda indefinida. "
             "filtro.py aborta en vez de decidirlo por su cuenta.",
@@ -1422,6 +1595,16 @@ def ejecutar(args):
             json.dump(informe, f, ensure_ascii=False, indent=1, default=str)
         print(f"informe escrito en {args.informe}")
 
+    # Enmienda 35, utilidad anadida: los dos hashes que la entrada de transicion
+    # va a tener que declarar. No es una regla ni condiciona nada; se ofrecen
+    # para que no haya que calcularlos a mano.
+    print("\nhashes para la entrada de transicion de resultado:")
+    if args.informe:
+        print(f"  sha256_informe: {sha256_fichero(args.informe)}")
+    else:
+        print("  sha256_informe: no se escribio informe (--informe ausente)")
+    print(f"  sha256_motor:   {_sha_motor()}")
+
     return 0
 
 
@@ -1433,6 +1616,11 @@ def main(argv=None):
     ap.add_argument("--precio")
     ap.add_argument("--metrica", action="append",
                     help="id=ruta.csv (repetible)")
+    ap.add_argument("--snapshot-metrica", action="append",
+                    help="id=ruta (repetible). Enmienda 35: artefacto bruto que "
+                         "la ficha declare como snapshot. Solo se comprueba su "
+                         "SHA-256 contra sha256_snapshot_metrica de la entrada; "
+                         "el motor no lo abre ni supone que forma tiene.")
     ap.add_argument("--informe")
     ap.add_argument("--solo-comprobar", action="store_true")
     ap.add_argument(

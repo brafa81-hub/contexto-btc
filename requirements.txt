@@ -1,5 +1,9 @@
+# Enmienda 35 (2026-09-06): pandas y numpy con version exacta. Son las unicas
+# bibliotecas que intervienen en el calculo del resultado. streamlit, plotly y
+# requests quedan en rango: afectan al dashboard o a una descarga ya congelada
+# por hash. No fija el interprete de Python ni las dependencias transitivas.
 streamlit>=1.62
-pandas>=2.0
-numpy>=1.24
+pandas==2.3.3
+numpy==2.3.5
 plotly>=5.0
 requests>=2.28

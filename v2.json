@@ -1,7 +1,7 @@
 {
  "meta": {
   "nombre": "Contexto-BTC — Protocolo de validacion v2",
-  "version_esquema": "2.8.0",
+  "version_esquema": "2.9.0",
   "fecha_creacion": "2026-09-03",
   "archivo_registro_asociado": "registro.json",
   "declaracion_obligatoria": "Batch-PRDS actua como cribado de descubrimiento. La garantia real de control de falsos positivos descansa en la confirmacion forward sobre datos que no existian cuando la variable fue propuesta.",
@@ -238,6 +238,21 @@
      "4. Declaracion de que filtro.py no automatiza esa obligatoriedad, y alta del hueco junto al de los hashes de snapshot no verificados.",
      "5. Declaracion del cambio de la constante de compatibilidad de filtro.py posterior al resultado, con su alcance limitado a esta enmienda."
     ],
+    "naturaleza": "Solo anade. Aplicacion prospectiva."
+   },
+   {
+    "n": 35,
+    "titulo": "verificacion de los hashes de la metrica y cierre de los controles declarados no automatizados",
+    "fecha": "2026-09-06",
+    "motivo": "La enmienda 34 dejo declarados dos huecos del motor: no comprobaba la obligatoriedad de sha256_motor y sha256_informe, ni verificaba los hashes del artefacto bruto y del CSV de la metrica. El CSV, ademas, no tenia campo en la lista cerrada donde anclarse.",
+    "partes": [
+     "1. Campo nuevo en la lista cerrada de la entrada de transicion: sha256_serie_metrica, exigido en EN_TEST como precompromiso.",
+     "2. Regimen expreso de sha256_snapshot_metrica: opcional, pero exigible y verificado si la entrada lo declara.",
+     "3. Implementacion en filtro.py de los tres controles, con la lista de estados y el corte prospectivo leidos de la doctrina.",
+     "4. Actualizacion del estado de requirements.txt, con declaracion expresa de que las versiones de la ejecucion de la entrada 23 son desconocidas y no se reconstruyen.",
+     "5. Constancia de la decision de no escribir la regla general que distinga cambios de compatibilidad de cambios de comportamiento."
+    ],
+    "momento": "Lote 2026-Q3 cerrado, sin test pendiente ni resultado contaminable.",
     "naturaleza": "Solo anade. Aplicacion prospectiva."
    }
   ],
@@ -840,6 +855,7 @@
       "gate_alcanzado",
       "fecha_corte_bloques",
       "sha256_snapshot_metrica",
+      "sha256_serie_metrica",
       "sha256_motor",
       "sha256_informe",
       "declaraciones_de_ejecucion",
@@ -892,7 +908,14 @@
       "alcance_de_sha256_motor": {
        "cubre": "El fichero del motor, unicamente.",
        "no_cubre": "El entorno de ejecucion ni las dependencias. requirements.txt no fija versiones (pandas>=2.0, numpy>=1.24), de modo que dos ejecuciones del mismo fichero pueden correr sobre bibliotecas distintas.",
-       "naturaleza": "Limitacion declarada, no resuelta. Fijar versiones es tarea aparte y posterior: no se sabe con que versiones se ejecuto el informe ya archivado, y fijar hoy las de un contenedor de verificacion registraria como confirmado un dato que es supuesto sobre una ejecucion pasada."
+       "naturaleza": "Limitacion declarada, no resuelta. Fijar versiones es tarea aparte y posterior: no se sabe con que versiones se ejecuto el informe ya archivado, y fijar hoy las de un contenedor de verificacion registraria como confirmado un dato que es supuesto sobre una ejecucion pasada.",
+       "actualizacion_enmienda_35": {
+        "hecho": "El 2026-09-06 se fijan versiones exactas de pandas y numpy en requirements.txt. El texto de no_cubre describe el estado del repositorio en la fecha de la enmienda 34, era cierto entonces y no se reescribe.",
+        "alcance_de_la_fijacion": "Solo pandas y numpy, que son las bibliotecas que intervienen en el calculo del resultado. streamlit, plotly y requests quedan en rango: afectan al dashboard o a una descarga ya congelada por hash, y clavarlos anadiria riesgo de despliegue sin ganar reproducibilidad.",
+        "lo_que_no_queda_fijado": "La version del interprete de Python y las dependencias transitivas. requirements.txt no las gobierna. La limitacion se reduce, no desaparece.",
+        "no_es_retroactivo": "Las versiones con que se ejecuto el informe anclado en la entrada 23 son DESCONOCIDAS. Fijar hoy las de un contenedor de verificacion y presentarlas como aquellas registraria un supuesto como confirmado. No se reconstruyen.",
+        "alcance_de_sha256_motor_sin_cambios": "sha256_motor sigue cubriendo el fichero unicamente. Fijar dependencias reduce la deriva futura del entorno; no amplia lo que ese hash cubre."
+       }
       },
       "obligatoriedad_condicional": {
        "regla": "Ambos campos son exigidos cuando el campo estado de la transicion pertenece a los estados de resultado de test.",
@@ -910,14 +933,35 @@
       "no_automatizada": {
        "hecho": "filtro.py no comprueba hoy esta obligatoriedad condicional. La doctrina la afirma y el motor no la ejecuta.",
        "consecuencia": "Queda declarada como hueco conocido del motor, junto al de la enmienda 33: filtro.py verifica el SHA-256 del snapshot de precio contra la doctrina, pero no el del snapshot de matriz ni el del CSV de la metrica.",
-       "leccion": "Misma que la enmienda 33: la doctrina no afirma controles que el motor ejecuta sin decirlo, ni finge que ejecuta los que no ejecuta. La ausencia de comprobacion en el codigo no autoriza a omitir el requisito doctrinal, pero tampoco lo garantiza."
+       "leccion": "Misma que la enmienda 33: la doctrina no afirma controles que el motor ejecuta sin decirlo, ni finge que ejecuta los que no ejecuta. La ausencia de comprobacion en el codigo no autoriza a omitir el requisito doctrinal, pero tampoco lo garantiza.",
+       "superado_por_la_enmienda_35": {
+        "hecho": "La enmienda 35 implementa esta obligatoriedad condicional en filtro.py, junto con la verificacion de los hashes de la metrica. El texto de este objeto describe el estado del motor entre las enmiendas 34 y 35 y no se reescribe.",
+        "controles_que_pasan_a_ejecutarse": [
+         "Obligatoriedad de sha256_motor y sha256_informe en los estados de resultado de test.",
+         "Verificacion de sha256_serie_metrica contra el CSV que el motor consume.",
+         "Verificacion de sha256_snapshot_metrica contra su fichero cuando la entrada lo declara."
+        ],
+        "garantia_de_que_no_se_declara_en_vano": "Esta enmienda cambia mayor.menor, y filtro.py aborta antes de leer nada si DOCTRINA_COMPATIBLE no coincide con version_esquema. Una doctrina 2.9.0 con un motor que aun no ejecute estos controles no puede ejecutarse en absoluto: el desfase se manifiesta como aborto, no como control declarado e incumplido en silencio.",
+        "hueco_que_permanece": "Ninguno de estos controles alcanza al entorno de ejecucion. Ver alcance_de_sha256_motor."
+       }
       },
       "cambio_de_compatibilidad_posterior_al_resultado": {
        "hecho": "Esta enmienda cambia mayor.menor, por lo que meta.compatibilidad.consecuencia_asumida obliga a tocar filtro.py. La edicion se limita a la constante DOCTRINA_COMPATIBLE, de 2.7 a 2.8. Se realiza despues de conocer el resultado del test de ssr_capstables del lote 2026-Q3.",
        "por_que_no_afecta_al_resultado": "La constante gobierna unicamente si el motor acepta leer esta doctrina. No interviene en extraccion de datos, calculo, umbrales, mascara, particion, gates ni decision. No tiene capacidad causal sobre un resultado ya emitido, que ademas no se regenera.",
        "consecuencia_registrada": "El SHA-256 de filtro.py cambia. El campo sha256_motor de la entrada que registre ese resultado debe llevar el hash del fichero que EJECUTO, no el del fichero vigente tras esta enmienda. La discrepancia entre ambos es procedencia historica correcta, no un defecto.",
        "reproducibilidad": "El informe archivado es regenerable byte a byte contra el estado del repositorio anterior a esta enmienda, no contra el vigente. La reproducibilidad se define contra el artefacto historico que produjo el resultado.",
-       "alcance": "Declaracion de hecho sobre esta enmienda. No crea ninguna regla general ni ninguna excepcion invocable en el futuro. Si se quiere una regla que distinga cambios de compatibilidad de cambios de comportamiento, debe escribirse como enmienda propia y decidirse sin un caso pendiente que la reclame."
+       "alcance": "Declaracion de hecho sobre esta enmienda. No crea ninguna regla general ni ninguna excepcion invocable en el futuro. Si se quiere una regla que distinga cambios de compatibilidad de cambios de comportamiento, debe escribirse como enmienda propia y decidirse sin un caso pendiente que la reclame.",
+       "evaluacion_enmienda_35": {
+        "decision": "No se escribe la regla general que distinga cambios de compatibilidad de cambios de comportamiento. Evaluada el 2026-09-06, con el lote 2026-Q3 cerrado y sin ningun caso pendiente que la reclame, que es la condicion que este parrafo exigia.",
+        "motivos": [
+         "meta.compatibilidad.consecuencia_asumida declara deliberada la friccion de que toda enmienda mayor.menor obligue a tocar filtro.py. Una regla que exima a los cambios de compatibilidad ablanda exactamente esa friccion.",
+         "meta.compatibilidad.cierre_del_hueco_de_parche reconoce que la granularidad deja abierto quien decide que es un parche, y lo cierra con la traza, no con una categoria. Clasificar los cambios en compatibilidad y comportamiento reintroduce esa decision un nivel mas arriba y con poder de autorizacion en lugar de deteccion.",
+         "El problema que la regla resolveria ya esta resuelto por anclaje: sha256_motor registra en cada entrada el fichero que ejecuto. El coste de no tener regla general es una declaracion por caso; el de tenerla, una autorizacion generica invocable por quien necesite que su cambio sea de compatibilidad.",
+         "Existe un unico precedente. Generalizar de una observacion es lo contrario del criterio con que se escribio el resto del protocolo."
+        ],
+        "alcance_de_la_decision": "No prohibe escribir esa regla en el futuro. Deja constancia de que se evaluo y se decidio no escribirla, para que la ausencia no se lea como olvido. Reabrir requiere un segundo caso real.",
+        "nota": "La enmienda 35 no pertenece a esta categoria: cambia el comportamiento del motor, no solo su constante de compatibilidad."
+       }
       },
       "aplicacion_prospectiva": {
        "regla": "Los dos campos y su obligatoriedad condicional rigen para las entradas de transicion escritas a partir de esta enmienda. El registro tenia 22 entradas cuando se escribio; las entradas 1 a 22 quedan fuera.",
@@ -926,6 +970,42 @@
       },
       "origen_externo": "Dos rondas de revision externa independiente el 2026-09-06. La segunda, sobre la forma del versionado, con cinco revisores: unanimidad en que ampliar una lista cerrada leida desde la doctrina es un cambio semantico y exige mayor.menor; unanimidad en que meta.compatibilidad.cierre_del_hueco_de_parche es una regla de deteccion y no de autorizacion; unanimidad en que alojar estos hashes en declaraciones_de_ejecucion repetiria la maniobra que la enmienda 33 prohibio con el campo motivo.",
       "naturaleza": "Solo anade. No reescribe ningun texto previo. No altera ningun gate, umbral, mascara, particion ni criterio estadistico. No modifica ninguna entrada del registro."
+     },
+     "ampliacion_enmienda_35": {
+      "campos_anadidos": [
+       "sha256_serie_metrica"
+      ],
+      "definiciones": {
+       "sha256_serie_metrica": "SHA-256 del fichero CSV de la serie de la metrica continua que filtro.py consume por --metrica para esta variable. Es el fichero que entra al motor, no el artefacto bruto del que se derivo.",
+       "distincion_con_sha256_snapshot_metrica": "sha256_snapshot_metrica ancla el artefacto bruto que la ficha de la variable declare como snapshot; para ssr_capstables, la matriz fecha por token. sha256_serie_metrica ancla la serie derivada que el motor lee. Pueden coincidir si la ficha no define un snapshot bruto aparte: en ese caso ambos campos llevan el mismo hash y no se duplica nada, porque cada uno responde a una pregunta distinta."
+      },
+      "motivo": "Entre el artefacto anclado y el resultado registrado quedaba un eslabon sin verificar: el CSV que el motor lee de verdad. Un cambio en ese fichero no rompia ningun hash y no lo detectaba nadie. La entrada 22 registro su SHA-256 dentro de declaraciones_de_ejecucion, que es objeto documental y no condiciona ninguna transicion. Usarlo como ancla vinculante habria repetido con declaraciones_de_ejecucion la maniobra que la enmienda 33 prohibio con el campo motivo.",
+      "obligatoriedad_condicional": {
+       "regla": "sha256_serie_metrica es exigido cuando el campo estado de la transicion es EN_TEST.",
+       "estados_que_lo_exigen": [
+        "EN_TEST"
+       ],
+       "ancla_estructural": "El propio campo estado, igual que en la enmienda 34. No se crea ningun discriminante nuevo.",
+       "momento": "Es un precompromiso, no un registro de resultado: se escribe antes de ejecutar ningun gate, como fecha_corte_bloques. Exigirlo en la transicion de resultado llegaria tarde, porque para entonces el fichero ya habria producido el veredicto.",
+       "fuera_de_ese_estado": "Opcional."
+      },
+      "regimen_de_sha256_snapshot_metrica": {
+       "obligatoriedad": "Sigue siendo opcional. No toda variable futura tendra un artefacto bruto distinto de la serie que el motor lee.",
+       "consecuencia_de_declararlo": "Si una entrada de transicion a EN_TEST lo trae, filtro.py exige el fichero correspondiente en la ejecucion y aborta si no se aporta o si el hash no coincide. Declarar un ancla y no poder comprobarla es peor que no declararla.",
+       "motivo_de_no_hacerlo_obligatorio": "Exigirlo siempre obligaria a una variable de fuente unica a escribir dos veces el hash del mismo fichero para satisfacer la forma de la lista. La lista cerrada se amplia para registrar lo que existe, no para obligar a inventar artefactos."
+      },
+      "implementacion_en_el_motor": {
+       "argumento_nuevo": "filtro.py recibe el artefacto bruto por un argumento propio. El motor no asume que sea una matriz fecha por token: verifica lo que la ficha de esa variable declare como snapshot.",
+       "cero_reglas_en_el_codigo": "La lista de estados que exige cada campo y el corte de aplicacion prospectiva se leen de este objeto y del de la enmienda 34. El motor no incorpora ninguna constante nueva.",
+       "utilidad_anadida": "Al terminar, filtro.py imprime el SHA-256 del informe que acaba de escribir y el suyo propio. No es una regla: exigir dos hashes y no ofrecerlos deja abierta la via de error mas probable, que es calcularlos a mano."
+      },
+      "aplicacion_prospectiva": {
+       "regla": "El campo y su obligatoriedad condicional rigen para las entradas de transicion escritas a partir de esta enmienda. El registro tenia 23 entradas cuando se escribio; las entradas 1 a 23 quedan fuera.",
+       "entradas_previas_a_la_enmienda": 23,
+       "motivo": "El registro es append-only: una entrada anterior no se puede corregir. Mismo criterio que las enmiendas 33 y 34."
+      },
+      "momento": "Escrita con el lote 2026-Q3 cerrado, sin ningun test pendiente ni ningun resultado que se pueda contaminar. Es la unica ventana en que tocar los controles del motor no admite sospecha de haberlos ajustado a un resultado.",
+      "naturaleza": "Solo anade. No reescribe ningun texto previo. No altera ningun gate, umbral, mascara, particion ni criterio estadistico. No modifica ninguna entrada del registro. Aplicacion prospectiva."
      }
     }
    },
