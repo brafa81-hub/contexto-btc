@@ -6,8 +6,8 @@
   "append_only": true,
   "algoritmo_hash": "sha256",
   "genesis": "0000000000000000000000000000000000000000000000000000000000000000",
-  "ultimo_hash": "6a993fc9d97e2f1ef3b197d8e86cd48d1a59c889d3db8252f07ac22eb946c0f7",
-  "n_entradas": 22,
+  "ultimo_hash": "277698883dc35f56edafcbde8cd286c0a9f556c3c8a05fdec0249ccf670496a6",
+  "n_entradas": 23,
   "regla": "Ninguna entrada se edita ni se borra. Una correccion se registra como entrada nueva que referencia la anterior. filtro.py verifica la cadena completa al arrancar y aborta si esta rota.",
   "canonizacion": "json.dumps(entrada_sin_hash, sort_keys=True, separators=(',',':'), ensure_ascii=False).encode('utf-8')"
  },
@@ -873,6 +873,20 @@
    "motivo": "Transicion de ssr_capstables a EN_TEST para el lote 2026-Q3. Se escribe antes de ejecutar ningun gate. Fija la fecha de corte de bloques y el sha256 del snapshot de la metrica como precompromiso: filtro.py deriva la particion por su cuenta y aborta si no coincide con la registrada aqui. No modifica la ficha congelada (entrada 20) ni la aclaracion del numerador (entrada 21), que no se reabren. Consume la primera propuesta del presupuesto 2026-Q3.",
    "hash_anterior": "a1b5b876d114e5d11f3b521d6a5df2bd1e9c8eef61a9566e0e7af0b03ba15738",
    "hash": "6a993fc9d97e2f1ef3b197d8e86cd48d1a59c889d3db8252f07ac22eb946c0f7"
+  },
+  {
+   "id": "ssr_capstables",
+   "tipo_entrada": "transicion_de_estado",
+   "estado": "DESCARTADA_GATE_3",
+   "fecha_registro": "2026-09-06",
+   "gate_alcanzado": 3,
+   "fecha_corte_bloques": "2023-03-31",
+   "sha256_snapshot_metrica": "10dcabcf818fc4c0b553dda9ab5cfaffc11a93b3f22eb8c190f01140d5ebf788",
+   "sha256_motor": "936eda7034ec04dbadfc3f03b0530bd1c52e1b3ef5f99a0208185220f097966f",
+   "sha256_informe": "eaff81e22ebbe8ecc1c5b7381134206549c9a999a1e70fc1114d54d5801f0e88",
+   "motivo": "Resultado del test del lote 2026-Q3. La variable no supera el gate 3: su contribucion incremental de R2 queda por debajo del umbral del lote, sin insuficiencia de observaciones efectivas. Los gates 1 y 4 se superan y el gate 2, descriptivo desde la enmienda 19, no condiciona el veredicto. La particion coincide con la fecha de corte comprometida en la entrada 22, escrita antes de ejecutar. Las cifras estan en el informe anclado en sha256_informe; no se reproducen aqui, porque la enmienda 33 prohibe usar este campo como contenedor de datos estructurados. sha256_motor identifica el fichero filtro.py que produjo el resultado, anterior al cambio de la constante de compatibilidad de la enmienda 34; difiere del fichero vigente y esa diferencia es procedencia historica, no defecto. El rechazo cierra la variable: no otorga derecho a re-proponerla ni a proponer variantes, conforme a protocolo.unicidad_del_test. No se reabren la ficha congelada (entrada 20), la aclaracion del numerador (entrada 21) ni la incidencia de cobertura Omni declarada en la entrada 22.",
+   "hash_anterior": "6a993fc9d97e2f1ef3b197d8e86cd48d1a59c889d3db8252f07ac22eb946c0f7",
+   "hash": "277698883dc35f56edafcbde8cd286c0a9f556c3c8a05fdec0249ccf670496a6"
   }
  ]
 }

@@ -32,7 +32,7 @@ import pandas as pd
 
 import cadena
 
-DOCTRINA_COMPATIBLE = "2.7"  # enmienda 33
+DOCTRINA_COMPATIBLE = "2.8"  # enmienda 34
 
 # Hueco declarado de la doctrina: estados.mapeo_salida_filtro_py.tabla traduce
 # la etiqueta interna PASA a EN_CONFIRMACION "solo si supera ademas el umbral BY
