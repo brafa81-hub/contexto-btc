@@ -45,6 +45,11 @@ sistemáticamente alcista — el test estaba sesgado a favor.
 El rango honesto es amplio: p entre 0.014 y 0.049. Significativo en todos
 los casos, pero más frágil de lo que sugería el 0.001.
 
+Este rango se calculó con la convención de cola de filtro.py v1, que elige
+la cola tras ver el signo observado. Medida en simulación, esa convención
+da una tasa de error tipo I de 0,095 a nominal 0,05: bajo v2 el rango
+equivalente sería aproximadamente el doble.
+
 CORRECCIÓN POR PRUEBAS MÚLTIPLES: se evaluaron 6 fases del ciclo, así que
 el umbral de Bonferroni es 0.05/6 = 0.0083. La fase 545-730d es la única
 que lo cruza, y solo con el planteamiento más favorable del test.
@@ -174,7 +179,7 @@ def texto_aviso(hoy: date = None) -> str:
             f"📅 En {v['dias_hasta_ventana']} días entra la ventana histórica de "
             f"18-24 meses post-halving{nota_estimado}. En los cuatro ciclos "
             f"anteriores, esa fase precedió una caída mediana del 22% a 90 días "
-            f"(p entre 0,014 y 0,049 según el test; acierta 2 de 3 fuera de muestra), con solo 4 observaciones — evidencia débil, no "
+            f"(p entre 0,014 y 0,049 con método v1 — bajo v2 sería el doble aprox.; acierta 2 de 3 fuera de muestra), con solo 4 observaciones — evidencia débil, no "
             f"una predicción. Detalle completo en `halving.py`."
         )
 
@@ -182,7 +187,7 @@ def texto_aviso(hoy: date = None) -> str:
         f"📅 Estás dentro de la ventana histórica de 18-24 meses post-halving"
         f"{nota_estimado} (quedan {v['dias_restantes_ventana']} días). En los "
         f"cuatro ciclos anteriores esta fase precedió una caída mediana del 22% "
-        f"a 90 días (p entre 0,014 y 0,049; acierta 2 de 3 fuera de muestra) — evidencia con solo 4 observaciones, no una "
+        f"a 90 días (p entre 0,014 y 0,049 con método v1 — el doble aprox. bajo v2; acierta 2 de 3 fuera de muestra) — evidencia con solo 4 observaciones, no una "
         f"predicción. Detalle completo en `halving.py`."
     )
 
