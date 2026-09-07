@@ -6,8 +6,8 @@
   "append_only": true,
   "algoritmo_hash": "sha256",
   "genesis": "0000000000000000000000000000000000000000000000000000000000000000",
-  "ultimo_hash": "277698883dc35f56edafcbde8cd286c0a9f556c3c8a05fdec0249ccf670496a6",
-  "n_entradas": 23,
+  "ultimo_hash": "c0f82b038de53584cbf03c42c63eb7df35c269c572f072a2686336cc8ce3c41f",
+  "n_entradas": 24,
   "regla": "Ninguna entrada se edita ni se borra. Una correccion se registra como entrada nueva que referencia la anterior. filtro.py verifica la cadena completa al arrancar y aborta si esta rota.",
   "canonizacion": "json.dumps(entrada_sin_hash, sort_keys=True, separators=(',',':'), ensure_ascii=False).encode('utf-8')"
  },
@@ -887,6 +887,30 @@
    "motivo": "Resultado del test del lote 2026-Q3. La variable no supera el gate 3: su contribucion incremental de R2 queda por debajo del umbral del lote, sin insuficiencia de observaciones efectivas. Los gates 1 y 4 se superan y el gate 2, descriptivo desde la enmienda 19, no condiciona el veredicto. La particion coincide con la fecha de corte comprometida en la entrada 22, escrita antes de ejecutar. Las cifras estan en el informe anclado en sha256_informe; no se reproducen aqui, porque la enmienda 33 prohibe usar este campo como contenedor de datos estructurados. sha256_motor identifica el fichero filtro.py que produjo el resultado, anterior al cambio de la constante de compatibilidad de la enmienda 34; difiere del fichero vigente y esa diferencia es procedencia historica, no defecto. El rechazo cierra la variable: no otorga derecho a re-proponerla ni a proponer variantes, conforme a protocolo.unicidad_del_test. No se reabren la ficha congelada (entrada 20), la aclaracion del numerador (entrada 21) ni la incidencia de cobertura Omni declarada en la entrada 22.",
    "hash_anterior": "6a993fc9d97e2f1ef3b197d8e86cd48d1a59c889d3db8252f07ac22eb946c0f7",
    "hash": "277698883dc35f56edafcbde8cd286c0a9f556c3c8a05fdec0249ccf670496a6"
+  },
+  {
+   "id": "treasury_general_account",
+   "tipo_entrada": "alta_retroactiva",
+   "familia": "macro",
+   "lote": "2026-Q3",
+   "fecha_propuesta": "2026-09-08",
+   "estado": "DESCARTADA_PREVIA",
+   "gate_alcanzado": null,
+   "consume_presupuesto_v2": false,
+   "fecha_registro": "2026-09-08",
+   "fuente": {
+    "proveedor": "api.fiscaldata.treasury.gov, Daily Treasury Statement, tabla operating_cash_balance",
+    "endpoint": "https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v1/accounting/dts/operating_cash_balance",
+    "verificado_en_vivo": "2026-09-08",
+    "hallazgo_estructural": "La serie cambia de esquema dos veces sin aviso: 2005-10-03 a 2021-09-30 el saldo esta en account_type='Federal Reserve Account', campo close_today_bal; 2021-10-01 a 2022-04-15 en account_type='Treasury General Account (TGA)', mismo campo; desde 2022-04-18 en account_type='Treasury General Account (TGA) Closing Balance', campo open_today_bal (close_today_bal pasa a null). Verificado por cuadre aritmetico exacto: apertura + depositos - retiradas = cierre en el tercer tramo.",
+    "rango_disponible": "2005-10-03 a 2026-09-03, 5256 publicaciones, maximo hueco entre publicaciones 4 dias naturales"
+   },
+   "motivo": "La variable no se congela. Se mide la distribucion de activacion de la mascara candidata (percentil movil 730 dias, cola alta, Q80) antes de fijar la ficha, y el resultado muestra un defecto de diseno, no falta de historia. Con inicio de dias utiles en 2015-01-01 (4264 dias, 5,84 anios por bloque, muy por encima del suelo de 3), la tasa de activacion global medida es 38,5% frente al 20% nominal esperado, con anios completos en extremos opuestos: 84,7% en 2020 y 0,0% en 2022. La causa es la tendencia secular del nivel del TGA (mediana anual: 54.000M USD en 2013, 165.000M en 2015, 1.543.000M en 2020), consecuencia del cambio de politica de gestion de caja del Tesoro desde 2015, que una ventana movil de 730 dias no absorbe. El gate 1 (estabilidad entre tramos) y el gate 4 (coherencia de signo) fallarian con alta probabilidad por construccion de la mascara, no por ausencia de efecto economico. Emitir un resultado bajo esta mascara no distinguiria no hay efecto de la mascara no puede detectarlo. No se propone en su lugar ninguna variante de la variable en esta entrada: una eventual ficha sobre la variacion del TGA en lugar de su nivel exige justificacion propia en sesion separada y no se da por disponible aqui, conforme a la advertencia de protocolo.unicidad_del_test.excepciones[0].por_que_se_declara_excepcion sobre vias de elusion mediante id nuevo.",
+   "declaracion_de_sesgo": "Se midio la distribucion completa de activaciones de la variable (incluida su evolucion anual) antes de decidir el descarte. No se midio ni se consulto en ningun momento la relacion entre el TGA y el retorno de BTC. La medicion que motiva este descarte es sobre la mascara en si misma, no sobre el resultado del test economico.",
+   "nota_cola": "La eleccion previa de cola alta (Q80) sobre cola baja (Q20), motivada por contaminacion de la cola baja con episodios de techo de deuda, queda documentada pero no llega a aplicarse: el descarte es anterior y no depende de cual cola se hubiera elegido.",
+   "no_es_re_test": "No hay entrada previa con este id. Es alta y descarte en el mismo movimiento, antes de EN_TEST.",
+   "hash_anterior": "277698883dc35f56edafcbde8cd286c0a9f556c3c8a05fdec0249ccf670496a6",
+   "hash": "c0f82b038de53584cbf03c42c63eb7df35c269c572f072a2686336cc8ce3c41f"
   }
  ]
 }
