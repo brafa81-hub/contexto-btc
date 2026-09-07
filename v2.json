@@ -1,7 +1,7 @@
 {
  "meta": {
   "nombre": "Contexto-BTC — Protocolo de validacion v2",
-  "version_esquema": "2.10.0",
+  "version_esquema": "2.11.0",
   "fecha_creacion": "2026-09-03",
   "archivo_registro_asociado": "registro.json",
   "declaracion_obligatoria": "Batch-PRDS actua como cribado de descubrimiento. La garantia real de control de falsos positivos descansa en la confirmacion forward sobre datos que no existian cuando la variable fue propuesta.",
@@ -270,6 +270,12 @@
     ],
     "naturaleza": "Anade una excepcion acotada y cerrada. No altera ningun gate, umbral, mascara, particion ni criterio estadistico. No modifica ninguna entrada del registro. No reescribe ningun texto previo salvo protocolo.unicidad_del_test.nota, cuyo texto anterior se conserva.",
     "momento": "Lote 2026-Q3 cerrado, sin test pendiente ni resultado contaminable. Ninguna variable en CONFIRMADA."
+   },
+   {
+    "n": 37,
+    "titulo": "implementacion de las verificaciones de la repesca v1 y resolucion del campo regimen",
+    "fecha": "2026-09-07",
+    "motivo": "La enmienda 36 dejo sus siete verificaciones DECLARADAS NO AUTOMATIZADAS y prohibio escribir ninguna repesca hasta implementarlas. Al implementarlas aparecio que la doctrina no decia de que entrada se lee el campo regimen, y que segun la respuesta 'nasdaq' era o no elegible: dos clausulas de la enmienda 36 en contradiccion. Se resuelve por analogia explicita con la regla de lote de la enmienda 29, escrita en la doctrina y no en el motor."
    }
   ],
   "compatibilidad": {
@@ -1062,6 +1068,16 @@
     "motivo": "El motor tomaba la ultima entrada como ficha. Escrita una transicion a EN_TEST, que por su lista cerrada no lleva ningun campo de ficha, la variable se quedaba sin mascara, sin horizonte y sin fecha de fin de ventana. La doctrina ya distinguia las dos cosas: el estado gana la ultima, la ficha es inmutable.",
     "alcance": "No cambia cual es la ficha en ninguna variable ya registrada: a fecha de esta enmienda no existe ninguna entrada de tipo transicion_de_estado en el registro.",
     "no_debilita_la_inmutabilidad": "Sigue vigente que la ficha solo puede sustituirse en estado PROPUESTA y que queda inmutable al alcanzar EN_TEST. Esta clausula dice cual es la ficha, no permite cambiarla."
+   },
+   "regimen": {
+    "enmienda": 37,
+    "regla": "regimen es una propiedad de la VARIABLE, no de la entrada. Lo fija la PRIMERA entrada de un id y ninguna entrada posterior puede cambiarlo. Identica a la regla de 'lote' de la enmienda 29.",
+    "comportamiento_ante_discrepancia": "Si una entrada posterior declara un regimen distinto, filtro.py IGNORA ese valor y hace constar la incoherencia en el informe, nombrando la entrada. No aborta: el registro es append-only y estas entradas no se pueden editar.",
+    "motivo": "Detectado al implementar la verificacion (b) de la enmienda 36. La entrada 13 (nasdaq_aclaracion_panel) declara regimen 'v2' sobre una variable del regimen v1, exactamente el mismo defecto que ya tiene en el campo lote y que la enmienda 29 resolvio. Sin esta regla, 'nasdaq' resolvia a regimen v2 y la verificacion (b) lo declaraba no elegible, contradiciendo a ids_elegibles.lista, que lo incluye. Dos clausulas de la misma enmienda daban respuestas opuestas sobre la misma variable.",
+    "por_que_no_se_resolvio_en_el_codigo": "El motor no puede decidir de que entrada lee un campo cuando la doctrina no lo dice: seria una regla viviendo en el codigo, que es lo que meta.precedencia prohibe y lo que repesca_v1.verificaciones_de_filtro_py.regla exige evitar.",
+    "alcance": "No modifica ninguna entrada del registro ni ningun resultado. La entrada 13 conserva su valor 'v2' y pasa a reportarse como incoherencia de regimen en cada ejecucion, ademas de la de lote que ya se reportaba.",
+    "no_es_una_categoria_nueva": "No se define que valores puede tomar regimen ni se crea lista cerrada. Solo se dice de que entrada se lee. Cerrar la lista de valores exigiria decidir sobre regimenes futuros sin caso.",
+    "orden_de_resolucion": "Se fija en el mismo paso que lote: 1) resolver ids; 2) fijar lote y regimen por la primera entrada de cada id resuelto; 3) fijar estado por la ultima; 4) contar presupuesto."
    }
   },
   "modulo_de_escritura": {
@@ -1463,7 +1479,16 @@
    ],
    "criterio_de_la_lista": "Los nueve ids con estado operativo RECHAZADA_PVALOR y lote v1-historico en el registro de 23 entradas del 2026-09-07.",
    "verificacion_viva": "Ademas de la pertenencia a esta lista, filtro.py comprueba contra el registro que el id apuntado existe, es de regimen v1, tiene lote v1-historico y su estado operativo es RECHAZADA_PVALOR. Las dos comprobaciones son redundantes a proposito: fallan de forma distinta y detectan errores distintos.",
-   "lista_cerrada": "No ampliable. Anadir un id a esta lista exigiria una enmienda nueva que justificase por que ese id fue evaluado por un metodo declarado defectuoso."
+   "lista_cerrada": "No ampliable. Anadir un id a esta lista exigiria una enmienda nueva que justificase por que ese id fue evaluado por un metodo declarado defectuoso.",
+   "criterios_verificables": {
+    "enmienda": 37,
+    "naturaleza": "TRANSCRIPCION a forma legible por maquina de los tres criterios que verificacion_viva ya enuncia en prosa. No anade ninguna condicion nueva, no relaja ninguna existente y no altera la lista de ids.",
+    "motivo": "verificacion_viva exige comprobar regimen, lote y estado del id apuntado, pero sus tres valores solo existian dentro de una frase. Extraerlos del texto por coincidencia de cadena habria sido una regla de interpretacion escondida en el motor; escribirlos en el codigo habria violado verificaciones_de_filtro_py.regla.",
+    "regimen": "v1",
+    "lote": "v1-historico",
+    "estado_operativo": "RECHAZADA_PVALOR",
+    "como_se_resuelve_cada_uno": "regimen y lote por la primera entrada del id resuelto (integridad.resolucion_de_entradas.regimen y .lote); estado por la ultima."
+   }
   },
   "no_elegibles": {
    "regla": "Los estados de resultado del regimen v2 NO son elegibles: DESCARTADA_GATE_1, DESCARTADA_GATE_3, DESCARTADA_GATE_4, RECHAZADA_PVALOR bajo lote v2, RECHAZADA_FORWARD.",
@@ -1575,14 +1600,43 @@
     "f. El hash de plantilla de la ficha coincide con el ancla calculado sobre la ficha operativa de ssr_capstables. Si no, ABORTA nombrando el campo que difiere.",
     "g. repesca_de_id_v1 no se usa en ningun punto para resolver ni plegar ids. Invariante de codigo, verificable en revision, mismo criterio que ficha_congelada.alcance.aislamiento_del_resolver."
    ],
-   "estado_de_implementacion": "DECLARADO NO AUTOMATIZADO en el momento de esta enmienda. filtro.py no implementa todavia ninguna de las siete. Se anota junto a los huecos ya declarados del motor, con el mismo criterio que la enmienda 34 uso para su obligatoriedad condicional: se declara el hueco antes que suponerlo cerrado. Ninguna repesca puede escribirse hasta que esten implementadas."
+   "estado_de_implementacion": "DECLARADO NO AUTOMATIZADO en el momento de esta enmienda. filtro.py no implementa todavia ninguna de las siete. Se anota junto a los huecos ya declarados del motor, con el mismo criterio que la enmienda 34 uso para su obligatoriedad condicional: se declara el hueco antes que suponerlo cerrado. Ninguna repesca puede escribirse hasta que esten implementadas.",
+   "superado_por_la_enmienda_37": {
+    "hecho": "La enmienda 37 implementa en filtro.py las verificaciones (a) a (f) y el inventario_de_reincidencia. El texto de estado_de_implementacion describe el estado del motor entre las enmiendas 36 y 37 y no se reescribe.",
+    "controles_que_pasan_a_ejecutarse": [
+     "a. pertenencia de repesca_de_id_v1 a ids_elegibles.lista.",
+     "b. existencia del id apuntado y coincidencia con los tres criterios de ids_elegibles.criterios_verificables.",
+     "c. presencia y contenido no vacio de declaracion_de_antecedente.",
+     "d. unicidad del antecedente entre ids resueltos distintos.",
+     "e. una sola repesca por lote.",
+     "f. coincidencia del hash de plantilla con el ancla calculada sobre la ficha operativa de ssr_capstables, nombrando los campos que difieren.",
+     "inventario_de_reincidencia, sin severidad y sin capacidad de abortar."
+    ],
+    "momento_de_ejecucion": "En la fase 1, sobre el registro completo, despues de los defectos estructurales de la enmienda 31 y antes de la fase de admision. Ninguna repesca puede llegar a ejecutar un gate sin haberlas superado, y se comprueban tambien bajo --solo-comprobar.",
+    "verificacion_g_no_automatizada": {
+     "hecho": "La verificacion (g) no pasa a ejecutarse: la propia lista la define como invariante de codigo, no como comprobacion en tiempo de ejecucion.",
+     "constatacion": "Verificada por revision del codigo el 2026-09-07: repesca_de_id_v1 se lee unicamente dentro de las verificaciones de esta seccion y del inventario, y no aparece en ninguna ruta de resolucion ni de plegado de ids. Queda constatada en comentario dentro de filtro.py.",
+     "por_que_no_se_imprime_en_cada_ejecucion": "Imprimirla presentaria como comprobada en ejecucion una propiedad que solo se verifica en revision. Mismo criterio que ficha_congelada.alcance.aislamiento_del_resolver, que se declara verificada por revision con fecha y no se comprueba sola."
+    },
+    "prohibicion_de_forma_ya_cubierta": "campos.repesca_de_id_v1.prohibicion_de_forma no necesita control propio: fase1 ya aborta ante cualquier entrada con referencia_entrada_anterior a un id distinto fuera de las dos excepciones historicas de la enmienda 28. Una ficha de repesca que intentase plegarse sobre su antecedente no llega a resolverse.",
+    "garantia_de_que_no_se_declara_en_vano": "Esta enmienda cambia mayor.menor y filtro.py aborta antes de leer nada si DOCTRINA_COMPATIBLE no coincide con version_esquema. Entre las enmiendas 36 y 37 el motor estaba efectivamente detenido: la 36 llevo la doctrina a 2.10.0 con un motor que declaraba 2.9. El desfase se manifesto como aborto, no como control declarado e incumplido en silencio.",
+    "huecos_que_permanecen": [
+     "El inventario_de_reincidencia sigue siendo un control detectivo por coincidencia de cadena. Un id renombrado lo evade por completo. No cierra elusion_conocida.",
+     "Ninguno de estos controles alcanza al entorno de ejecucion."
+    ]
+   }
   },
   "inventario_de_reincidencia": {
    "regla": "filtro.py lista en cada informe todo id de ficha cuyo texto contenga como subcadena alguno de los nueve ids de ids_elegibles.lista y que NO declare repesca_de_id_v1.",
    "sin_severidad": "No es un error ni una advertencia y no lleva nivel de severidad. Es un inventario, no un diagnostico. Una coincidencia de subcadena puede ser casual.",
    "no_bloquea": "Nunca hace abortar a filtro.py ni condiciona ninguna transicion de estado.",
    "debilidad_declarada": "Es un control detectivo por coincidencia de cadena. Un id renombrado lo evade por completo. NO cierra elusion_conocida y no debe leerse como si lo hiciera: la deteccion de equivalencia conceptual sigue fuera del enforcement automatico, segun ficha_congelada.retirada_en_propuesta.reproposicion.una_sola_vez.alcance_real.",
-   "precedente_interno": "Mismo patron y mismo alcance parcial que ficha_congelada.alcance.prohibicion_de_referencias.inventario_de_referencias."
+   "precedente_interno": "Mismo patron y mismo alcance parcial que ficha_congelada.alcance.prohibicion_de_referencias.inventario_de_referencias.",
+   "forma_de_la_salida": {
+    "enmienda": 37,
+    "regla": "Cada fila distingue si el id coincide exactamente con un id elegible o si lo contiene como subcadena estricta.",
+    "no_es_un_filtro": "Los nueve ids elegibles se contienen a si mismos y por tanto figuran siempre en el inventario. No se excluyen: excluirlos seria un criterio que esta seccion no escribe. La distincion es descripcion de un hecho, no severidad ni diagnostico."
+   }
   },
   "declaracion_obligatoria": {
    "estado": "OBLIGATORIO_EN_INFORME",

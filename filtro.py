@@ -35,7 +35,7 @@ import pandas as pd
 
 import cadena
 
-DOCTRINA_COMPATIBLE = "2.9"  # enmienda 35
+DOCTRINA_COMPATIBLE = "2.11"  # enmienda 37
 
 # Hueco declarado de la doctrina: estados.mapeo_salida_filtro_py.tabla traduce
 # la etiqueta interna PASA a EN_CONFIRMACION "solo si supera ademas el umbral BY
@@ -203,6 +203,12 @@ def fase1_resolver(doc, reg):
     for id_res, lista in resueltas.items():
         n_primera, primera = lista[0]
         lote = primera.get("lote")
+        # enmienda 37: regimen es propiedad de la VARIABLE, no de la entrada. Lo
+        # fija la primera entrada, igual que lote. Sin esta regla la entrada 13
+        # (nasdaq_aclaracion_panel, regimen 'v2' sobre una variable v1) hacia que
+        # 'nasdaq' fuese inelegible para la repesca pese a figurar en la lista
+        # cerrada de la enmienda 36: dos clausulas en contradiccion.
+        regimen = primera.get("regimen")
 
         for n, e in lista[1:]:
             if e.get("lote") and e["lote"] != lote:
@@ -210,6 +216,12 @@ def fase1_resolver(doc, reg):
                     f"entrada {n} ({e['id']}) declara lote '{e['lote']}' pero '{id_res}' "
                     f"tiene lote '{lote}' fijado por la entrada {n_primera}. "
                     f"Se ignora y se reporta (enmienda 29 parte 4)."
+                )
+            if e.get("regimen") and e["regimen"] != regimen:
+                incidencias.append(
+                    f"entrada {n} ({e['id']}) declara regimen '{e['regimen']}' pero "
+                    f"'{id_res}' tiene regimen '{regimen}' fijado por la entrada "
+                    f"{n_primera}. Se ignora y se reporta (enmienda 37)."
                 )
 
         n_ultima, ultima = lista[-1]
@@ -227,6 +239,7 @@ def fase1_resolver(doc, reg):
         variables[id_res] = {
             "id": id_res,
             "lote": lote,
+            "regimen": regimen,
             "estado": ultima.get("estado"),
             "familia": ultima.get("familia") or primera.get("familia"),
             "entrada_operativa": ultima,
@@ -270,6 +283,19 @@ def fase1_resolver(doc, reg):
             + "\n  - ".join(estructurales)
         )
 
+    # --- enmienda 36, implementada por la 37: verificaciones de la repesca ----
+    # Corren aqui, sobre el registro completo y antes de la fase de admision:
+    # si una ficha de repesca no adopta la plantilla, el test no debe llegar a
+    # ejecutarse. Se comprueban tambien bajo --solo-comprobar.
+    repesca = _verificaciones_repesca(variables, doc)
+    if repesca:
+        abortar(
+            "la repesca no cumple las condiciones de la enmienda 36:\n  - "
+            + "\n  - ".join(repesca)
+        )
+
+    reincidencia = _inventario_de_reincidencia(variables, doc)
+
     almacenado = reg.get("presupuesto_por_trimestre", {})
     for lote, derivado in consumo.items():
         guardado = almacenado.get(lote, {}).get("propuestas_usadas")
@@ -279,7 +305,7 @@ def fase1_resolver(doc, reg):
                 f"contador almacenado = {guardado}. {der['comportamiento_si_discrepan']}"
             )
 
-    return variables, consumo, incidencias
+    return variables, consumo, incidencias, reincidencia
 
 
 # =====================================================================
@@ -517,6 +543,274 @@ def _colisiones_de_medida(variables, doc):
                 f"{detalle}. Reproposicion exacta de una medida ya registrada"
             )
     return problemas
+
+
+def hash_de_plantilla(entrada, doc):
+    """
+    repesca_v1.hash_de_plantilla (enmienda 36).
+
+    Sub-hash de DOCE campos: los cinco de raiz que definen la geometria del test
+    y los siete de mascara. Verifica que una ficha de repesca adopta sin retoques
+    la plantilla de medida congelada del ancla.
+
+    NO es hash_de_medida y NO participa en su regla_de_colision: alli la colision
+    entre ids distintos es un aborto, aqui es el objetivo. Dos controles con
+    proposito opuesto sobre el mismo material (no_activa_la_regla_de_colision).
+
+    Se CALCULA, nunca se almacena. Canonizacion identica a la de cadena.py, que
+    es la declarada en registro.json -> meta.canonizacion. Devuelve None si la
+    ficha no contiene los doce campos.
+    """
+    sub = ruta(doc, "repesca_v1.hash_de_plantilla.subconjunto")
+    campos_raiz = sub["raiz"]
+    campos_mascara = sub["mascara"]
+
+    if any(c not in entrada for c in campos_raiz):
+        return None
+    mascara = entrada.get("mascara")
+    if not isinstance(mascara, dict) or any(c not in mascara for c in campos_mascara):
+        return None
+
+    cuerpo = {c: entrada[c] for c in campos_raiz}
+    cuerpo["mascara"] = {c: mascara[c] for c in campos_mascara}
+    canon = json.dumps(
+        cuerpo, sort_keys=True, separators=(",", ":"), ensure_ascii=False
+    ).encode("utf-8")
+    return hashlib.sha256(canon).hexdigest()
+
+
+def _campos_de_plantilla_que_difieren(ficha, ancla_ficha, doc):
+    """
+    comportamiento_filtro_py: al fallar (f) hay que nombrar el campo concreto que
+    difiere, no solo el hash. Un hash distinto no dice nada al que lo lee.
+    """
+    sub = ruta(doc, "repesca_v1.hash_de_plantilla.subconjunto")
+    difieren = []
+    for c in sub["raiz"]:
+        if ficha.get(c) != ancla_ficha.get(c):
+            difieren.append(f"{c}: {ficha.get(c)!r} != {ancla_ficha.get(c)!r}")
+    m_f = ficha.get("mascara") or {}
+    m_a = ancla_ficha.get("mascara") or {}
+    for c in sub["mascara"]:
+        if m_f.get(c) != m_a.get(c):
+            difieren.append(f"mascara.{c}: {m_f.get(c)!r} != {m_a.get(c)!r}")
+    return difieren
+
+
+def _campos_repesca(doc):
+    """
+    Nombres de los dos campos de ficha de la enmienda 36, derivados de la propia
+    doctrina. verificaciones_de_filtro_py.regla: "Ninguna constante nueva vive en
+    el codigo". El discriminante es el que ancla_estructural nombra; el otro es
+    el de la declaracion. Devuelve (campo_antecedente, campo_declaracion).
+    """
+    campos = ruta(doc, "repesca_v1.campos_obligatorios.campos")
+    texto_ancla = ruta(doc, "repesca_v1.campos_obligatorios.ancla_estructural")
+    disc = [k for k in campos if k in texto_ancla]
+    if len(disc) != 1:
+        abortar(
+            f"repesca_v1.campos_obligatorios.ancla_estructural no identifica un "
+            f"unico campo discriminante entre {sorted(campos)}: {sorted(disc)}"
+        )
+    otros = sorted(k for k in campos if k != disc[0])
+    if len(otros) != 1:
+        abortar(
+            f"repesca_v1.campos_obligatorios.campos deberia contener exactamente "
+            f"dos campos; contiene {sorted(campos)}"
+        )
+    return disc[0], otros[0]
+
+
+def _id_del_ancla(variables, doc):
+    """
+    hash_de_plantilla.ancla.regla: el ancla se CALCULA sobre la ficha operativa
+    de un id del registro y NO se escribe como constante en la doctrina.
+
+    El id se deriva por coincidencia sobre el texto de la propia regla, con el
+    mismo patron que fase1_resolver usa con excepciones_documentadas.regla
+    (enmienda 28). Aborta si la coincidencia no es unica: preferible detenerse a
+    elegir un ancla por su cuenta.
+    """
+    texto = ruta(doc, "repesca_v1.hash_de_plantilla.ancla.regla")
+    candidatos = sorted(i for i in variables if i in texto)
+    if len(candidatos) != 1:
+        abortar(
+            f"repesca_v1.hash_de_plantilla.ancla.regla no identifica un unico id "
+            f"del registro como ancla: {candidatos}"
+        )
+    return candidatos[0]
+
+
+def _verificaciones_repesca(variables, doc):
+    """
+    repesca_v1.verificaciones_de_filtro_py.lista, apartados (a) a (f).
+    Implementadas por la enmienda 37.
+
+    El apartado (g) NO esta aqui: la propia lista lo define como invariante de
+    codigo, no como comprobacion en tiempo de ejecucion. Constatacion por
+    revision del codigo, 2026-09-07: 'repesca_de_id_v1' se lee unicamente en esta
+    funcion y en _inventario_de_reincidencia, y no aparece en ninguna ruta de
+    resolucion ni de plegado de ids (fase1_resolver no lo consulta). Mismo
+    criterio que ficha_congelada.alcance.aislamiento_del_resolver.
+
+    La prohibicion_de_forma del campo (no usar referencia_entrada_anterior hacia
+    el id v1) no necesita control propio: fase1_resolver ya aborta ante cualquier
+    referencia_entrada_anterior a un id distinto fuera de las dos excepciones
+    historicas de la enmienda 28.
+
+    Ninguna constante vive aqui: la lista de ids elegibles, los tres criterios
+    verificables, los nombres de los dos campos y el id del ancla se leen de
+    v2.json. Devuelve lista de problemas.
+    """
+    campo_ant, campo_dec = _campos_repesca(doc)
+
+    con_repesca = {
+        v["id"]: v for v in variables.values()
+        if v["ficha_operativa"].get(campo_ant)
+    }
+    if not con_repesca:
+        return []
+
+    elegibles = ruta(doc, "repesca_v1.ids_elegibles.lista")
+    crit = ruta(doc, "repesca_v1.ids_elegibles.criterios_verificables")
+
+    problemas = []
+
+    # --- (f): ancla de plantilla -------------------------------------------
+    id_ancla = _id_del_ancla(variables, doc)
+    ficha_ancla = variables[id_ancla]["ficha_operativa"]
+    ancla = hash_de_plantilla(ficha_ancla, doc)
+    if ancla is None:
+        abortar(
+            f"la ficha operativa del ancla '{id_ancla}' (entrada "
+            f"{variables[id_ancla]['n_ficha_operativa']}) no contiene los doce "
+            f"campos de la plantilla: no se puede calcular el ancla"
+        )
+    verificado = ruta(doc, "repesca_v1.hash_de_plantilla.ancla.valor_verificado_2026_09_07",
+                      defecto=None)
+    if verificado and verificado != ancla:
+        abortar(
+            f"el ancla calculada sobre la ficha operativa de '{id_ancla}' "
+            f"({ancla[:16]}...) no coincide con la comprobacion cruzada de la "
+            f"doctrina ({verificado[:16]}...)"
+        )
+
+    por_antecedente = {}
+    por_lote = {}
+
+    for vid, v in sorted(con_repesca.items()):
+        ficha = v["ficha_operativa"]
+        antecedente = ficha[campo_ant]
+
+        # (a) pertenencia a la lista cerrada
+        if antecedente not in elegibles:
+            problemas.append(
+                f"[{vid}] {campo_ant} = '{antecedente}' no figura en "
+                f"repesca_v1.ids_elegibles.lista. Lista cerrada, no ampliable"
+            )
+
+        # (b) comprobacion viva contra el registro
+        ant = variables.get(antecedente)
+        if ant is None:
+            problemas.append(
+                f"[{vid}] {campo_ant} = '{antecedente}' no existe como id "
+                f"resuelto en el registro"
+            )
+        else:
+            reales = {
+                "regimen": ant.get("regimen"),
+                "lote": ant.get("lote"),
+                "estado_operativo": ant.get("estado"),
+            }
+            for clave, esperado in reales.items():
+                if crit[clave] != esperado:
+                    problemas.append(
+                        f"[{vid}] el antecedente '{antecedente}' tiene {clave} "
+                        f"'{esperado}' y la repesca exige '{crit[clave]}'"
+                    )
+
+        # (c) declaracion de antecedente
+        dec = ficha.get(campo_dec)
+        if not (isinstance(dec, str) and dec.strip()) and not (
+                isinstance(dec, (list, dict)) and dec):
+            problemas.append(
+                f"[{vid}] lleva {campo_ant} y no aporta {campo_dec}. "
+                f"Presentar una repesca como variable sin historia es la "
+                f"elusion_conocida de la enmienda 32"
+            )
+
+        por_antecedente.setdefault(antecedente, []).append(vid)
+        if v["lote"]:
+            por_lote.setdefault(v["lote"], []).append(vid)
+
+        # (f) la ficha adopta la plantilla sin retoques
+        h = hash_de_plantilla(ficha, doc)
+        if h is None:
+            problemas.append(
+                f"[{vid}] la ficha no contiene los doce campos de la plantilla: "
+                f"no se puede comprobar contra el ancla"
+            )
+        elif h != ancla:
+            difieren = _campos_de_plantilla_que_difieren(ficha, ficha_ancla, doc)
+            detalle = "; ".join(difieren) if difieren else "ninguno identificado"
+            problemas.append(
+                f"[{vid}] el hash de plantilla ({h[:16]}...) no coincide con el "
+                f"ancla de '{id_ancla}' ({ancla[:16]}...). Campos que difieren: "
+                f"{detalle}"
+            )
+
+    # (d) una repesca por id v1, para siempre
+    for antecedente, ids in sorted(por_antecedente.items()):
+        if len(ids) > 1:
+            problemas.append(
+                f"dos ids resueltos distintos repescan el mismo antecedente "
+                f"'{antecedente}': {sorted(ids)}. Cada negativo de v1 dispone de "
+                f"una oportunidad, no de una serie"
+            )
+
+    # (e) una repesca por lote
+    for lote, ids in sorted(por_lote.items()):
+        if len(ids) > 1:
+            problemas.append(
+                f"el lote '{lote}' contiene mas de una repesca: {sorted(ids)}. "
+                f"La repesca se acordo individual, no por cohorte"
+            )
+
+    return problemas
+
+
+def _inventario_de_reincidencia(variables, doc):
+    """
+    repesca_v1.inventario_de_reincidencia.
+
+    Lista todo id resuelto cuyo texto contenga como subcadena alguno de los nueve
+    ids elegibles y que NO declare el campo de antecedente.
+
+    SIN SEVERIDAD. NO ABORTA. NO condiciona ninguna transicion de estado. Es
+    inventario, no diagnostico: una coincidencia de subcadena puede ser casual.
+
+    DEBILIDAD DECLARADA EN DOCTRINA: control detectivo por coincidencia de
+    cadena. Un id renombrado lo evade por completo. NO cierra elusion_conocida.
+
+    Los nueve elegibles se contienen a si mismos y figuran siempre. No se
+    excluyen: se marcan (forma_de_la_salida, enmienda 37). Excluirlos seria un
+    criterio que la doctrina no escribe.
+    """
+    campo_ant, _ = _campos_repesca(doc)
+    elegibles = ruta(doc, "repesca_v1.ids_elegibles.lista")
+
+    filas = []
+    for vid, v in sorted(variables.items()):
+        if v["ficha_operativa"].get(campo_ant):
+            continue
+        for e in elegibles:
+            if e in vid:
+                filas.append({
+                    "id": vid,
+                    "elegible": e,
+                    "coincidencia": "exacta" if vid == e else "contiene",
+                })
+    return filas
 
 
 def _campos_de_transicion(entradas, doc):
@@ -1363,12 +1657,21 @@ def ejecutar(args):
     print(f"\n[FASE 0] {msg_cadena}")
     print("[FASE 0] registro.json sin maximos de presupuesto: correcto")
 
-    variables, consumo, incidencias = fase1_resolver(doc, reg)
+    variables, consumo, incidencias, reincidencia = fase1_resolver(doc, reg)
     print(f"\n[FASE 1] {len(variables)} variables resueltas desde "
           f"{len(reg['entradas'])} entradas")
     print(f"[FASE 1] consumo derivado por lote: {consumo or '{}'} (coincide con los contadores)")
     for i in incidencias:
         print(f"[FASE 1] incidencia: {i}")
+
+    # Inventario de reincidencia (enmienda 36). Sin severidad, no bloquea.
+    if reincidencia:
+        print("\n[FASE 1] inventario de reincidencia sobre ids del regimen v1")
+        print("         (descriptivo, sin severidad; no condiciona ninguna transicion)")
+        print("         debilidad declarada: coincidencia de cadena. Un id renombrado")
+        print("         lo evade por completo. NO cierra elusion_conocida.")
+        for f in reincidencia:
+            print(f"  - {f['id']}  ->  {f['coincidencia']} '{f['elegible']}'")
 
     inventario = []
     candidatas, problemas, avisos = fase2_admision(
@@ -1558,6 +1861,12 @@ def ejecutar(args):
         "declaracion_obligatoria": ruta(doc, "meta.declaracion_obligatoria"),
         "potencia_medida": ruta(doc, "potencia_medida.texto_literal"),
         "incidencias_registro": incidencias,
+        "inventario_de_reincidencia": {
+            "filas": reincidencia,
+            "sin_severidad": ruta(doc, "repesca_v1.inventario_de_reincidencia.sin_severidad"),
+            "debilidad_declarada": ruta(
+                doc, "repesca_v1.inventario_de_reincidencia.debilidad_declarada"),
+        },
         "avisos": avisos,
         "presupuesto_derivado": consumo,
         "precio": meta_precio,
