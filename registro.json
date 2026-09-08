@@ -6,8 +6,8 @@
   "append_only": true,
   "algoritmo_hash": "sha256",
   "genesis": "0000000000000000000000000000000000000000000000000000000000000000",
-  "ultimo_hash": "a1f9887313e6a5be5b2d7770a204b4040b8dae4cb6d399b75d90b9600ce90506",
-  "n_entradas": 25,
+  "ultimo_hash": "d01f3a99f97d7367fd399e212478490cf2cd6f2547a8a37a9496e5a15bbad0cf",
+  "n_entradas": 27,
   "regla": "Ninguna entrada se edita ni se borra. Una correccion se registra como entrada nueva que referencia la anterior. filtro.py verifica la cadena completa al arrancar y aborta si esta rota.",
   "canonizacion": "json.dumps(entrada_sin_hash, sort_keys=True, separators=(',',':'), ensure_ascii=False).encode('utf-8')"
  },
@@ -943,6 +943,92 @@
    "no_es_re_test": "No hay entrada previa con este id. Es alta y descarte en el mismo movimiento, antes de EN_TEST.",
    "hash_anterior": "c0f82b038de53584cbf03c42c63eb7df35c269c572f072a2686336cc8ce3c41f",
    "hash": "a1f9887313e6a5be5b2d7770a204b4040b8dae4cb6d399b75d90b9600ce90506"
+  },
+  {
+   "id": "hy_credit_spread",
+   "tipo_entrada": "alta_retroactiva",
+   "familia": "macro",
+   "lote": "2026-Q3",
+   "fecha_propuesta": "2026-09-08",
+   "estado": "DESCARTADA_PREVIA",
+   "gate_alcanzado": null,
+   "consume_presupuesto_v2": false,
+   "fecha_registro": "2026-09-08",
+   "fuente": {
+    "proveedor_previsto": "ICE BofA US High Yield Index Option-Adjusted Spread, serie FRED BAMLH0A0HYM2",
+    "endpoint": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=BAMLH0A0HYM2",
+    "verificado_en_vivo": "2026-09-08",
+    "hallazgo_estructural": "A partir de abril de 2026, ICE Data Indices restringio la licencia de distribucion de toda su familia de indices (BAMLH0A0HYM2 y series relacionadas de investment grade, incluidas BAMLC0A0CM y BAMLC0A4CBBB, verificadas en vivo con el mismo corte) a una ventana movil de solo 3 anios en FRED. Confirmado descargando el CSV real: la serie principal empieza en 2023-09-05, muy por debajo del minimo de particion_datos (cada bloque >= 3 anios, minimo total aproximado 6-7 anios). El acceso a la historia completa exige o bien una vintage archivada anterior al corte (alfred.stlouisfed.org, dominio no habilitado en esta sesion) o una api_key registrada de FRED (api.stlouisfed.org exige api_key, no cumple el criterio de acceso programatico sin registro aplicado al resto del proyecto)."
+   },
+   "motivo": "La variable no se congela. No es un problema de diseno de mascara ni de mecanismo economico: es que la fuente prevista dejo de ser reproducible con historia completa por un cambio de licencia del proveedor, ocurrido despues de que la variable se identificase como candidata. Aceptar una serie cosida (archivo historico pre-corte + ventana movil actual de FRED) produciria una variable que nadie podria reconstruir de forma independiente desde una fuente viva, lo que viola el principio de reproducibilidad declarado como prioridad del proyecto por encima de la disponibilidad de una variable concreta. No se acepta serie cosida por ese motivo. Se consulto a cuatro modelos externos (ChatGPT, Grok, Gemini, DeepSeek) sobre si el spread Baa investment-grade (BAA10Y, historia completa desde 1986, sin restriccion de licencia) es un sustituto razonable del mecanismo de estres de credito corporativo. Consenso unanime: Baa mide un mecanismo relacionado pero no equivalente (menor sensibilidad, mayor retraso, componente de duracion/tipos contaminando el spread), defendible unicamente como variable propia y redefinida, no como sustituto directo de high yield. En consecuencia se propone por separado el id baa_credit_spread, con ficha, mecanismo y justificacion propios, sin heredar ningun campo de esta entrada.",
+   "declaracion_de_sesgo": "No se midio ni se consulto en ningun momento la relacion entre high yield credit spread y el retorno de BTC. El descarte es anterior a cualquier medicion de ese tipo: se origina en la imposibilidad de acceso reproducible a la fuente, verificada en vivo.",
+   "no_es_re_test": "No hay entrada previa con este id. Es alta y descarte en el mismo movimiento, antes de EN_TEST.",
+   "hash_anterior": "a1f9887313e6a5be5b2d7770a204b4040b8dae4cb6d399b75d90b9600ce90506",
+   "hash": "3cb738eb324e9c86326772f6de7cb44016f76d256129f7ba45f585dbef826318"
+  },
+  {
+   "id": "baa_credit_spread",
+   "alias": "Baa-10Y",
+   "tipo_entrada": "ficha_congelada",
+   "familia": "macro",
+   "regimen": "v2",
+   "lote": "2026-Q3",
+   "fecha_propuesta": "2026-09-08",
+   "fecha_fin_ventana_test": "2026-09-08",
+   "fecha_corte_bloques": null,
+   "estado": "PROPUESTA",
+   "gate_alcanzado": null,
+   "metrica_continua": {
+    "definicion": "Moody's Seasoned Baa Corporate Bond Yield menos el rendimiento del Treasury estadounidense a 10 anos, en puntos porcentuales. Serie FRED BAA10Y, calculada y publicada directamente por FRED (no requiere combinar dos series por separado).",
+    "interpretacion": "Spread alto indica mayor prima exigida al credito corporativo Baa (grado de inversion, el escalon mas bajo dentro de investment-grade) frente al activo libre de riesgo. Spread bajo indica condiciones de credito corporativo relajadas.",
+    "fuente": {
+     "proveedor": "Federal Reserve Bank of St. Louis (FRED), serie BAA10Y. Subyacente: Moody's (yield Baa) y Departamento del Tesoro de EEUU (Treasury 10Y), agregados y publicados por FRED sin restriccion de licencia conocida.",
+     "endpoint": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=BAA10Y",
+     "verificado_en_vivo": "2026-09-08",
+     "rango_disponible": "1986-01-02 a 2026-09-03, 10169 observaciones, dias habiles (gaps de 3-4 dias en fines de semana largos, sin huecos anomalos)",
+     "limitacion_declarada": "No es un option-adjusted spread (OAS) como lo era la fuente original prevista (ICE BofA HY OAS): es un yield Baa de bonos corporativos de vencimiento largo (20+ anios segun metodologia de Moody's) menos el Treasury a 10 anios. Esto introduce un componente de desajuste de duracion, prima por plazo y movimientos de la curva libre de riesgo que no son estres de credito puro. Declarado en consulta externa (consenso unanime de 4 modelos) como principal impureza de esta serie frente a un OAS limpio."
+    }
+   },
+   "mascara": {
+    "regla": "mascara(t) = 1 si BAA10Y(t) > Q80(t)",
+    "q_percentil": 80,
+    "tipo_ventana": "movil",
+    "longitud_ventana_dias": 730,
+    "solo_informacion_anterior_a_t": true,
+    "inclusividad": "estricta (>)",
+    "warm_up_dias": 730,
+    "warm_up_excluido_del_computo_de_bloques": true,
+    "justificacion_estructura_una_cola": "Mecanismo economico monotono y no simetrico: un ensanchamiento del spread de credito corporativo siempre se lee como mayor estres financiero, nunca lo contrario. Un spread anormalmente estrecho no tiene lectura simetrica de estres inverso, por lo que una mascara de dos colas mezclaria subpoblaciones de efecto distinto, exactamente el error de diseno confirmado por consenso unanime de 4 modelos externos en la sesion previa de esta misma serie de trabajo (aplicado alli a hy_credit_spread, se hereda el mismo argumento aqui por ser el mismo mecanismo economico, solo que sobre el segmento investment-grade).",
+    "justificacion_q": "Q80 sobre cola alta. Se verifico en vivo la tasa de activacion resultante antes de congelar: con ventana movil de 730 dias, la tasa global medida es 20.9%, muy proxima al 20% nominal esperado, y el patron anual coincide con episodios de estres de credito conocidos (98% en 2001, 100% en 2008, 67% en 2020) alternando con anios de calma en 0% (2003-2006, 2010-2011, 2017-2018, 2021-2026 salvo un repunte parcial). No se observa el patron de anios completos saturados en 0% o 100% de forma sistematica que indicaria un defecto estructural como el detectado en treasury_general_account y btc_dominance: aqui la variacion anual es coherente con ciclos de credito reales, no con una tendencia secular no absorbida por la ventana movil.",
+    "justificacion_ventana_movil": "Igual que en el resto de variables de nivel del proyecto, un umbral absoluto congelado activaria la mascara de forma desigual entre regimenes de tipos de interes muy distintos (los tipos de 1986 no son comparables a los de 2021), por lo que la ventana movil es la eleccion coherente con el resto del protocolo.",
+    "justificacion_longitud_730": "Con 40.7 anios de historia disponible, un warm-up de 730 dias no compromete el minimo de bloque: bloque_1 y bloque_2 quedan en aproximadamente 18.7 anios cada uno, muy por encima del suelo de 3 anios. Se elige 730 en lugar de 365 por coherencia con la mascara ya usada para treasury_general_account y btc_dominance sobre variables de nivel similares, no por necesidad de historia en este caso concreto.",
+    "limitacion_aceptada": "Una ventana de dos anios puede quedar dominada por un unico ciclo de credito si el episodio de estres es extraordinariamente prolongado."
+   },
+   "horizonte_N": 30,
+   "unidad_theta": "fraccion de retorno simple a 30 dias",
+   "theta_B2": null,
+   "M": 0.03,
+   "estado_M": "FIJADO",
+   "derivacion_M": "Valor por defecto del regimen v2, mismo utilizado en ssr_capstables. Anclado al menor salto de estado distinto de cero del bloque 07.",
+   "casilla_dashboard": {
+    "identificador": "contexto_estres_credito_ig",
+    "existe_hoy": false,
+    "nota": "Ninguna casilla actual del dashboard es direccional, por lo que theta no puede mover ninguna existente. Esta casilla se creara si y solo si la variable se confirma.",
+    "granularidad": 0.03,
+    "estados_visibles": 3,
+    "funcion_D_theta": "D(theta) = 'desfavorable' si theta <= -0.03; 'neutral' si -0.03 < theta < 0.03; 'favorable' si theta >= 0.03"
+   },
+   "naturaleza_de_la_hipotesis": "Desplazamiento de localizacion, no de cola. El mecanismo postulado (mayor estres de credito corporativo precede peor retorno de activos de riesgo, incluido BTC) es un desplazamiento del centro de la distribucion, por lo que la diferencia de medianas es el estadistico apropiado.",
+   "dias_episodio": 30,
+   "signo_esperado": "negativo",
+   "justificacion_signo": "Direccion declarada con mecanismo previo, no bilateral: un ensanchamiento del spread de credito corporativo Baa refleja mayor prima exigida por riesgo y condiciones financieras mas restrictivas, lo cual historicamente coincide con menor apetito por activos de riesgo (equities, cripto). Los cuatro modelos externos consultados coinciden en que la direccion economica se mantiene frente a la variable original (high yield), aunque con menor sensibilidad y mayor retraso. Se declara 'negativo' (spread alto -> retorno futuro de BTC mas bajo), no bilateral, porque el mecanismo direccional esta sostenido por la literatura y por el consenso externo, no solo por intuicion.",
+   "pronostico_registrado": "Se registra antes de ejecutar el test: la consulta externa senala de forma unanime que BAA10Y tiene menor sensibilidad y mayor retraso que el high yield OAS original, y que su relacion con activos de riesgo se espera mas debil y mas ruidosa. Existe una probabilidad real de que el efecto medido sea mas pequeno que M o que el resultado sea NULO por potencia insuficiente, no solo por PENDIENTE_REVISION de episodios. Se registra antes de ejecutar para que ese desenlace no se reinterprete despues.",
+   "consume_presupuesto_v2": false,
+   "nota_presupuesto": "Consumira presupuesto al transitar a EN_TEST.",
+   "fecha_registro": "2026-09-08",
+   "nota_origen": "Esta ficha no sustituye ni hereda campos de hy_credit_spread (ver entrada previa, DESCARTADA_PREVIA en el mismo lote). Es una variable nueva y distinta, propuesta a raiz de consulta externa (4 modelos, consenso unanime) tras la imposibilidad de reproducir la fuente original de high yield por cambio de licencia del proveedor ICE Data en FRED.",
+   "hash_anterior": "3cb738eb324e9c86326772f6de7cb44016f76d256129f7ba45f585dbef826318",
+   "hash": "d01f3a99f97d7367fd399e212478490cf2cd6f2547a8a37a9496e5a15bbad0cf"
   }
  ]
 }
