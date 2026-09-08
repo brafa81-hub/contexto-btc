@@ -6,8 +6,8 @@
   "append_only": true,
   "algoritmo_hash": "sha256",
   "genesis": "0000000000000000000000000000000000000000000000000000000000000000",
-  "ultimo_hash": "c0f82b038de53584cbf03c42c63eb7df35c269c572f072a2686336cc8ce3c41f",
-  "n_entradas": 24,
+  "ultimo_hash": "a1f9887313e6a5be5b2d7770a204b4040b8dae4cb6d399b75d90b9600ce90506",
+  "n_entradas": 25,
   "regla": "Ninguna entrada se edita ni se borra. Una correccion se registra como entrada nueva que referencia la anterior. filtro.py verifica la cadena completa al arrancar y aborta si esta rota.",
   "canonizacion": "json.dumps(entrada_sin_hash, sort_keys=True, separators=(',',':'), ensure_ascii=False).encode('utf-8')"
  },
@@ -911,6 +911,38 @@
    "no_es_re_test": "No hay entrada previa con este id. Es alta y descarte en el mismo movimiento, antes de EN_TEST.",
    "hash_anterior": "277698883dc35f56edafcbde8cd286c0a9f556c3c8a05fdec0249ccf670496a6",
    "hash": "c0f82b038de53584cbf03c42c63eb7df35c269c572f072a2686336cc8ce3c41f"
+  },
+  {
+   "id": "btc_dominance",
+   "tipo_entrada": "alta_retroactiva",
+   "familia": "macro",
+   "lote": "2026-Q3",
+   "fecha_propuesta": "2026-09-08",
+   "estado": "DESCARTADA_PREVIA",
+   "gate_alcanzado": null,
+   "consume_presupuesto_v2": false,
+   "fecha_registro": "2026-09-08",
+   "fuente": {
+    "proveedor": "bitcoin-data.com (BGeometrics), API publica sin clave, limite 8 req/hora y 15 req/dia",
+    "endpoint": "https://bitcoin-data.com/v1/bitcoin-dominance/csv",
+    "verificado_en_vivo": "2026-09-08",
+    "hallazgo_estructural": "El endpoint JSON sin sufijo /csv devuelve solo los ultimos ~4 anios (1308 puntos, desde 2022-09-07); el endpoint /csv devuelve el historico completo desde 2013-04-29 (4698 puntos). La cifra de '4 anios' aportada por un modelo externo sin cita verificable en sesion previa queda corregida y sustituida por verificacion directa contra la API real, conforme a v2.protocolo.",
+    "rango_disponible": "2013-04-29 a 2026-09-07, 4698 publicaciones, casi diaria (gaps de 1 dia en 4524 de 4697 intervalos, de 2 dias en 167, resto marginal)",
+    "endpoints_descartados_sesion_previa_no_reprobados": [
+     "CoinGecko /global (solo snapshot, sin historico)",
+     "CoinGecko /global/market_cap_chart (exclusivo Pro, error 10005)",
+     "CoinGecko /coins/{id}/market_chart (limite 365 dias, error 10012 si se excede)",
+     "DefiLlama (sin endpoint de dominancia ni market cap total cripto)",
+     "TradingView via tvdatafeed (no es API oficial, no cumple acceso programatico fiable)"
+    ]
+   },
+   "motivo": "La variable no se congela. Se midio la distribucion de activacion de tres mascaras candidatas (percentil movil 730 dias: cola baja Q20, cola alta Q80, y dos colas Q20/Q80) antes de fijar la ficha, y el resultado muestra el mismo defecto de diseno ya documentado en treasury_general_account: no falta de historia, sino tendencia secular en regimenes plurianuales que la ventana movil no absorbe. La mediana anual de dominancia BTC pasa de 93.9 (2013) a 43.7 (2018) a 63.5 (2020) a 39.6 (2022) a 56.7 (2026), sin patron monotono. Con bloque_1 y bloque_2 de 5.93 anios cada uno (warm-up 365 dias, muy por encima del suelo de 3), la tasa de activacion medida es: cola baja 29.0% global (rango anual 0% a 76%), cola alta 29.4% global (rango anual 0% a 99%), dos colas 58.4% global (rango anual 7% a 99%), todas muy alejadas de sus valores nominales (20%, 20%, 40%) y con anios completos en extremos opuestos (ej. cola alta: 0% en 2017-2018 y 2022, 99% en 2024). El gate 1 (estabilidad entre tramos) fallaria con alta probabilidad por construccion de la mascara, no por ausencia de efecto economico. Emitir un resultado bajo cualquiera de las tres mascaras no distinguiria no hay efecto de la mascara no puede detectarlo. No se propone en su lugar ninguna variante de la variable en esta entrada: una eventual ficha sobre la variacion de la dominancia en lugar de su nivel exige justificacion propia en sesion separada y no se da por disponible aqui, conforme a la advertencia de protocolo.unicidad_del_test.excepciones[0].por_que_se_declara_excepcion sobre vias de elusion mediante id nuevo.",
+   "declaracion_de_sesgo": "Se midio la distribucion completa de activaciones de las tres mascaras candidatas (incluida su evolucion anual) antes de decidir el descarte. No se midio ni se consulto en ningun momento la relacion entre la dominancia de BTC y el retorno de BTC. La medicion que motiva este descarte es sobre las mascaras en si mismas, no sobre el resultado del test economico.",
+   "nota_estructura_mascara": "A diferencia de treasury_general_account, aqui no habia decision previa de cola tomada en sesion anterior: se declaro explicitamente sin resolver, a la espera de un argumento de mecanismo economico monotono defendible o de un argumento de extremidad no direccional tipo google_trends_bitcoin. Ninguno de los dos se estableció como defendible antes de medir. El descarte es anterior e independiente de esa eleccion no resuelta: las tres estructuras posibles (cola baja, cola alta, dos colas) fallan por la misma causa estructural, por lo que no era necesario resolver la ambiguedad de mecanismo para llegar a esta conclusion.",
+   "nota_endogeneidad": "Riesgo de diseno ya acordado antes de esta verificacion, declarado aqui aunque no llega a aplicarse: la dominancia = capitalizacion BTC / capitalizacion total cripto, el numerador contiene el precio de BTC, por lo que la variable es parcialmente endogena respecto a lo que se quiere predecir. No fue la causa del descarte.",
+   "no_es_re_test": "No hay entrada previa con este id. Es alta y descarte en el mismo movimiento, antes de EN_TEST.",
+   "hash_anterior": "c0f82b038de53584cbf03c42c63eb7df35c269c572f072a2686336cc8ce3c41f",
+   "hash": "a1f9887313e6a5be5b2d7770a204b4040b8dae4cb6d399b75d90b9600ce90506"
   }
  ]
 }
