@@ -6,14 +6,14 @@
   "append_only": true,
   "algoritmo_hash": "sha256",
   "genesis": "0000000000000000000000000000000000000000000000000000000000000000",
-  "ultimo_hash": "ca45a280dbfcd77a91f00ddad7033039a6264f14050c721b5bdbbc744d46c80b",
-  "n_entradas": 30,
+  "ultimo_hash": "209fa1ce777e59147e51f00798fc340290663fa5332efc29d76d9db028d09d2f",
+  "n_entradas": 31,
   "regla": "Ninguna entrada se edita ni se borra. Una correccion se registra como entrada nueva que referencia la anterior. filtro.py verifica la cadena completa al arrancar y aborta si esta rota.",
   "canonizacion": "json.dumps(entrada_sin_hash, sort_keys=True, separators=(',',':'), ensure_ascii=False).encode('utf-8')"
  },
  "presupuesto_por_trimestre": {
   "2026-Q3": {
-   "propuestas_usadas": 1,
+   "propuestas_usadas": 2,
    "familias_nuevas_usadas": 0,
    "nota": "SSR pertenece a una familia del catalogo inicial, por lo que no consume cuota de familia nueva.",
    "nota_enmienda_29": "Los maximos viven solo en v2.json (presupuesto.autoridad). Aqui quedan unicamente los contadores de uso, que filtro.py contrasta contra el valor derivado del array entradas."
@@ -1190,6 +1190,18 @@
    "nota_origen": "Esta ficha no sustituye ni hereda campos de hy_credit_spread (ver entrada previa, DESCARTADA_PREVIA en el mismo lote). Es una variable nueva y distinta, propuesta a raiz de consulta externa (4 modelos, consenso unanime) tras la imposibilidad de reproducir la fuente original de high yield por cambio de licencia del proveedor ICE Data en FRED. Esta entrada sustituye integramente a la ficha_congelada anterior de este mismo id (fecha_registro 2026-09-08, hash d01f3a99f97d7367fd399e212478490cf2cd6f2547a8a37a9496e5a15bbad0cf), permitido porque baa_credit_spread permanece en estado PROPUESTA. Unico cambio respecto a la anterior: mascara.justificacion_q, corregida por error de especificacion de ventana (730 observaciones vs 730 dias naturales) detectado en verificacion previa a EN_TEST. Ningun otro campo de la ficha se modifica.",
    "hash_anterior": "cce6dcef927772c8fc40f3c8b9ad6b52172044a9a6cab0ab8a5eae04ea845ebc",
    "hash": "ca45a280dbfcd77a91f00ddad7033039a6264f14050c721b5bdbbc744d46c80b"
+  },
+  {
+   "id": "baa_credit_spread",
+   "tipo_entrada": "transicion_de_estado",
+   "estado": "EN_TEST",
+   "fecha_registro": "2026-09-10",
+   "gate_alcanzado": null,
+   "fecha_corte_bloques": "2007-05-07",
+   "sha256_serie_metrica": "7a90bd8777b70392fddf804a312853bdb6b690ab59509617d5a74eb409ac4a2d",
+   "motivo": "Transicion de baa_credit_spread a EN_TEST para el lote 2026-Q3. Se escribe antes de ejecutar ningun gate. Fija como precompromiso la fecha de corte de bloques y el sha256 de la serie de la metrica que el motor consumira por --metrica: filtro.py deriva la particion por su cuenta y aborta si no coincide con la registrada aqui, y verifica el CSV contra el hash antes de calcular nada (enmienda 35, obligatorio en estado EN_TEST). No se declara sha256_snapshot_metrica porque la ficha de esta variable no define ningun artefacto bruto distinto de la serie que el motor lee; declararlo obligaria a aportar un fichero inventado, contra el criterio de enmienda 35 regimen_de_sha256_snapshot_metrica. sha256_motor y sha256_informe se omiten por ser opcionales fuera de los estados de resultado de test: la ejecucion no ha ocurrido y el informe no existe. La serie congelada abarca 1986-01-02 a 2026-09-08, 10171 observaciones, descargada de FRED BAA10Y el 2026-09-10; la ventana termina en fecha_fin_ventana_test (2026-09-08) conforme a protocolo.ventana_temporal, sin truncar manualmente datos disponibles dentro de la ventana. La ficha operativa es la entrada 30 (ficha_congelada del 2026-09-10), que corrigio la cifra de verificacion de justificacion_q mientras la variable seguia en PROPUESTA; ninguna entrada posterior puede ya modificarla. Consume la segunda propuesta del presupuesto 2026-Q3.",
+   "hash_anterior": "ca45a280dbfcd77a91f00ddad7033039a6264f14050c721b5bdbbc744d46c80b",
+   "hash": "209fa1ce777e59147e51f00798fc340290663fa5332efc29d76d9db028d09d2f"
   }
  ]
 }
