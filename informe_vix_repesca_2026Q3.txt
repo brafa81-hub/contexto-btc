@@ -1,0 +1,227 @@
+{
+ "sha256_v2_json": "40585b210167e0de3329846f4bac8d3e68da43061b5e5fda202c82e477f3407a",
+ "doctrina": "2.12.0",
+ "lote": "2026-Q3",
+ "declaracion_obligatoria": "Batch-PRDS actua como cribado de descubrimiento. La garantia real de control de falsos positivos descansa en la confirmacion forward sobre datos que no existian cuando la variable fue propuesta.",
+ "potencia_medida": "Esta capa de gates no es un cribado permisivo. Medida por simulacion sobre un bloque_1 de 1387 dias con mascara activa el 20% del tiempo, detecta aproximadamente el 39% de un efecto real de theta=0.084 y deja pasar el 15% del ruido puro. Un efecto real puede no atravesarla. Que una variable sea descartada aqui no demuestra que no exista.",
+ "incidencias_registro": [
+  "entrada 13: 'nasdaq_aclaracion_panel' resuelve al id 'nasdaq' (excepcion enmienda 28)",
+  "entrada 17: 'halving_ciclo_aclaracion_pvalor' resuelve al id 'halving_ciclo' (excepcion enmienda 28)",
+  "entrada 13 (nasdaq_aclaracion_panel) declara lote '2026-Q3' pero 'nasdaq' tiene lote 'v1-historico' fijado por la entrada 6. Se ignora y se reporta (enmienda 29 parte 4).",
+  "entrada 13 (nasdaq_aclaracion_panel) declara regimen 'v2' pero 'nasdaq' tiene regimen 'v1' fijado por la entrada 6. Se ignora y se reporta (enmienda 37).",
+  "entrada 19 (stablecoin_supply_ratio): transicion de estado con campos fuera de la lista cerrada: ['declaracion'] (anterior a la enmienda 33, declarada, no corregible)",
+  "entrada 22 (ssr_capstables): estado EN_TEST sin ['sha256_serie_metrica'] (ampliacion_enmienda_35.obligatoriedad_condicional) (entrada 22 <= corte 23 de esa enmienda, declarada, no corregible)"
+ ],
+ "inventario_de_reincidencia": {
+  "filas": [
+   {
+    "id": "dxy",
+    "elegible": "dxy",
+    "coincidencia": "exacta"
+   },
+   {
+    "id": "fear_and_greed_index",
+    "elegible": "fear_and_greed_index",
+    "coincidencia": "exacta"
+   },
+   {
+    "id": "fed_funds_rate",
+    "elegible": "fed_funds_rate",
+    "coincidencia": "exacta"
+   },
+   {
+    "id": "funding_rate",
+    "elegible": "funding_rate",
+    "coincidencia": "exacta"
+   },
+   {
+    "id": "hashrate",
+    "elegible": "hashrate",
+    "coincidencia": "exacta"
+   },
+   {
+    "id": "m2_global",
+    "elegible": "m2_global",
+    "coincidencia": "exacta"
+   },
+   {
+    "id": "mvrv_z_score",
+    "elegible": "mvrv_z_score",
+    "coincidencia": "exacta"
+   },
+   {
+    "id": "nasdaq",
+    "elegible": "nasdaq",
+    "coincidencia": "exacta"
+   },
+   {
+    "id": "vix",
+    "elegible": "vix",
+    "coincidencia": "exacta"
+   }
+  ],
+  "sin_severidad": "No es un error ni una advertencia y no lleva nivel de severidad. Es un inventario, no un diagnostico. Una coincidencia de subcadena puede ser casual.",
+  "debilidad_declarada": "Es un control detectivo por coincidencia de cadena. Un id renombrado lo evade por completo. NO cierra elusion_conocida y no debe leerse como si lo hiciera: la deteccion de equivalencia conceptual sigue fuera del enforcement automatico, segun ficha_congelada.retirada_en_propuesta.reproposicion.una_sola_vez.alcance_real."
+ },
+ "avisos": [
+  "[vix_repesca] en EN_TEST con la transicion ya escrita (entrada 35) y el test sin ejecutar. Ficha operativa: entrada 34"
+ ],
+ "presupuesto_derivado": {
+  "2026-Q3": 2
+ },
+ "precio": {
+  "duplicados_resueltos": 0,
+  "sha256_snapshot": "32c0b8ea8a66f01181032c3cb5b66c10ede867b12f6779d7bea8b19258627e49",
+  "dias": 4264,
+  "desde": "2015-01-01",
+  "hasta": "2026-09-03"
+ },
+ "correccion_multiple": null,
+ "resultados": {
+  "vix_repesca": {
+   "id": "vix_repesca",
+   "mascara": {
+    "operador": "<",
+    "q": 20,
+    "ventana_dias": 365,
+    "warm_up_dias": 365,
+    "primer_dia_valido": "1991-01-02",
+    "dias_sin_precio_disponible": 6051,
+    "aviso_interseccion_precio": "6051 fecha(s) de la mascara caian fuera del snapshot de precio (2015-01-01 a 2026-09-03) y se excluyeron antes de particionar (enmienda 39)"
+   },
+   "particion": {
+    "fecha_corte_bloques": "2020-11-02",
+    "anios_bloque_1": 5.83,
+    "anios_bloque_2": 5.83,
+    "minimo_por_bloque_anios": 3,
+    "suficiente": true,
+    "comprometida_en_transicion": "2020-11-02",
+    "coincide_con_la_derivada": true
+   },
+   "racha_media_mascara": 6.6,
+   "diagnostico_estructural": {
+    "activaciones": 808,
+    "observaciones_evaluables": 2967,
+    "racha_media": 6.6,
+    "tramos_bloque_1": [
+     {
+      "tramo": 1,
+      "desde": "2015-01-02",
+      "hasta": "2016-12-11",
+      "dias": 490,
+      "activos": 95,
+      "varia": true,
+      "obs_efectivas": 16.3
+     },
+     {
+      "tramo": 2,
+      "desde": "2016-12-12",
+      "hasta": "2018-11-22",
+      "dias": 491,
+      "activos": 178,
+      "varia": true,
+      "obs_efectivas": 16.4
+     },
+     {
+      "tramo": 3,
+      "desde": "2018-11-23",
+      "hasta": "2020-11-02",
+      "dias": 489,
+      "activos": 62,
+      "varia": true,
+      "obs_efectivas": 16.3
+     }
+    ],
+    "obs_efectivas_bloque_1": 44.5,
+    "minimo_gate_3": 36,
+    "observaciones_enmascaradas_bloque_2": 456,
+    "episodios_independientes_bloque_2": 11,
+    "dias_episodio": 30,
+    "admisible": true,
+    "motivos": [],
+    "nota_grandfathering": "variable ya comprometida a EN_TEST antes de la enmienda 38: este diagnostico es informativo y no bloquea ni cambia el estado ni el motivo de su resultado"
+   },
+   "tramos": [
+    [
+     "2015-01-02",
+     "2016-12-11"
+    ],
+    [
+     "2016-12-12",
+     "2018-11-22"
+    ],
+    [
+     "2018-11-23",
+     "2020-11-02"
+    ]
+   ],
+   "gates": {
+    "1": {
+     "gate": 1,
+     "vinculante": true,
+     "estadistico": 0.06382735681861959,
+     "umbral": 0.08494271104668184,
+     "n_realizaciones_nulo": 300,
+     "correlaciones_por_tramo": [
+      -0.07735146044089997,
+      0.36974095730385903,
+      -0.06382735681861959
+     ],
+     "tramos_insuficientes": [],
+     "pasa": false,
+     "insuficiencia": false,
+     "criterio": "|mediana de las correlaciones de los tramos| >= umbral",
+     "exige_signo": false
+    },
+    "2": {
+     "gate": 2,
+     "vinculante": false,
+     "afecta_a_veredicto": false,
+     "theta_fwd": 0.04894377484697432,
+     "theta_bwd": 0.04081685851327954,
+     "cociente": 1.1991068551013238,
+     "lectura": "empate: no distingue anticipacion de regimen",
+     "ambito": "informe de lote unicamente"
+    },
+    "3": {
+     "gate": 3,
+     "vinculante": true,
+     "delta_r2_pp": 1.5713813125356246,
+     "umbral_pp": 0.4854516913900153,
+     "n_realizaciones_nulo": 300,
+     "observaciones_efectivas": 44.5,
+     "minimo": 36,
+     "base": [
+      "mayer",
+      "vol30",
+      "mom30"
+     ],
+     "insuficiencia": false,
+     "pasa": true
+    },
+    "4": {
+     "gate": 4,
+     "vinculante": true,
+     "signos": [
+      -1,
+      1,
+      -1
+     ],
+     "pasa": false,
+     "advertencia": "Tres tramos con signo identico ocurre por azar con probabilidad 1/4. Es un cribado, no evidencia de estabilidad.",
+     "tasa_bajo_ruido_medida": 0.241
+    }
+   },
+   "diagnostico_solape_bloques": 21,
+   "estado": "DESCARTADA_GATE_1"
+  }
+ },
+ "huecos_de_doctrina_detectados": [
+  "estados.mapeo_salida_filtro_py.tabla no tiene fila para la rama negativa del umbral BY. filtro.py usa RECHAZADA_PVALOR de la lista cerrada.",
+  "ficha_congelada.mascara.campos_obligatorios no incluye un campo 'operador': la direccion de la mascara se deduce de 'inclusividad'.",
+  "protocolo.gates_cualitativos.parametros.metodo_de_umbral no especifica el sorteo de desplazamientos del nulo por rotacion, ni que hacer con las rotaciones cuya realizacion es indefinida (se descartan y se cuenta cuantas quedan).",
+  "alta_transicion_de_estado.ampliacion_enmienda_34 nombra su lista de estados 'estados_de_resultado_de_test' y la ampliacion_enmienda_35 la nombra 'estados_que_lo_exigen'. Para no codificar nombres de clave, el motor toma la unica lista de cadenas de cada bloque obligatoriedad_condicional, y aborta si hay mas de una.",
+  "La doctrina no define que ocurre si un tramo del bloque_1 no tiene ninguna observacion con la mascara activa: la correlacion queda indefinida. filtro.py aborta en vez de decidirlo por su cuenta."
+ ],
+ "no_escribe_registro": "filtro.py no modifica registro.json. La entrada de transicion se escribe aparte con cadena.anadir."
+}
