@@ -6,8 +6,8 @@
   "append_only": true,
   "algoritmo_hash": "sha256",
   "genesis": "0000000000000000000000000000000000000000000000000000000000000000",
-  "ultimo_hash": "e9e83d39981b8b593722bafed65cf5aaf3b1ba301abc0ce51a40fdddfc23e891",
-  "n_entradas": 33,
+  "ultimo_hash": "63fc4606d820b60fe3c1a01becf41bbf71e7c231ec447f54dfa3e9f7d3c1b8a5",
+  "n_entradas": 34,
   "regla": "Ninguna entrada se edita ni se borra. Una correccion se registra como entrada nueva que referencia la anterior. filtro.py verifica la cadena completa al arrancar y aborta si esta rota.",
   "canonizacion": "json.dumps(entrada_sin_hash, sort_keys=True, separators=(',',':'), ensure_ascii=False).encode('utf-8')"
  },
@@ -1224,6 +1224,77 @@
    "motivo": "La variable no puede completar el test bajo el compromiso ya escrito en la entrada 31 (EN_TEST, fecha_corte_bloques 2007-05-07). particion_datos.bloque_1 se definio sobre la historia disponible de la metrica (BAA10Y, FRED, desde 1986) sin intersectarla con fuente_de_precio.snapshot (2015-01-01 a 2026-09-03): su bloque_1 derivado (1988-2007) tiene cero dias de solape con el precio, retorno_N(precio) no es evaluable en ninguna fecha del bloque y gate1 no puede calcular ninguna correlacion por tramo. Verificado ejecutando el motor real contra la serie oficial de BAA10Y (FRED) y el snapshot de precio del repositorio. La enmienda 39 corrige este defecto de particionar() para variables admitidas a partir de su entrada en vigor, pero integridad.resolucion_de_entradas.inmutabilidad fija fecha_corte_bloques en el momento de la transicion a EN_TEST y prohibe expresamente reescribirla despues: aplicarsela a esta entrada exigiria cambiar el corte comprometido de 2007-05-07 a 2020-11-02, lo que la propia doctrina no permite. Se evaluo explicitamente y se descarto extender la enmienda 39 a esta variable por esa razon (decision con Rafa, 2026-09-11). Sin overlap con el precio no hay ninguna reformulacion de la particion, dentro de las reglas vigentes al comprometerse la entrada 31, que haga el test evaluable: la insuficiencia es de historia, no de una regla de aceptacion. Corresponde protocolo.particion_datos.si_no_alcanza_minimo: estado PENDIENTE_REVISION, no consume presupuesto, no entra en correccion BY.",
    "hash_anterior": "f878af39b4410c7fd4e9a67bb63124fd3d973c7a10214f32dc3586b17008c801",
    "hash": "e9e83d39981b8b593722bafed65cf5aaf3b1ba301abc0ce51a40fdddfc23e891"
+  },
+  {
+   "id": "vix_repesca",
+   "alias": "VIX-Q20",
+   "tipo_entrada": "ficha_congelada",
+   "familia": "macro",
+   "regimen": "v2",
+   "lote": "2026-Q3",
+   "fecha_propuesta": "2026-09-12",
+   "fecha_fin_ventana_test": "2026-09-12",
+   "fecha_corte_bloques": null,
+   "estado": "PROPUESTA",
+   "gate_alcanzado": null,
+   "metrica_continua": {
+    "definicion": "Cierre diario del indice CBOE Volatility Index (VIX), volatilidad implicita a 30 dias de las opciones sobre el S&P 500.",
+    "interpretacion": "VIX bajo indica complacencia y prima de riesgo comprimida en la renta variable estadounidense. VIX alto indica estres.",
+    "fuente": {
+     "serie": "FRED, serie VIXCLS, originada por CBOE.",
+     "endpoint": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=VIXCLS",
+     "acceso": "Publico, sin clave, CSV estable. Verificado HTTP 200 el 2026-09-12, 9573 observaciones desde 1990-01-02.",
+     "calendario": "Dias habiles del mercado estadounidense. No se rellenan fines de semana ni festivos. La ventana movil se aplica sobre el indice nativo mediante rolling('365D', closed='left'), identico al tratamiento del resto de series del protocolo.",
+     "limitacion_declarada": "Serie de un mercado distinto al de BTC. El desfase de calendario implica que la mascara no puede activarse en fin de semana, mientras el retorno de BTC si se computa esos dias."
+    }
+   },
+   "mascara": {
+    "regla": "mascara(t) = 1 si VIX(t) < Q20(t)",
+    "q_percentil": 20,
+    "tipo_ventana": "movil",
+    "longitud_ventana_dias": 365,
+    "solo_informacion_anterior_a_t": true,
+    "inclusividad": "estricta (<)",
+    "warm_up_dias": 365,
+    "warm_up_excluido_del_computo_de_bloques": true,
+    "origen": "Plantilla de medida congelada de ssr_capstables, adoptada sin retoques por exigencia de repesca_v1. Los siete parametros anteriores NO son elegidos por el autor: se heredan. La cola baja y el operador estricto forman parte de lo heredado, tal como el campo inclusividad los codifica en la ficha ancla. Verificable por hash_de_plantilla.",
+    "consecuencia_de_heredar_la_cola": "La hipotesis resultante es de complacencia (volatilidad implicita anormalmente baja), no de estres. Es consecuencia de la plantilla, no una eleccion del autor. La eleccion de cola tras ver el signo es precisamente uno de los defectos de v1 que repesca_v1.por_que_se_abre.direccion_del_defecto_v1 identifica; heredarla la elimina.",
+    "tasa_de_activacion_verificada": "29.2% global sobre 2715 dias utiles (2016-01-04 a 2026-09-03), tras intersectar con fuente_de_precio.snapshot conforme a la enmienda 39. Bloque_1 28.4%, bloque_2 30.0%. Los seis tramos presentan variacion de mascara: bloque_1 50.8/9.7/24.8%, bloque_2 26.7/48.1/15.0%. Desviacion respecto al 20% nominal declarada y no corregida: el VIX es asimetrico y con reversion a la media, por lo que el Q20 movil desciende con retardo tras un pico de volatilidad y la condicion se cumple por encima de lo nominal. Precedente del mismo fenomeno: baa_credit_spread, 23.6%. Patron anual sin tendencia secular ni anios saturados: 2016:36%, 2017:64%, 2018:3%, 2019:21%, 2020:4%, 2021:56%, 2022:5%, 2023:72%, 2024:25%, 2025:14%, 2026:17%. Racha media activa 6.8 dias, por debajo del umbral de 60 que activaria la limitacion declarada del nulo por rotacion.",
+    "suficiencia_estructural_verificada": "Observaciones enmascaradas en bloque_2: 407, minimo 20. Episodios independientes en bloque_2 con dias_episodio=30: 34, minimo 8. Bloque_1 5.39 anios y bloque_2 5.28 anios, suelo de 3. Comprobado antes de proponer la transicion a EN_TEST conforme a la enmienda 38."
+   },
+   "horizonte_N": 30,
+   "unidad_theta": "fraccion de retorno simple a 30 dias",
+   "theta_B2": null,
+   "M": 0.03,
+   "estado_M": "FIJADO",
+   "derivacion_M": "Heredado sin retoques de la plantilla de medida congelada de ssr_capstables.",
+   "casilla_dashboard": {
+    "identificador": "contexto_complacencia_volatilidad",
+    "existe_hoy": false,
+    "granularidad": 0.03,
+    "estados_visibles": 3,
+    "funcion_D_theta": "D(theta) = 'desfavorable' si theta <= -0.03; 'neutral' si -0.03 < theta < 0.03; 'favorable' si theta >= 0.03",
+    "nota": "Ninguna casilla actual del dashboard recoge este contexto. Se creara si y solo si la variable se confirma."
+   },
+   "naturaleza_de_la_hipotesis": "Desplazamiento de localizacion, no de cola. La diferencia de medianas es el estadistico apropiado.",
+   "dias_episodio": 30,
+   "signo_esperado": "bilateral",
+   "justificacion_signo": "Heredado sin retoques de la plantilla congelada, conforme a repesca_v1. No es una eleccion del autor. Resulta ademas coherente con el mecanismo heredado: la complacencia (VIX anormalmente bajo) no tiene direccion monotona establecida sobre el retorno de activos de riesgo, y admite dos lecturas opuestas con respaldo en la literatura, regimen de apetito por riesgo que favorece la continuacion de la tendencia o compresion de prima que precede a un giro. Al no poder declararse una direccion previa con fundamento, bilateral es la especificacion honesta. Se declara expresamente el coste: filtro.py calcula el p-valor bilateral como la proporcion de permutaciones con |dif| >= |theta observado|, lo que exige un efecto mas extremo que un contraste de una cola.",
+   "repesca_de_id_v1": "vix",
+   "declaracion_de_antecedente": {
+    "id_antecedente": "vix",
+    "resultado_antecedente": "RECHAZADA_PVALOR",
+    "cribado_con_antecedente_conocido": "El cribado de esta variable se ejecuta con el antecedente CONOCIDO por el autor. No es un filtro ciego.",
+    "garantia_real": "La garantia frente a esa contaminacion no la aporta la fase de cribado, sino la confirmacion forward de cinco trimestres sobre datos que no existian al congelar esta ficha.",
+    "lectura_de_la_fase_1": "La fase 1 de esta variable NO debe leerse como filtro ciego dentro de tres anios. Es un filtro de viabilidad, no evidencia.",
+    "potencia_declarada": "La capa de gates detecta aproximadamente el 39% de un efecto real a theta=0.084 y deja pasar aproximadamente el 15% de ruido puro. El descarte es el resultado mas probable incluso con senal real."
+   },
+   "consume_presupuesto_v2": true,
+   "nota_presupuesto": "Ocupa plaza ordinaria del lote 2026-Q3, la liberada por el paso de baa_credit_spread a PENDIENTE_REVISION (entrada 33). Unica repesca del lote, conforme al limite de una por lote trimestral.",
+   "fecha_registro": "2026-09-12",
+   "nota_origen": "Primera repesca ejecutada bajo repesca_v1 (enmienda 36). Admisibilidad estructural (enmienda 38) e interseccion con el snapshot de precio (enmienda 39) verificadas antes de escribir esta ficha.",
+   "hash_anterior": "e9e83d39981b8b593722bafed65cf5aaf3b1ba301abc0ce51a40fdddfc23e891",
+   "hash": "63fc4606d820b60fe3c1a01becf41bbf71e7c231ec447f54dfa3e9f7d3c1b8a5"
   }
  ]
 }
