@@ -4,24 +4,19 @@ Este documento describe el sistema tal y como está, no como sería elegante que
 estuviera. Donde hay huecos, se dicen. Donde una regla no está clara en la
 doctrina, se dice también en lugar de rellenarla.
 
-Está escrito contra este estado verificado del repositorio:
+Escrito contra el estado del repositorio verificado el 2026-09-11 (esquema
+2.12.0, 40 enmiendas, 33 entradas en el registro). La tabla de hashes SHA-256
+de los ficheros núcleo se omite deliberadamente en esta versión: si necesitas
+verificar la integridad exacta del repositorio, hazlo contra `v2.json` y
+`registro.json` directamente, no contra una tabla de este documento que puede
+quedar desactualizada.
 
-| Fichero | SHA-256 |
-|---|---|
-| `v2.json` | `c12a1f0d6d9160d278483dbb2e84dba7771b2be321d4abc26a744cf07bb0f5a5` |
-| `filtro.py` | `e7ced4352fc1f4be3264ca1a411a301429bbaa28b0b31c01c66ce4bcbdec9ea6` |
-| `registro.json` | `8257e0c369406801ddeb94c62c99902711fd76b4cc31b240ed3b6378973e403b` |
-| `requirements.txt` | `f0e59c76d7628bed28eecbd49a216dc45f9f4a277d2c3246cc3d64a44b9f4be5` |
-| `cadena.py` | `ac6576efbba641f5ef241aa4e1da51739d10ed8defaa8815f5f6dce9a4156997` |
-| `enmienda_35.py` | `11682bbad1a0982fc9f721aa0eaf4dafb2c1147ddb98d3c30df9b1ac08f8d737` |
-| `informe_2026Q3_ssr_capstables.json` | `eaff81e22ebbe8ecc1c5b7381134206549c9a999a1e70fc1114d54d5801f0e88` |
+Este propio documento no puede contener su propio SHA-256, porque calcular el
+hash de un fichero que incluye su propio hash es una referencia circular. No se
+disimula el hueco.
 
-Este propio documento no aparece en la tabla: no puede contener su propio
-SHA-256, porque calcular el hash de un fichero que incluye su propio hash es
-una referencia circular. No se disimula el hueco.
-
-Si abres el repositorio y estos hashes no coinciden, el sistema ha cambiado
-desde que se escribió esto. Lee la doctrina, no este documento.
+Si el estado del repositorio no coincide con lo descrito aquí, el sistema ha
+cambiado desde que se escribió esto. Lee la doctrina, no este documento.
 
 ---
 
@@ -119,6 +114,10 @@ Este es el mapa. Todo lo demás son detalles de alguna de estas etapas.
    EN_TEST ────────► consume 1 de las 12 plazas del trimestre
      │                se fija la fecha de corte de bloques
      │
+     ├── admisibilidad estructural (enmienda 38)
+     │      └─► si la partición no es evaluable ──► PENDIENTE_REVISION  ✖ FIN
+     │           (no consume presupuesto, no aborta el lote)
+     │
      ├── bloque 1 (primera mitad de la historia)
      │      └─► LOS 4 GATES ──► si falla ──► DESCARTADA_GATE_n  ✖ FIN
      │
@@ -142,8 +141,21 @@ test, y la que sirve de línea base más adelante.
 
 Si a una variable no le llegan 3 años en cada bloque, no se testea: queda en
 `PENDIENTE_REVISION`, no consume presupuesto y no entra en la corrección
-estadística. (Es el caso de la variable de flujos de ETF: no tiene historia
-suficiente todavía.)
+estadística. (Es el caso de la variable de flujos de ETF, y también el de
+`baa_credit_spread`: su historia empieza en 1986, muy antes que el snapshot de
+precio congelado en 2015, y su bloque 1 derivado no llegó a solapar con ningún
+día de precio. La enmienda 39 corrige ese defecto de partición hacia adelante,
+pero no puede aplicarse retroactivamente a una fecha de corte ya comprometida.)
+
+**Admisibilidad estructural, antes de los gates (enmienda 38).** Desde
+2026-09-11, antes de ejecutar ningún gate se comprueba que la partición
+resultante sea evaluable: que la máscara varíe dentro de cada tramo, y que
+tanto el bloque 1 como el bloque 2 tengan observaciones efectivas suficientes.
+Si algo de esto falla, la variable pasa a `PENDIENTE_REVISION` sin consumir
+presupuesto, y **sin abortar el resto del lote**. Antes de esta enmienda, un
+solo tramo sin variación en la máscara podía hacer abortar la ejecución
+completa del lote trimestral, afectando también a variables sin ningún
+problema.
 
 ---
 
@@ -194,9 +206,11 @@ permitir arreglarlas después de ver el resultado.
 
 > Una variable se testea una sola vez, en el trimestre en que entra.
 
-`re_test_permitido: false`. La lista de excepciones está **vacía**. No hay
-mecanismo de reapertura. Una variable descartada queda descartada de forma
-permanente bajo este protocolo.
+`re_test_permitido: false`. Hasta la enmienda 36 la lista de excepciones estaba
+vacía; hoy contiene una sola excepción acotada y cerrada: la **repesca de
+variables del régimen v1** (ver sección 11). Fuera de ese caso finito, no hay
+mecanismo de reapertura. Una variable descartada bajo v2 queda descartada de
+forma permanente.
 
 **Por qué esta regla es tan dura.** Si puedes volver a testear, puedes ir
 probando variantes hasta que una pase, y entonces lo que has medido no es el
@@ -210,24 +224,29 @@ poco margen después.
 
 **Lo que NO es una excepción.** Una variable retirada antes de llegar a
 `EN_TEST` (`RETIRADA_EN_PROPUESTA`) no fue testeada, así que volver a proponerla
-no es un re-test. La doctrina lo aclara y deja la lista de excepciones vacía
-igualmente.
+no es un re-test. La doctrina lo aclara expresamente.
 
 **Caso real.** `ssr_capstables` (el *Stablecoin Supply Ratio*) fue testeada en
-el lote 2026-Q3 y **rechazada en el gate 3**. Está en la entrada 23 como
-`DESCARTADA_GATE_3`. Su propia entrada declara que el rechazo no otorga derecho
-a re-proponerla ni a proponer variantes suyas: sería una puerta de escape
-asimétrica, es decir, aceptar el resultado cuando gusta y buscar otra vía cuando
-no.
+el lote 2026-Q3 y **rechazada en el gate 3**. Su propia entrada declara que el
+rechazo no otorga derecho a re-proponerla ni a proponer variantes suyas: sería
+una puerta de escape asimétrica, es decir, aceptar el resultado cuando gusta y
+buscar otra vía cuando no.
+
+**Segundo caso real, distinto en naturaleza.** `baa_credit_spread` no fue
+rechazada por ningún gate: quedó en `PENDIENTE_REVISION` porque su partición no
+llegó a ser evaluable (ver sección 4). No consumió presupuesto y, a diferencia
+de un rechazo por gate, no está descartada de forma permanente — puede
+revisarse si en el futuro cambian las condiciones que impidieron el test.
 
 ---
 
 ## 7. Los gates, y lo permisivos que realmente son
 
-Después de superar la ficha, la variable pasa cuatro filtros sobre el bloque 1.
-Todos operan sobre la **máscara binaria**, nunca sobre la métrica continua,
-porque el panel decide con la máscara: filtrar por otra cosa sería cribar por
-una hipótesis distinta de la que emite el veredicto.
+Después de superar la ficha y la admisibilidad estructural, la variable pasa
+cuatro filtros sobre el bloque 1. Todos operan sobre la **máscara binaria**,
+nunca sobre la métrica continua, porque el panel decide con la máscara: filtrar
+por otra cosa sería cribar por una hipótesis distinta de la que emite el
+veredicto.
 
 | Gate | Nombre | ¿Vincula? | Qué comprueba, en llano |
 |---|---|---|---|
@@ -276,10 +295,13 @@ Detección medida por tamaño del efecto:
 | ruido puro | pasa el 15 % |
 
 Léelo dos veces: **un efecto real de tamaño medio tiene un 60 % de
-probabilidades de morir en los gates.** Cuando dentro de dos años leas
-"`ssr_capstables`: DESCARTADA_GATE_3", lo correcto es entender *no atravesó un
-filtro que deja fuera a la mayoría de las señales reales*, no *el SSR no
-sirve*.
+probabilidades de morir en los gates.** Esta es la razón de fondo por la que,
+hasta la fecha, ninguna variable evaluada bajo v2 haya sido `CONFIRMADA`: la
+afirmación correcta ante un `DESCARTADA_GATE_n` es *no atravesó un filtro que
+deja fuera a la mayoría de las señales reales*, nunca *esta variable no tiene
+valor predictivo* ni, mucho menos, *el precio de BTC no puede anticiparse con
+datos públicos*. Esta última es una conclusión que el sistema no ha medido y
+que su propia declaración de potencia contradice explícitamente.
 
 El gate 4 tiene su propia advertencia obligatoria: tres tramos con el mismo
 signo ocurre por azar una de cada cuatro veces. Es un cribado, no evidencia de
@@ -305,6 +327,12 @@ correlacionado.
 Solo cuentan para la corrección las variables que llegaron a producir p-valor.
 Las que murieron en los gates y las que están en `PENDIENTE_REVISION` no cuentan.
 Hay un suelo de m=3 para que la corrección no sea trivial en lotes pequeños.
+
+El p-valor se calcula según el `signo_esperado` **declarado en la ficha**,
+nunca según el signo observado tras ver el resultado. Esto está calibrado: la
+fórmula bilateral (valor absoluto) mide un error tipo I de 0,043 frente al
+nominal 0,05; la convención de elegir la cola después de ver el signo mide
+0,095, casi el doble.
 
 ---
 
@@ -367,8 +395,9 @@ Cada trimestre admite como máximo **12 propuestas** y **2 familias nuevas**. La
 familias ya existentes en el catálogo no consumen esa segunda cuota.
 
 Una variable consume presupuesto **en el momento en que pasa a `EN_TEST`**, no
-al proponerse. Las que caen en `PENDIENTE_REVISION` antes de testearse no
-consumen.
+al proponerse. Las que caen en `PENDIENTE_REVISION` antes de testearse —ya sea
+por historia insuficiente o por fallar la admisibilidad estructural de la
+enmienda 38— no consumen.
 
 **Para qué sirve.** Es una defensa contra el dragado de datos por volumen: si
 puedes testear cien variables al trimestre, alguna pasará por azar. Limitar el
@@ -384,6 +413,11 @@ El conteo va por **id distinto**, no por entrada: una aclaración o una
 transición de estado no suman otra vez. El lote histórico `v1-historico` está
 exento.
 
+**Estado actual del lote 2026-Q3:** de las 12 plazas disponibles, se ha
+consumido 1 (`ssr_capstables`, descartada en gate 3). `baa_credit_spread`
+consumió una plaza al pasar a `EN_TEST`, pero al quedar en `PENDIENTE_REVISION`
+esa plaza se libera de nuevo: el consumo neto derivado es 1, no 2.
+
 ---
 
 ## 11. Estados, sellados y la herencia de v1
@@ -397,7 +431,7 @@ La lista de estados es **cerrada**: ante una etiqueta que no esté en ella,
 | `EN_TEST` | Consumiendo presupuesto, atravesando gates |
 | `DESCARTADA_GATE_1/3/4` | Falló el gate correspondiente |
 | `DESCARTADA_GATE_2` | **Ya no puede emitirse** (gate 2 dejó de vincular) |
-| `PENDIENTE_REVISION` | Historia insuficiente |
+| `PENDIENTE_REVISION` | Historia insuficiente, o partición no evaluable |
 | `RECHAZADA_PVALOR` | No superó el umbral BY del lote |
 | `EN_CONFIRMACION` | En ventana forward de 5 trimestres |
 | `CONFIRMADA` | Superó los 3 criterios forward |
@@ -415,48 +449,77 @@ aborta si alguien intenta emitirlo hoy.
 juicio sobre la variable**, no es evidencia de ausencia de efecto, no es un
 resultado de test y no puede citarse como tal.
 
-### La herencia de v1
+`DESCARTADA_PREVIA` se usa cuando una variable se descarta antes de llegar
+siquiera a `PROPUESTA` formal, típicamente por un defecto estructural detectado
+al medir la distribución de activación de su máscara candidata. Tres casos del
+lote 2026-Q3 ilustran el patrón: `treasury_general_account` y `btc_dominance`
+mostraban tendencias seculares que saturaban la máscara en años completos (0 %
+o 99 % de activación), y `google_trends_bitcoin` inicialmente superó ese
+filtro pero, al verificar en vivo antes de transitar a `EN_TEST`, se descubrió
+que su tasa de activación declarada (20,3 %) se había medido sin aplicar su
+propia regla de censura: sobre la población realmente evaluable, la tasa real
+era 13,2 %, con un bloque 2 de solo 2 activaciones en 53 meses. En los tres
+casos, el descarte se decidió mirando solo la máscara, nunca la relación con el
+retorno de BTC — es una distinción que el propio registro declara
+explícitamente en cada entrada.
+
+### La herencia de v1 y la repesca (enmienda 36)
 
 Si abres `registro.json` verás entradas con lote `v1-historico`. Son de un
-protocolo anterior que **tenía sesgo de selección conocido y no corregido**. No
-consumen presupuesto v2 y no se re-testean.
+protocolo anterior que **tenía sesgo de selección conocido y no corregido**: la
+cola del test se elegía después de ver el signo observado, lo que en
+simulación produce un error tipo I de 0,095 frente al 0,05 nominal. Es decir,
+el filtro v1 era **más laxo** de lo que declaraba, no más estricto.
 
-El caso a entender es `halving_ciclo`, en estado `SELLADA_V1`. Encontró retornos
-**negativos** en la ventana de 18-24 meses tras el halving — es decir, lo
+Por esa razón, desde la enmienda 36 existe una única excepción, acotada y
+cerrada, a la regla de un solo test: nueve variables rechazadas bajo v1
+(`mvrv_z_score`, `funding_rate`, `dxy`, `fed_funds_rate`, `vix`, `nasdaq`,
+`fear_and_greed_index`, `hashrate`, `m2_global`) pueden volver a presentarse
+una sola vez cada una, con identificador nuevo, declarando su antecedente y
+adoptando sin retoques la plantilla de medida de `ssr_capstables` (lo que las
+deja todas con `signo_esperado: bilateral`). Ninguna se ha repescado todavía.
+
+El caso a entender aparte es `halving_ciclo`, en estado `SELLADA_V1`. Encontró
+retornos **negativos** en la ventana de 18-24 meses tras el halving — lo
 contrario de la narrativa habitual de rally— con p-valores entre 0,014 y 0,049.
-
-Su estatus es deliberadamente ambiguo y está declarado como tal: se conserva por
-su valor operativo y por trazabilidad histórica, **no como evidencia validada
-bajo el protocolo v2**. Corre en `halving.py`, en silencio, y solo emerge en la
-interfaz cuando la fecha se acerca a la ventana de riesgo. No se somete a v2 ni
-se re-testea, porque hacerlo violaría la unicidad del test.
+Su estatus es deliberadamente ambiguo y está declarado como tal: se conserva
+por su valor operativo y por trazabilidad histórica, **no como evidencia
+validada bajo el protocolo v2**. A diferencia de las nueve repescables, este
+hallazgo **no** tiene ruta de re-test: la repesca corrige la asimetría de un
+filtro v1 demasiado laxo con los negativos, pero re-testear un positivo hasta
+que falle sería el mismo abuso en espejo. `halving_ciclo` corre en `halving.py`,
+en silencio, y solo emerge en la interfaz cuando la fecha se acerca a la
+ventana de riesgo.
 
 ---
 
 ## 12. Cómo se enmienda la doctrina
 
 La doctrina se modifica mediante **enmiendas numeradas**, registradas en
-`meta.enmiendas` con su número, título, fecha y motivo. Van por la 34.
+`meta.enmiendas` con su número, título, fecha y motivo. Van por la 40.
 
-La versión del esquema (`2.8.0`) usa numeración semántica, pero **la doctrina no
-define en ninguna parte qué distingue un cambio mayor de uno menor**. En la
+La versión del esquema (`2.12.0`) usa numeración semántica, pero **la doctrina
+no define en ninguna parte qué distingue un cambio mayor de uno menor**. En la
 práctica se ha movido el segundo número al añadir campos o reglas nuevas. Esto
-es una observación sobre lo que ha ocurrido, no una regla escrita: **si necesitas
-saber la regla, no está en `v2.json`.**
+es una observación sobre lo que ha ocurrido, no una regla escrita: **si
+necesitas saber la regla, no está en `v2.json`.**
 
-Lo que sí está claro es el principio de fondo, visible en las enmiendas 33 y 34,
-que se declaran a sí mismas: *"Solo añade. No reescribe ningún texto previo."*
+Lo que sí está claro es el principio de fondo, visible en varias enmiendas que
+se declaran a sí mismas: *"Solo añade. No reescribe ningún texto previo."*
 
-Las enmiendas recientes se escriben con cuidado sobre **cuándo** se escriben. La
-33 dice: *"Encadenada antes de que exista ningún resultado del test de
-`ssr_capstables`. Escrita después, no valdría nada."* Y también: *"Una enmienda
-escrita antes del test que relajase cualquiera de esas cosas no sería una
-enmienda sino una propuesta nueva."*
+Las enmiendas se escriben con cuidado sobre **cuándo** se escriben, siempre
+antes de que exista un resultado que pudieran favorecer. La enmienda 36 (la
+repesca) lo declara de forma explícita: *"Ninguna variable estaba elegida
+cuando se escribió esta enmienda. [...] Escribir la regla con un caso esperando
+la habría convertido en una autorización a medida."*
 
 Un ejemplo de disciplina que conviene no perder: la enmienda 34 declaró un caso
 concreto (un cambio en `filtro.py` posterior a un resultado) y **expresamente no
 creó una regla general**, para no escribir una autorización a medida del caso que
-la necesitaba. Si hace falta la regla general, se escribe aparte y en frío.
+la necesitaba. La enmienda 35 evaluó explícitamente si debía escribirse esa
+regla general y decidió que no, con el lote ya cerrado y sin ningún caso
+pendiente que la reclamara. Si hace falta la regla general, se escribe aparte
+y en frío.
 
 **Nunca se editan `registro.json` ni `v2.json` a mano.** Siempre mediante un
 script de un solo uso que verifica los hashes antes de tocar nada.
@@ -474,9 +537,10 @@ registro:
 arranque.
 
 **Dato estimado** — medido, pero con un método que tiene supuestos dentro. Las
-cotas de peso de los 6 tokens no acreditados: 0,2523 % global, 0,1613 % en el
-bloque 1. Se declararon **junto a** las cotas congeladas del protocolo (0,91 % y
-0,26 %), sin sustituirlas: lo congelado sigue siendo el compromiso.
+cotas de peso de los 6 tokens no acreditados en `ssr_capstables`: 0,2523 %
+global, 0,1613 % en el bloque 1. Se declararon **junto a** las cotas
+congeladas del protocolo (0,91 % y 0,26 %), sin sustituirlas: lo congelado
+sigue siendo el compromiso.
 
 **Supuesto** — no observado, declarado como tal. Las cifras de potencia de los
 gates de la sección 7: salen de un modelo sintético, no de datos reales, y la
@@ -489,103 +553,97 @@ ejecutar el test de SSR, los días útiles derivados salieron 2504 y la ficha
 decía 2503 — un día de diferencia por convención de borde. La regla aplicada:
 *"Se declara el resultado derivado. No se corrige la ficha congelada."*
 
-**Los defectos que ya no se pueden arreglar se declaran también.** La entrada 19
-tiene un campo fuera de la lista cerrada, anterior a la enmienda 33. Aparece en
-cada ejecución de `filtro.py` como incidencia, con la etiqueta *"declarada, no
-corregible"*. No se limpia, porque limpiarla sería editar el pasado.
+**Los defectos que ya no se pueden arreglar se declaran también.** Una entrada
+antigua del registro tiene un campo fuera de la lista cerrada, de antes de que
+existiera el control que lo habría bloqueado. Aparece en cada ejecución de
+`filtro.py` como incidencia, declarada y no corregible. No se limpia, porque
+limpiarla sería editar el pasado.
 
 **Los problemas de los datos se declaran aunque incomoden.** DefiLlama no cubre
 la cadena Omni, lo que contamina el arranque de la serie de stablecoins: 166 de
-1252 días del bloque 1 (13,3 %), y un 39,8 % del tramo 1. La decisión fue
-declarar y ejecutar igualmente, tras consultar a cinco modelos externos (cuatro
-a favor, uno en contra), razonando que la contaminación puede impedir el paso de
-los gates pero no falsear la estimación del efecto. Y se dejó escrito por
-adelantado que esto **no daba derecho a re-proponer si los gates rechazaban**.
-Que es exactamente lo que pasó.
+1252 días del bloque 1 de `ssr_capstables` (13,3 %), y un 39,8 % del tramo 1.
+La decisión fue declarar y ejecutar igualmente, tras consultar a cinco modelos
+externos (cuatro a favor, uno en contra), razonando que la contaminación puede
+impedir el paso de los gates pero no falsear la estimación del efecto. Y se
+dejó escrito por adelantado que esto **no daba derecho a re-proponer si los
+gates rechazaban**. Que es exactamente lo que pasó.
 
 ---
 
 ## 14. Huecos declarados hoy
 
-Cosas que el sistema promete y todavía no comprueba automáticamente. Están
-declaradas en el propio registro, no descubiertas aquí:
+Cosas que el sistema promete y todavía no comprueba automáticamente, o
+limitaciones que se han decidido no resolver. Están declaradas en el propio
+registro, no descubiertas aquí:
 
-1. **CERRADO.** Hashes de snapshot sin verificar. `filtro.py` en su versión
-   2.9 verifica el CSV de la métrica contra `sha256_serie_metrica` y el
-   artefacto bruto contra `sha256_snapshot_metrica`, este último mediante el
-   nuevo argumento `--snapshot-metrica`. Antes solo se verificaba el snapshot
-   de precio; ahora también estos dos.
+1. **Alcance de `sha256_motor` y `sha256_serie_metrica`.** Ambos hashes cubren
+   el fichero que ejecutó el test o la serie que consumió, pero **no** el
+   entorno de ejecución ni las dependencias transitivas.
 
-2. **CERRADO.** La obligatoriedad de la enmienda 34 no se comprobaba.
-   `filtro.py` 2.9 la automatiza —junto con la de la enmienda 35—, leyendo
-   los campos, estados y cortes directamente de la doctrina, sin añadir
-   constantes nuevas al código.
+2. **`requirements.txt` fija `pandas` y `numpy`, no el resto.** El intérprete
+   de Python y las dependencias transitivas siguen sin fijar. Además, las
+   versiones con las que se ejecutó el test de `ssr_capstables` (entrada 23,
+   la primera ejecución real del lote) son **desconocidas** y no se
+   reconstruyen: fijar hoy las de un contenedor de verificación y presentarlas
+   como aquellas registraría un supuesto como confirmado.
 
-3. **REDUCIDO, NO CERRADO.** `requirements.txt` fija ahora `pandas==2.3.3` y
-   `numpy==2.3.5`. Pero:
-   - El intérprete de Python y las dependencias transitivas siguen sin fijar.
-   - La fijación solo se ha podido **verificar** contra el arranque
-     (`import`) y las fases 0-2, que no usan `pandas`. **No** se ha podido
-     verificar contra el camino numérico, porque el lote está cerrado y
-     `ssr_capstables` ya no es admisible a `EN_TEST` (unicidad del test).
-   - **No** reconstruye las versiones con las que se ejecutó realmente la
-     entrada 23: esas siguen siendo **desconocidas**.
-   - La propia enmienda 35 lo dice así: *"la limitación se reduce, no
-     desaparece"*. No se declara cerrado.
+3. **N=30 tiene un cabo suelto documentado.** El horizonte se justificó
+   midiendo la persistencia de la *métrica continua* entre épocas. Desde la
+   enmienda 18 los gates operan sobre la *máscara binaria*, así que esa
+   justificación ya no describe exactamente lo que el protocolo hace. No se
+   recalcula nada, porque `definicion_de_efecto` es inmutable. Queda anotado
+   para que no se descubra como sorpresa.
 
-4. **PERMANECE, íntegro.** El alcance de `sha256_motor` es limitado y está
-   declarado: cubre el fichero `filtro.py`, no el entorno ni las
-   dependencias.
+4. **El anti-truncamiento depende de Git.** Un borrado del historial completo
+   no es detectable desde dentro del repositorio.
 
-5. **Sin cambios.** N=30 tiene un cabo suelto documentado. El horizonte se
-   justificó midiendo la persistencia de la *métrica continua* entre épocas.
-   Desde la enmienda 18 los gates operan sobre la *máscara binaria*, así que
-   esa justificación ya no describe exactamente lo que el protocolo hace. No
-   se recalcula nada, porque `definicion_de_efecto` es inmutable. La
-   enmienda 26 lo anotó expresamente *"para que el cabo suelto no se
-   descubra como sorpresa dentro de dos años"*.
+5. **La numeración de versión del esquema no está definida en la doctrina**
+   (ver sección 12). En la práctica, toda enmienda que cambia el
+   comportamiento del motor mueve el segundo número; no hay una regla escrita
+   que lo exija.
 
-6. **Sin cambios.** El anti-truncamiento depende de Git. Un borrado del
-   historial completo no es detectable desde dentro del repositorio.
+6. **El inventario de reincidencia de la repesca es detectable por
+   renombrado.** El control que vigila si un id nuevo coincide como subcadena
+   con uno de los nueve ids repescables es un control por coincidencia de
+   texto: un id renombrado lo evade por completo. Está declarado como
+   debilidad conocida, no como control cerrado.
 
-7. **Sin cambios.** La numeración de versión del esquema no está definida en
-   la doctrina (ver sección 12).
-
-8. **Nuevo.** La enmienda 34 y la enmienda 35 nombran de forma distinta la
-   misma lista de estados dentro de su bloque `obligatoriedad_condicional`:
-   la 34 la llama `estados_de_resultado_de_test`, la 35 la llama
-   `estados_que_lo_exigen`. `filtro.py` no codifica ninguno de los dos
-   nombres: toma la única lista de cadenas que encuentra dentro de cada
-   bloque `obligatoriedad_condicional`, y aborta si encuentra más de una.
-   Funciona, pero es un parche de lectura, no una regla unificada. Queda
-   anotado en `huecos_de_doctrina_detectados` de cada informe. Es candidato
-   a una enmienda futura que armonice el nombre del campo; esa enmienda no
-   se propone en este documento.
-
-**Cabo suelto ya resuelto: "cuatro incidentes históricos" vs. "tres".** En una
-versión anterior de este documento se habló de cuatro incidentes históricos,
-mientras que la comprobación con `filtro.py --lote 2026-Q3 --solo-comprobar`
-mostraba tres. Aclarado: eran cuatro **líneas de incidencia** repartidas en
-**tres entradas** (la entrada 13 aparece dos veces, una por la enmienda 28 y
-otra por la enmienda 29 parte 4). Con la doctrina 2.9.0 pasan a ser **cinco
-líneas en cuatro entradas**: se suma la entrada 22, que está en `EN_TEST` sin
-`sha256_serie_metrica`. Esa entrada queda por debajo del corte de la entrada
-23, así que es una incidencia declarada, no un bloqueo.
+7. **La verificación (g) de la repesca no se ejecuta en tiempo real.** Que
+   `repesca_de_id_v1` nunca se use para resolver o plegar ids es una
+   invariante verificada por revisión de código con fecha, no una comprobación
+   que `filtro.py` repita en cada ejecución.
 
 ---
 
-## Estado a fecha de este documento
+## Estado a fecha de este documento (2026-09-11)
 
-- Esquema **2.9.0**, **35 enmiendas** aplicadas, **23 entradas** en el
+- Esquema **2.12.0**, **40 enmiendas** aplicadas, **33 entradas** en el
   registro, cadena válida.
-- Lote **2026-Q3 cerrado**. Consumo: 1 de 12.
-- `ssr_capstables` testeada y **rechazada en el gate 3** (entrada 23). No se
-  re-propone, ni ella ni variantes.
+- Lote **2026-Q3 cerrado**. Consumo derivado: 1 de 12 plazas.
+- `ssr_capstables` testeada y **rechazada en el gate 3**. No se re-propone, ni
+  ella ni variantes.
+- `baa_credit_spread` en `PENDIENTE_REVISION`: su partición no llegó a
+  solapar con el snapshot de precio. No consumió presupuesto neto.
+- `google_trends_bitcoin`, `treasury_general_account`, `btc_dominance` y
+  `wikipedia_pageviews_bitcoin` en `DESCARTADA_PREVIA`, todas por defectos
+  estructurales de su máscara detectados antes de mirar ninguna relación con
+  el retorno de BTC.
+- Excepción de repesca abierta (enmienda 36) para nueve variables del régimen
+  v1. Ninguna repescada todavía.
 - Ninguna variable en `EN_TEST` ni en `EN_CONFIRMACION`.
 - Ninguna variable **`CONFIRMADA`** hasta la fecha.
 
-Ese último punto es el resumen honesto del proyecto: el sistema lleva más
-esfuerzo invertido en no engañarse que en encontrar señales, y hasta hoy no ha
-validado ninguna. Es el resultado esperable de un protocolo diseñado para que
-pasar sea difícil. Un sistema con estas reglas y una lista larga de variables
-confirmadas sería más sospechoso que este.
+Ese último punto es el resumen honesto del proyecto, y conviene ser preciso
+sobre lo que significa y lo que no. **No significa** que el precio de BTC no
+pueda anticiparse con datos públicos disponibles: la capa de gates, por diseño
+y medición propia, detecta aproximadamente el 39 % de un efecto real de
+magnitud moderada y deja pasar sin detectar el 61 % restante. Lo que sí
+significa, con la evidencia reunida hasta hoy, es que **ninguna de las
+variables evaluadas ha producido evidencia que sobreviva el cribado y,
+mucho menos, la confirmación forward sobre datos futuros**. La ausencia de
+confirmación no es evidencia de ausencia de efecto; es, simplemente, ausencia
+de confirmación. El sistema lleva más esfuerzo invertido en no engañarse que
+en encontrar señales, y hasta hoy no ha validado ninguna. Es el resultado
+esperable de un protocolo diseñado para que pasar sea difícil. Un sistema con
+estas reglas y una lista larga de variables confirmadas sería más sospechoso
+que este.
