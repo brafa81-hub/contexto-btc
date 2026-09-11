@@ -6,16 +6,16 @@
   "append_only": true,
   "algoritmo_hash": "sha256",
   "genesis": "0000000000000000000000000000000000000000000000000000000000000000",
-  "ultimo_hash": "63fc4606d820b60fe3c1a01becf41bbf71e7c231ec447f54dfa3e9f7d3c1b8a5",
-  "n_entradas": 34,
+  "ultimo_hash": "99dcd54d747f727c2849aea33e9389d92956999d8f2fc83b4823a82006dc63e2",
+  "n_entradas": 35,
   "regla": "Ninguna entrada se edita ni se borra. Una correccion se registra como entrada nueva que referencia la anterior. filtro.py verifica la cadena completa al arrancar y aborta si esta rota.",
   "canonizacion": "json.dumps(entrada_sin_hash, sort_keys=True, separators=(',',':'), ensure_ascii=False).encode('utf-8')"
  },
  "presupuesto_por_trimestre": {
   "2026-Q3": {
-   "propuestas_usadas": 1,
+   "propuestas_usadas": 2,
    "familias_nuevas_usadas": 0,
-   "nota": "SSR pertenece a una familia del catalogo inicial, por lo que no consume cuota de familia nueva. baa_credit_spread paso a PENDIENTE_REVISION (entrada 33): libera su plaza, no consume presupuesto.",
+   "nota": "SSR pertenece a una familia del catalogo inicial, por lo que no consume cuota de familia nueva. baa_credit_spread paso a PENDIENTE_REVISION (entrada 33): libera su plaza, no consume presupuesto. vix_repesca ocupa esa plaza al transitar a EN_TEST (entrada 35).",
    "nota_enmienda_29": "Los maximos viven solo en v2.json (presupuesto.autoridad). Aqui quedan unicamente los contadores de uso, que filtro.py contrasta contra el valor derivado del array entradas."
   }
  },
@@ -1295,6 +1295,20 @@
    "nota_origen": "Primera repesca ejecutada bajo repesca_v1 (enmienda 36). Admisibilidad estructural (enmienda 38) e interseccion con el snapshot de precio (enmienda 39) verificadas antes de escribir esta ficha.",
    "hash_anterior": "e9e83d39981b8b593722bafed65cf5aaf3b1ba301abc0ce51a40fdddfc23e891",
    "hash": "63fc4606d820b60fe3c1a01becf41bbf71e7c231ec447f54dfa3e9f7d3c1b8a5"
+  },
+  {
+   "id": "vix_repesca",
+   "tipo_entrada": "transicion_de_estado",
+   "estado": "EN_TEST",
+   "fecha_registro": "2026-09-12",
+   "gate_alcanzado": null,
+   "fecha_corte_bloques": "2020-11-02",
+   "activaciones_declaradas": 808,
+   "observaciones_evaluables_declaradas": 2967,
+   "sha256_serie_metrica": "476f91733659d8413bdf31f593fc76a363f7ad1b4fe568e0a260727fde98b1e5",
+   "motivo": "Transicion de vix_repesca a EN_TEST para el lote 2026-Q3. Se escribe antes de ejecutar ningun gate. Fija como precompromiso la fecha de corte de bloques, el sha256 de la serie de la metrica que el motor consumira por --metrica y las dos cifras estructurales de la enmienda 38, que filtro.py recalcula en la fase 3 y contra las que aborta si no coinciden. Serie congelada: FRED VIXCLS, 1990-01-02 a 2026-09-10, 9271 observaciones validas tras eliminar las 302 filas sin dato que la fuente marca con punto; descargada el 2026-09-12 del endpoint declarado en la ficha. La ventana no se trunca a mano: fecha_fin_ventana_test es 2026-09-12 y la fuente no publica dato posterior al 2026-09-10, conforme a protocolo.ventana_temporal. DISCREPANCIA DECLARADA. Las cifras de verificacion que la entrada 34 recoge en mascara.tasa_de_activacion_verificada y mascara.suficiencia_estructural_verificada NO reproducen contra el motor. Medido con filtro.py --solo-comprobar sobre la serie anclada aqui y el snapshot de precio congelado en fuente_de_precio.snapshot: observaciones evaluables 2967 y no 2715; activaciones 808, 27.2 por ciento y no 29.2; fecha de corte de bloques 2020-11-02, con bloques de 5.83 y 5.83 anios y no de 5.39 y 5.28; tramos del bloque_1 con 95 de 490, 178 de 491 y 62 de 489 activos, es decir 19.4, 36.3 y 12.7 por ciento y no 50.8, 9.7 y 24.8; racha media 6.6 dias y no 6.8; bloque_2 con 456 observaciones enmascaradas y no 407, y con 11 episodios independientes a dias_episodio 30 y no 34. CAUSA. La verificacion manual previa a redactar la ficha aplico el calentamiento de 365 dias sobre el rango ya intersectado con el precio, descartando el primer anio natural. El motor no lo hace, y no debe hacerlo: la serie del VIX arranca en 1990, por lo que el cuantil movil de 365 dias ya esta completamente definido en la primera fecha del snapshot de precio y no hay calentamiento que excluir. Al partir de una poblacion distinta cambia la mediana temporal que fija la particion y con ella la fecha de corte, los seis tramos y todas las cifras derivadas. ALCANCE. Esta entrada NO corrige la ficha ni puede hacerlo: ficha_congelada.migracion_de_fichas.limite_de_la_sustitucion prohibe que una ficha sustitutiva difiera en ningun campo de definicion de medida, y las cifras erroneas viven dentro de mascara, que lo es. La entrada 34 queda intacta y sus cifras de prosa quedan declaradas aqui como no reproducibles. El precompromiso verificable por maquina de la tasa de activacion es el par activaciones_declaradas y observaciones_evaluables_declaradas de esta entrada, creado por la enmienda 38 precisamente porque la cifra en prosa de mascara es texto libre que el motor no lee: el motivo de esa enmienda deja constancia de que dos fichas del lote 2026-Q3 ya habian declarado cifras que no coincidian con el motor. MOMENTO. La discrepancia se detecta y se declara ANTES de ejecutar ningun gate y sin haber visto ningun resultado del test. No es una correccion retroactiva de la definicion ni una reinterpretacion de ningun criterio. ADMISIBILIDAD. Los cuatro criterios de protocolo.admisibilidad_estructural se verifican con las cifras reales, no con las declaradas en la ficha: los tres tramos del bloque_1 presentan variacion de mascara; observaciones efectivas por tramo 16.3, 16.4 y 16.3; observaciones efectivas del bloque_1 44.5 sobre un minimo de 36; bloque_2 con 456 enmascaradas y 11 episodios independientes. La variable es ADMISIBLE. Se hace constar expresamente que el margen real es corto y muy inferior al que la ficha sugiere: 11 episodios independientes frente a los 34 declarados. Esa estrechez debe tenerse presente al interpretar theta_B2 y el p-valor. DIFERENCIA CON EL PRECEDENTE. google_trends_bitcoin (entrada 32) no transito porque sus cifras corregidas destruian la suficiencia estructural: dejaban el bloque_2 con 2 activaciones y un tramo del bloque_1 con cero, lo que hacia indefinida la correlacion de Spearman e inejecutables los gates 1 y 4. Aqui las cifras corregidas mantienen la suficiencia y ningun gate resulta inejecutable. El defecto es de exactitud de lo declarado en prosa, no de fondo. DECISION. Tomada por el autor el 2026-09-12 tras cuatro revisiones externas, con consenso dividido 2 a 2. Se hace constar que las dos revisiones favorables a no transitar razonaban sobre el supuesto de que la variable podria volver a presentarse corregida en una ronda posterior. Bajo repesca_v1.limites.una_por_id_v1 ese supuesto es falso: el motor aborta si dos ids resueltos distintos apuntan al mismo repesca_de_id_v1, sin filtrar por estado, de modo que no transitar habria agotado de forma permanente la unica repesca de vix. OMISIONES. No se declara sha256_snapshot_metrica porque la ficha no define ningun artefacto bruto distinto de la serie que el motor lee, conforme al criterio de la enmienda 35. sha256_motor y sha256_informe se omiten por ser opcionales fuera de los estados de resultado: la ejecucion no ha ocurrido y el informe no existe. Consume la segunda plaza del presupuesto 2026-Q3, la liberada por baa_credit_spread.",
+   "hash_anterior": "63fc4606d820b60fe3c1a01becf41bbf71e7c231ec447f54dfa3e9f7d3c1b8a5",
+   "hash": "99dcd54d747f727c2849aea33e9389d92956999d8f2fc83b4823a82006dc63e2"
   }
  ]
 }
