@@ -35,7 +35,7 @@ import pandas as pd
 
 import cadena
 
-DOCTRINA_COMPATIBLE = "2.11"  # enmienda 37
+DOCTRINA_COMPATIBLE = "2.12"  # enmiendas 38-40
 
 # Hueco declarado de la doctrina: estados.mapeo_salida_filtro_py.tabla traduce
 # la etiqueta interna PASA a EN_CONFIRMACION "solo si supera ademas el umbral BY
@@ -987,6 +987,11 @@ def _inventario_de_referencias(entrada, doc):
             if marca not in valor:
                 continue
             resto = valor.split(marca, 1)[1]
+            # Enmienda 40: si la marca cierra la cadena ("...del protocolo."),
+            # no hay ruta detras: es fin de frase, no una referencia. Sin esta
+            # guarda, resto.split() es una lista vacia y [0] lanza IndexError.
+            if not resto.split():
+                continue
             token = marca + "".join(
                 c for c in resto.split()[0] if c.isalnum() or c in "._"
             )
@@ -1083,6 +1088,10 @@ def fase2_admision(doc, variables, consumo, lote, inventario=None):
 
     en_propuesta = [v for v in del_lote if v["estado"] == "PROPUESTA"]
     pendientes = [v for v in del_lote if _en_test_pendiente(v)]
+    for v in en_propuesta:
+        v["admision_nueva_enmienda_38"] = True
+    for v in pendientes:
+        v["admision_nueva_enmienda_38"] = False
     admisibles = en_propuesta + pendientes
 
     if not admisibles:
@@ -1397,6 +1406,101 @@ def racha_media(mask):
     return float(np.mean(rachas)) if rachas else 0.0
 
 
+def diagnostico_estructural(mask, b1, b2, ret, base, doc):
+    """
+    Enmienda 38 (protocolo.admisibilidad_estructural).
+
+    Evalua ANTES de la capa de gates las cuatro condiciones de suficiencia que
+    ya existian en la doctrina y que hasta ahora solo aparecian al ejecutar.
+    No introduce umbrales (todos salen de v2.json), no calcula ningun nulo por
+    rotacion ni ningun estadistico de efecto: solo la geometria de la mascara
+    contra el calendario. Los predicados replican los de gate1, gate3 y
+    test_permutacion reutilizando sus mismas primitivas.
+    """
+    N = ruta(doc, "definicion_de_efecto.horizonte_N.valor")
+    n_tramos = ruta(doc, "protocolo.gates_cualitativos.parametros."
+                         "definicion_de_tramos.n_tramos")
+    min_tramo = ruta(doc, "protocolo.gates_cualitativos.parametros."
+                          "magnitud_en_tramos.observaciones_efectivas_minimas_por_tramo")
+    min_g3 = ruta(doc, "protocolo.gates_cualitativos.parametros."
+                       "contribucion_incremental_R2.observaciones_efectivas_minimas")
+    tp = ruta(doc, "protocolo.test_de_permutacion")
+    dias_ep = tp["dias_episodio"]["valor_bajo_N_30"]
+    if tp["dias_episodio"]["regla"].startswith("dias_episodio = max(21, N)"):
+        dias_ep = max(21, N)
+
+    m1 = mask.loc[b1]
+    m2 = mask.loc[b2]
+    tr = tramos_de(b1, n_tramos)
+
+    # (1) variacion y (2) observaciones efectivas por tramo. La variacion se
+    # evalua con el mismo selector que gate1 (_preparar_tramos: tramo y retorno
+    # finito) y la misma condicion que deja la correlacion indefinida en
+    # _cors_por_tramo (menos de 3 filas, o mascara constante).
+    _, selectores = _preparar_tramos(m1.index, ret, tr)
+    mvals = m1.values
+    tramos_sin_variacion, tramos_ralos, detalle_tramos = [], [], []
+    for k, ((a, b), sel) in enumerate(zip(tr, selectores), start=1):
+        idx = m1.index[(m1.index >= a) & (m1.index <= b)]
+        seg = mvals[sel]
+        varia = bool(sel.sum() >= 3 and len(np.unique(seg)) > 1)
+        efect = obs_efectivas(idx, N)
+        if not varia:
+            tramos_sin_variacion.append(k)
+        if efect < min_tramo:
+            tramos_ralos.append((k, round(efect, 1)))
+        detalle_tramos.append({
+            "tramo": k, "desde": str(a.date()), "hasta": str(b.date()),
+            "dias": int(len(idx)), "activos": int(m1.loc[idx].sum()),
+            "varia": varia, "obs_efectivas": round(efect, 1),
+        })
+
+    # (3) minimo del gate 3, con la misma alineacion base/retorno que gate3().
+    datos_g3 = base.reindex(m1.index).join(ret.reindex(m1.index)).dropna()
+    efect_g3 = obs_efectivas(datos_g3.index, N)
+
+    # (4) minimos del test de permutacion sobre bloque_2.
+    z2 = pd.DataFrame({"m": m2, "retorno_N": ret.reindex(m2.index)}).dropna()
+    sel2 = z2[z2["m"]]
+    eps2 = episodios_independientes(sel2.index, dias_ep)
+
+    motivos = []
+    if tramos_sin_variacion:
+        motivos.append(
+            f"la mascara no varia en el/los tramo(s) {tramos_sin_variacion} del "
+            f"bloque_1: la correlacion queda indefinida y gate1 abortaria")
+    if tramos_ralos:
+        motivos.append(
+            f"observaciones efectivas por debajo de {min_tramo} en el/los "
+            f"tramo(s) {tramos_ralos} del bloque_1 (gate 1)")
+    if efect_g3 < min_g3:
+        motivos.append(
+            f"observaciones efectivas del bloque_1 {round(efect_g3, 1)} < "
+            f"{min_g3} (gate 3)")
+    if len(sel2) < tp["observaciones_enmascaradas_minimas"]:
+        motivos.append(
+            f"solo {len(sel2)} observaciones enmascaradas en bloque_2 (minimo "
+            f"{tp['observaciones_enmascaradas_minimas']}, test de permutacion)")
+    if len(eps2) < tp["episodios_independientes_minimos"]:
+        motivos.append(
+            f"solo {len(eps2)} episodios independientes en bloque_2 (minimo "
+            f"{tp['episodios_independientes_minimos']}, dias_episodio={dias_ep})")
+
+    return {
+        "activaciones": int(mask.sum()),
+        "observaciones_evaluables": int(len(mask)),
+        "racha_media": round(racha_media(mask), 1),
+        "tramos_bloque_1": detalle_tramos,
+        "obs_efectivas_bloque_1": round(efect_g3, 1),
+        "minimo_gate_3": min_g3,
+        "observaciones_enmascaradas_bloque_2": int(len(sel2)),
+        "episodios_independientes_bloque_2": int(len(eps2)),
+        "dias_episodio": dias_ep,
+        "admisible": not motivos,
+        "motivos": motivos,
+    }
+
+
 def gate1(mask_b1, ret, tramos, doc):
     par = ruta(doc, "protocolo.gates_cualitativos.parametros.magnitud_en_tramos")
     N = ruta(doc, "definicion_de_efecto.horizonte_N.valor")
@@ -1695,8 +1799,12 @@ def ejecutar(args):
             print(f"  - {p}")
         abortar(f"{len(problemas)} bloqueo(s) impiden ejecutar el lote {args.lote}")
 
-    if args.solo_comprobar:
+    # Enmienda 38: --solo-comprobar alcanza la fase 3 si se aportan los datos.
+    # Sin ellos conserva exactamente el comportamiento anterior (fases 0-2).
+    if args.solo_comprobar and not (args.precio and args.metrica):
         print("\n[--solo-comprobar] fases 0-2 superadas. No se ejecuta ningun test.")
+        print("[--solo-comprobar] sin --precio y --metrica no se evalua la "
+              "admisibilidad estructural (enmienda 38).")
         return 0
 
     if not args.precio:
@@ -1764,6 +1872,21 @@ def ejecutar(args):
         mask, meta_mask = construir_mascara(metrica, ficha)
         mask = mask[mask.index <= fecha_fin]
 
+        # Enmienda 39: la particion solo usa fechas en las que tambien hay
+        # precio (protocolo.particion_datos.interseccion_con_precio). Sin esto,
+        # una metrica con historia muy anterior al snapshot deja un bloque_1
+        # sin ningun retorno_N y gate1 aborta el lote entero.
+        n_pre_interseccion = len(mask)
+        mask = mask[mask.index.isin(precio.index)]
+        meta_mask["dias_sin_precio_disponible"] = n_pre_interseccion - len(mask)
+        if len(mask) < n_pre_interseccion:
+            meta_mask["aviso_interseccion_precio"] = (
+                f"{n_pre_interseccion - len(mask)} fecha(s) de la mascara "
+                f"caian fuera del snapshot de precio "
+                f"({precio.index.min().date()} a {precio.index.max().date()}) "
+                f"y se excluyeron antes de particionar (enmienda 39)"
+            )
+
         b1, b2, meta_part = particionar(mask.index, doc)
 
         # enmienda 33: la fecha de corte registrada en la transicion es un
@@ -1792,8 +1915,91 @@ def ejecutar(args):
             r["motivo"] = (f"bloques de {meta_part['anios_bloque_1']} y "
                            f"{meta_part['anios_bloque_2']} anios, minimo "
                            f"{meta_part['minimo_por_bloque_anios']}")
+            if args.solo_comprobar:
+                print(f"\n[--solo-comprobar] [{vid}] NO ADMISIBLE")
+                print(f"    BLOQUEO: {r['motivo']}")
             resultados[vid] = r
             continue
+
+        # ---- Enmienda 38 ----------------------------------------------
+        # Grandfathering (decidido con Rafa 2026-09-11, avalado por consulta
+        # externa 4/4): el criterio 4 (y los otros 3) SOLO bloquean la
+        # admision de variables nuevas. Una variable que ya estaba en EN_TEST
+        # pendiente paso el punto de no retorno bajo las reglas anteriores a
+        # esta enmienda; aplicarle el bloqueo ahora reescribiria
+        # retroactivamente el resultado de un compromiso ya hecho. Para esas
+        # variables el diagnostico se calcula igual (es informativo, no
+        # condiciona nada) y la ejecucion continua normalmente a los gates.
+        es_admision_nueva = v.get("admision_nueva_enmienda_38", True)
+
+        diag = diagnostico_estructural(mask, b1, b2, ret, base, doc)
+        r["diagnostico_estructural"] = diag
+        if not es_admision_nueva:
+            r["diagnostico_estructural"]["nota_grandfathering"] = (
+                "variable ya comprometida a EN_TEST antes de la enmienda 38: "
+                "este diagnostico es informativo y no bloquea ni cambia el "
+                "estado ni el motivo de su resultado"
+            )
+
+        # Precompromiso verificable, mismo patron que fecha_corte_bloques
+        # (enmienda 33). Solo se exige/comprueba para admisiones nuevas: una
+        # variable ya en EN_TEST no pudo precomprometer un campo que no
+        # existia cuando se escribio su transicion.
+        if es_admision_nueva:
+            decl_act = ent_tr.get("activaciones_declaradas")
+            decl_obs = ent_tr.get("observaciones_evaluables_declaradas")
+            if decl_act is not None or decl_obs is not None:
+                if (decl_act != diag["activaciones"]
+                        or decl_obs != diag["observaciones_evaluables"]):
+                    abortar(
+                        f"[{vid}] el diagnostico derivado no coincide con el "
+                        f"comprometido en la entrada de transicion: declarado "
+                        f"{decl_act} activaciones de {decl_obs} observaciones, "
+                        f"derivado {diag['activaciones']} de "
+                        f"{diag['observaciones_evaluables']}")
+                r["precompromiso_diagnostico"] = {
+                    "activaciones": decl_act,
+                    "observaciones_evaluables": decl_obs,
+                    "coincide_con_el_derivado": True,
+                }
+
+        if args.solo_comprobar:
+            print(f"\n[--solo-comprobar] [{vid}] "
+                  f"{'ADMISIBLE' if diag['admisible'] else 'NO ADMISIBLE'}"
+                  + ("" if es_admision_nueva else " (informativo, ya en EN_TEST)"))
+            print(f"    activaciones: {diag['activaciones']} de "
+                  f"{diag['observaciones_evaluables']} observaciones evaluables")
+            print(f"    racha media: {diag['racha_media']} | corte: "
+                  f"{meta_part['fecha_corte_bloques']} | bloques "
+                  f"{meta_part['anios_bloque_1']}a / {meta_part['anios_bloque_2']}a")
+            for t in diag["tramos_bloque_1"]:
+                print(f"    tramo {t['tramo']}: {t['desde']} a {t['hasta']} | "
+                      f"{t['activos']} activos de {t['dias']} dias | "
+                      f"varia={t['varia']} | obs_efectivas={t['obs_efectivas']}")
+            print(f"    bloque_1: {diag['obs_efectivas_bloque_1']} obs efectivas "
+                  f"(minimo {diag['minimo_gate_3']})")
+            print(f"    bloque_2: {diag['observaciones_enmascaradas_bloque_2']} "
+                  f"enmascaradas, {diag['episodios_independientes_bloque_2']} "
+                  f"episodios independientes")
+            for m in diag["motivos"]:
+                print(f"    {'BLOQUEO' if es_admision_nueva else 'aviso (no bloquea)'}: {m}")
+            if es_admision_nueva:
+                resultados[vid] = r
+                continue
+            # EN_TEST pendiente bajo grandfathering: no se detiene aqui en
+            # modo --solo-comprobar; --solo-comprobar por definicion no
+            # ejecuta gates, asi que se reporta y se pasa a la siguiente
+            # variable sin resultado de gates (igual que antes de la 38).
+            resultados[vid] = r
+            continue
+
+        # Solo bloquea si es una admision nueva (grandfathering).
+        if es_admision_nueva and not diag["admisible"]:
+            r["estado"] = traducir("PROVISIONAL", doc)
+            r["motivo"] = "; ".join(diag["motivos"])
+            resultados[vid] = r
+            continue
+        # ---- fin enmienda 38 ------------------------------------------
 
         m1, m2 = mask.loc[b1], mask.loc[b2]
         tr = tramos_de(b1, n_tramos)
@@ -1829,6 +2035,23 @@ def ejecutar(args):
                 r["estado"] = "PENDIENTE_BY"
 
         resultados[vid] = r
+
+    # Enmienda 38: en modo comprobacion la ejecucion termina aqui. Sin
+    # correccion multiple, sin estados de resultado y sin informe.
+    if args.solo_comprobar:
+        no_admisibles = [
+            vid for vid, r in resultados.items()
+            if not r.get("diagnostico_estructural", {}).get("admisible", True)
+            or r.get("estado")
+        ]
+        print(f"\n[--solo-comprobar] fases 0-3 superadas sobre "
+              f"{len(resultados)} variable(s). No se ejecuta ningun test.")
+        if no_admisibles:
+            print(f"[--solo-comprobar] NO ADMISIBLES a EN_TEST: {no_admisibles}")
+        else:
+            print("[--solo-comprobar] todas las variables comprobadas son "
+                  "admisibles a EN_TEST.")
+        return 0
 
     # enmienda 33: prohibicion del fallo silencioso. Una variable con la
     # transicion escrita y el test sin ejecutar no puede quedarse sin resultado

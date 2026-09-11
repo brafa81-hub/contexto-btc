@@ -1,7 +1,7 @@
 {
  "meta": {
   "nombre": "Contexto-BTC — Protocolo de validacion v2",
-  "version_esquema": "2.11.0",
+  "version_esquema": "2.12.0",
   "fecha_creacion": "2026-09-03",
   "archivo_registro_asociado": "registro.json",
   "declaracion_obligatoria": "Batch-PRDS actua como cribado de descubrimiento. La garantia real de control de falsos positivos descansa en la confirmacion forward sobre datos que no existian cuando la variable fue propuesta.",
@@ -276,6 +276,24 @@
     "titulo": "implementacion de las verificaciones de la repesca v1 y resolucion del campo regimen",
     "fecha": "2026-09-07",
     "motivo": "La enmienda 36 dejo sus siete verificaciones DECLARADAS NO AUTOMATIZADAS y prohibio escribir ninguna repesca hasta implementarlas. Al implementarlas aparecio que la doctrina no decia de que entrada se lee el campo regimen, y que segun la respuesta 'nasdaq' era o no elegible: dos clausulas de la enmienda 36 en contradiccion. Se resuelve por analogia explicita con la regla de lote de la enmienda 29, escrita en la doctrina y no en el motor."
+   },
+   {
+    "n": 38,
+    "titulo": "evaluacion de admisibilidad estructural antes de la transicion a EN_TEST",
+    "fecha": "2026-09-11",
+    "motivo": "Los criterios de suficiencia estructural ya existian, pero solo se evaluaban en la capa de gates, despues de escrita la transicion a EN_TEST. Un tramo del bloque_1 sin variacion de la mascara hacia abortar a gate1 y con el a la ejecucion del lote COMPLETO. Ademas, la tasa de activacion se declaraba en mascara.justificacion_q, texto libre sin forma verificable por maquina: dos fichas del lote 2026-Q3 declararon cifras que no coincidian con lo que calcula el motor y el error se detecto a mano. Esta enmienda no crea ningun criterio ni umbral: adelanta el momento de evaluar los que ya existen y da forma comparable al dato que hoy vive en prosa."
+   },
+   {
+    "n": 39,
+    "titulo": "interseccion de la mascara con el snapshot de precio antes de particionar",
+    "fecha": "2026-09-11",
+    "motivo": "particion_datos.bloque_1 se definia sobre la historia disponible de la variable sin intersectarla con fuente_de_precio.snapshot. baa_credit_spread (BAA10Y desde 1986) quedo con un bloque_1 1988-2007 sin ningun dia de precio: gate1 no es evaluable y aborta el lote. Se corrige el universo de fechas sobre el que se particiona, sin tocar el metodo ni el minimo de anos."
+   },
+   {
+    "n": 40,
+    "titulo": "correccion de _inventario_de_referencias ante una marca de clave al final de cadena",
+    "fecha": "2026-09-11",
+    "motivo": "Defecto de implementacion, no doctrinal. La funcion de la enmienda 30 lanzaba IndexError cuando un texto de una ficha termina exactamente en el nombre de una clave de primer nivel seguido de punto (p. ej. '...del protocolo.'). Afecta a texto ya registrado en las entradas 21, 24, 26 y 29, por lo que fase2_admision reventaba en cualquier lote que admitiese una de esas fichas (hoy, el lote 2026-Q3 por baa_credit_spread). Se omite ese caso: no hay ruta detras de la marca. Se documenta como enmienda aparte para dejar trazado que se toco codigo de la enmienda 30 y por que. El inventario sigue siendo descriptivo y sin severidad."
    }
   ],
   "compatibilidad": {
@@ -319,7 +337,15 @@
     "consume_presupuesto": false,
     "entra_en_correccion_BY": false
    },
-   "registro_obligatorio": "La fecha de corte concreta se registra en la entrada de cada experimento. No se recalcula despues."
+   "registro_obligatorio": "La fecha de corte concreta se registra en la entrada de cada experimento. No se recalcula despues.",
+   "interseccion_con_precio": {
+    "enmienda": 39,
+    "regla": "Antes de particionar, la mascara se restringe a las fechas presentes en fuente_de_precio.snapshot. bloque_1.porcion y bloque_2.porcion se calculan sobre esta mascara ya restringida, no sobre el rango completo de la metrica.",
+    "motivo": "gate1 y gate3 leen retorno_N(precio) en las fechas del bloque_1. Sin esta interseccion, una metrica cuya historia empieza mucho antes que el snapshot puede quedar con un bloque_1 sin ningun dato de precio: todas las correlaciones por tramo son NaN y gate1 aborta el lote entero. Detectado en baa_credit_spread (entrada 31): bloque_1 1988-2007, cero dias de solape con el snapshot 2015-2026.",
+    "no_modifica": "particion_datos.metodo (corte_proporcional_por_variable) y minimo_por_bloque_anios no cambian. Solo cambia el universo de fechas sobre el que se calcula el 50%/50%.",
+    "efecto_sobre_series_ya_acotadas": "Sin efecto para cualquier metrica cuya historia ya este contenida en el rango del snapshot: la interseccion coincide con la mascara completa y bloque_1/bloque_2 no cambian.",
+    "aplicacion": "Prospectiva. No se reabre ni se recalcula la particion de ninguna variable ya en EN_TEST o posterior: fecha_corte_bloques ya esta precomprometida e inmutable para esas entradas."
+   }
   },
   "gates_cualitativos": {
    "cantidad": 4,
@@ -548,6 +574,44 @@
     },
     "orden": "La correccion se aplica ANTES de la correccion Benjamini-Yekutieli del lote. BY recibe el p-valor que representa la hipotesis realmente registrada."
    }
+  },
+  "admisibilidad_estructural": {
+   "enmienda": 38,
+   "momento_de_ejecucion": "Fase 3, sobre la mascara y la particion ya construidas (mascara ya intersectada con el precio por la enmienda 39), antes de la capa de gates. Bajo --solo-comprobar con --precio y --metrica se evalua y se reporta sin ejecutar ningun gate.",
+   "no_introduce_umbrales": "Los cuatro criterios ya existian y ya se derivaban en esta doctrina. Esta seccion no los redefine: los nombra y fija el momento en que se comprueban.",
+   "criterios": [
+    {
+     "id": "variacion_de_mascara_por_tramo",
+     "regla": "la mascara debe variar dentro de cada tramo del bloque_1",
+     "origen": "condicion exacta que hace abortar a gate1 cuando la correlacion es indefinida",
+     "sin_ella": "spearman sobre un vector constante es NaN y el gate no es evaluable"
+    },
+    {
+     "id": "observaciones_efectivas_por_tramo",
+     "regla": ">= protocolo.gates_cualitativos.parametros.magnitud_en_tramos.observaciones_efectivas_minimas_por_tramo",
+     "origen": "gate 1"
+    },
+    {
+     "id": "observaciones_efectivas_bloque_1",
+     "regla": ">= protocolo.gates_cualitativos.parametros.contribucion_incremental_R2.observaciones_efectivas_minimas",
+     "origen": "gate 3"
+    },
+    {
+     "id": "soporte_del_bloque_2",
+     "regla": ">= protocolo.test_de_permutacion.observaciones_enmascaradas_minimas y >= protocolo.test_de_permutacion.episodios_independientes_minimos",
+     "origen": "test de permutacion",
+     "por_que_en_admision": "theta_B2 y el p-valor salen del bloque_2. Admitir a EN_TEST una variable cuyo bloque_2 no alcanza el soporte minimo es consumir un precompromiso irreversible por un test que no se puede interpretar."
+    }
+   ],
+   "al_fallar": {
+    "estado_asignado": "PENDIENTE_REVISION",
+    "consume_presupuesto": false,
+    "entra_en_correccion_BY": false,
+    "nota": "Mismo destino que particion_datos.si_no_alcanza_minimo. No es un estado nuevo."
+   },
+   "aislamiento_del_lote": "Una variable inadmisible no aborta la ejecucion. Antes de esta enmienda, un tramo sin variacion hacia abortar a gate1 en fase 4 y con el a todas las demas variables del lote.",
+   "por_que_no_socava_el_precompromiso": "No cambia que constituye una variable admisible: los cuatro criterios ya eran obligatorios para que el test produjera un resultado interpretable. Cambia unicamente que el rechazo ocurre antes del precompromiso irreversible y no despues. Ninguno mira el resultado del test ni ningun estadistico de efecto.",
+   "aplicacion": "Prospectiva. El registro tiene 32 entradas al aprobarse esta enmienda; las entradas 1 a 32 no se reabren ni se reevaluan. Mismo criterio que las enmiendas 33, 34 y 35."
   }
  },
  "presupuesto": {
@@ -890,6 +954,8 @@
       "fecha_registro",
       "gate_alcanzado",
       "fecha_corte_bloques",
+      "activaciones_declaradas",
+      "observaciones_evaluables_declaradas",
       "sha256_snapshot_metrica",
       "sha256_serie_metrica",
       "sha256_motor",
@@ -1042,6 +1108,19 @@
       },
       "momento": "Escrita con el lote 2026-Q3 cerrado, sin ningun test pendiente ni ningun resultado que se pueda contaminar. Es la unica ventana en que tocar los controles del motor no admite sospecha de haberlos ajustado a un resultado.",
       "naturaleza": "Solo anade. No reescribe ningun texto previo. No altera ningun gate, umbral, mascara, particion ni criterio estadistico. No modifica ninguna entrada del registro. Aplicacion prospectiva."
+     },
+     "enmienda_38": {
+      "campos_anadidos": [
+       "activaciones_declaradas",
+       "observaciones_evaluables_declaradas"
+      ],
+      "obligatorios_si": "estado == EN_TEST",
+      "tipo": "entero",
+      "regla": "Numero de dias con mascara activa y numero de observaciones evaluables de la mascara (ya intersectada con el precio, enmienda 39), derivados por --solo-comprobar sobre la misma serie que ancla sha256_serie_metrica. filtro.py los recalcula en la fase 3 y aborta si no coinciden.",
+      "por_que_dos_enteros_y_no_una_tasa": "Una tasa en coma flotante depende de redondeo y representacion. Dos enteros se comparan sin ambiguedad y contienen la misma informacion.",
+      "mismo_patron_que": "fecha_corte_bloques (enmienda 33): valor derivado precomprometido antes de ejecutar y comprobado por el motor. Efecto buscado: no se puede escribir una transicion valida sin haber corrido antes la comprobacion.",
+      "no_duplica": "sha256_serie_metrica y sha256_snapshot_metrica anclan los datos; hash_de_medida ancla la definicion. Estos enteros son un diagnostico derivado de ambos, en forma comparable.",
+      "aplicacion": "Prospectiva. Las entradas 1 a 32 no se reabren."
      }
     }
    },

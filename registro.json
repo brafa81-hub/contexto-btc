@@ -6,16 +6,16 @@
   "append_only": true,
   "algoritmo_hash": "sha256",
   "genesis": "0000000000000000000000000000000000000000000000000000000000000000",
-  "ultimo_hash": "f878af39b4410c7fd4e9a67bb63124fd3d973c7a10214f32dc3586b17008c801",
-  "n_entradas": 32,
+  "ultimo_hash": "e9e83d39981b8b593722bafed65cf5aaf3b1ba301abc0ce51a40fdddfc23e891",
+  "n_entradas": 33,
   "regla": "Ninguna entrada se edita ni se borra. Una correccion se registra como entrada nueva que referencia la anterior. filtro.py verifica la cadena completa al arrancar y aborta si esta rota.",
   "canonizacion": "json.dumps(entrada_sin_hash, sort_keys=True, separators=(',',':'), ensure_ascii=False).encode('utf-8')"
  },
  "presupuesto_por_trimestre": {
   "2026-Q3": {
-   "propuestas_usadas": 2,
+   "propuestas_usadas": 1,
    "familias_nuevas_usadas": 0,
-   "nota": "SSR pertenece a una familia del catalogo inicial, por lo que no consume cuota de familia nueva.",
+   "nota": "SSR pertenece a una familia del catalogo inicial, por lo que no consume cuota de familia nueva. baa_credit_spread paso a PENDIENTE_REVISION (entrada 33): libera su plaza, no consume presupuesto.",
    "nota_enmienda_29": "Los maximos viven solo en v2.json (presupuesto.autoridad). Aqui quedan unicamente los contadores de uso, que filtro.py contrasta contra el valor derivado del array entradas."
   }
  },
@@ -1213,6 +1213,17 @@
    "motivo": "La variable no transiciona a EN_TEST. Se detecta, al verificar en vivo antes de escribir la transicion, que la cifra de justificacion_q de la ficha (tasa de activacion 20.3%, y el patron anual citado) se midio sobre los 212 meses con cuantil de 60 meses definido (2009-01 a 2026-08), SIN aplicar la propia regla de admisibilidad por censura que la misma ficha define. Verificado con datos reales descargados hoy via pytrends: 43/212 = 20.28%, reproduce exactamente la cifra declarada; el patron anual tambien reproduce casi exacto (2013=75%, 2017=83%, 2021=42% vs 41% declarado). Aplicando la regla de censura que la ficha exige (un mes t evaluable solo si su ventana de 60 meses previos no contiene GT=0), la poblacion realmente testeable son 106 meses (2017-11 a 2026-08, coincide con lo declarado), pero la tasa de activacion sobre esa poblacion es 13.2% (14/106), no 20.3%: los meses excluidos por censura (2009-2017, 106 meses) se activan al 27.4%, casi el doble que los meses que se testearian. La ficha midio y argumento sobre una poblacion que su propia regla de censura excluye del test. Sobre la poblacion real (106 meses admisibles) se verifica que el defecto es estructural, no solo de verificacion: la particion propuesta (bloque_1 2017-11 a 2022-03, bloque_2 2022-04 a 2026-08, ambos de 53 meses) da bloque_1 con 22.6% de activacion y bloque_2 con solo 2 activaciones (3.8%), que es la unica estimacion limpia disponible para theta_B2 y para el test de permutacion. El tramo central del bloque_1 (2019-04 a 2020-09, 17 meses) tiene CERO activaciones, lo que hace indefinida (NaN) la correlacion de Spearman en ese tramo y por tanto inejecutables gate_1 (mediana de correlaciones de los 3 tramos) y gate_4 (signo identico en los 3 tramos), verificado con scipy.stats.spearmanr sobre una mascara constante en ese tramo. Se evaluo la alternativa de censura tolerante que la propia ficha ya habia descartado en su justificacion_no_regla_tolerante (excluir un mes solo si la ventana de 60 tiene 6 o mas censurados en vez de 1 o mas): gana 7 meses admisibles (106 a 113), todos ubicados en 2017-04 a 2017-10, es decir, antes del inicio actual de la serie evaluable. Verificado que esto NO resuelve ninguno de los dos defectos: con la regla tolerante el tramo central del bloque_1 sigue con 0 activaciones (18 meses, 2018-10 a 2020-04) y el bloque_2 sigue con solo 2 activaciones en 57 meses (3.5%). El problema no es la regla de censura en si (necesaria, dado que el valor 0 de esta fuente no es un dato real sino una no-medicion declarada), sino que el numero de episodios de atencion de mercado extrema en Bitcoin, una vez excluido el periodo 2009-2017 por censura de la fuente, es insuficiente para que la particion en bloques y tramos del protocolo tenga soporte muestral. No se identifica la causa exacta del error de calculo de la sesion original (fecha_registro 2026-09-08): la serie descargada hoy es identica en estructura a la que la ficha describe (272 observaciones mensuales, sin huecos, pico de normalizacion en 2017-12), por lo que no se atribuye a un cambio de la fuente externa (Google Trends via pytrends no es API oficial y no garantiza estabilidad entre sesiones, pero aqui no hay evidencia de que haya cambiado).",
    "hash_anterior": "209fa1ce777e59147e51f00798fc340290663fa5332efc29d76d9db028d09d2f",
    "hash": "f878af39b4410c7fd4e9a67bb63124fd3d973c7a10214f32dc3586b17008c801"
+  },
+  {
+   "id": "baa_credit_spread",
+   "tipo_entrada": "transicion_de_estado",
+   "estado": "PENDIENTE_REVISION",
+   "fecha_registro": "2026-09-11",
+   "gate_alcanzado": null,
+   "fecha_corte_bloques": null,
+   "motivo": "La variable no puede completar el test bajo el compromiso ya escrito en la entrada 31 (EN_TEST, fecha_corte_bloques 2007-05-07). particion_datos.bloque_1 se definio sobre la historia disponible de la metrica (BAA10Y, FRED, desde 1986) sin intersectarla con fuente_de_precio.snapshot (2015-01-01 a 2026-09-03): su bloque_1 derivado (1988-2007) tiene cero dias de solape con el precio, retorno_N(precio) no es evaluable en ninguna fecha del bloque y gate1 no puede calcular ninguna correlacion por tramo. Verificado ejecutando el motor real contra la serie oficial de BAA10Y (FRED) y el snapshot de precio del repositorio. La enmienda 39 corrige este defecto de particionar() para variables admitidas a partir de su entrada en vigor, pero integridad.resolucion_de_entradas.inmutabilidad fija fecha_corte_bloques en el momento de la transicion a EN_TEST y prohibe expresamente reescribirla despues: aplicarsela a esta entrada exigiria cambiar el corte comprometido de 2007-05-07 a 2020-11-02, lo que la propia doctrina no permite. Se evaluo explicitamente y se descarto extender la enmienda 39 a esta variable por esa razon (decision con Rafa, 2026-09-11). Sin overlap con el precio no hay ninguna reformulacion de la particion, dentro de las reglas vigentes al comprometerse la entrada 31, que haga el test evaluable: la insuficiencia es de historia, no de una regla de aceptacion. Corresponde protocolo.particion_datos.si_no_alcanza_minimo: estado PENDIENTE_REVISION, no consume presupuesto, no entra en correccion BY.",
+   "hash_anterior": "f878af39b4410c7fd4e9a67bb63124fd3d973c7a10214f32dc3586b17008c801",
+   "hash": "e9e83d39981b8b593722bafed65cf5aaf3b1ba301abc0ce51a40fdddfc23e891"
   }
  ]
 }
