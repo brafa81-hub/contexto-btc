@@ -27,6 +27,7 @@ import hashlib
 import json
 import math
 import os
+import re
 import sys
 from datetime import datetime, timezone
 
@@ -35,7 +36,7 @@ import pandas as pd
 
 import cadena
 
-DOCTRINA_COMPATIBLE = "2.12"  # enmiendas 38-40
+DOCTRINA_COMPATIBLE = "2.13"  # enmienda 41
 
 # Hueco declarado de la doctrina: estados.mapeo_salida_filtro_py.tabla traduce
 # la etiqueta interna PASA a EN_CONFIRMACION "solo si supera ademas el umbral BY
@@ -152,6 +153,43 @@ def fase0_arranque(ruta_doctrina, ruta_registro):
 # FASE 1 — RESOLUCION DEL REGISTRO
 # =====================================================================
 
+def _lote_derivado_de_fecha(doc, id_res, n_primera, primera, lote):
+    """
+    Enmienda 41: el lote con forma de trimestre natural se deriva de la
+    fecha_propuesta de la primera entrada del id. Ni la forma del trimestre ni
+    la lista de lotes exentos viven aqui: se leen de la doctrina.
+    """
+    cl = ruta(doc, "integridad.resolucion_de_entradas.lote."
+                   "derivacion_desde_fecha_propuesta")
+    exentos = set(ruta(doc, "presupuesto.derivacion.lotes_exentos"))
+    if not lote or lote in exentos:
+        return
+    if not re.match(cl["forma_de_trimestre"], lote):
+        return
+
+    fecha = primera.get("fecha_propuesta")
+    if not fecha:
+        abortar(
+            f"entrada {n_primera} ({id_res}): declara lote '{lote}' con forma "
+            f"de trimestre y no lleva fecha_propuesta. "
+            f"{cl['fecha_propuesta_ausente']}"
+        )
+    try:
+        anio, mes = int(fecha[0:4]), int(fecha[5:7])
+    except (ValueError, IndexError):
+        abortar(
+            f"entrada {n_primera} ({id_res}): fecha_propuesta '{fecha}' no es "
+            f"una fecha AAAA-MM-DD interpretable."
+        )
+    derivado = f"{anio}-Q{(mes - 1) // 3 + 1}"
+    if lote != derivado:
+        abortar(
+            f"entrada {n_primera} ({id_res}): lote declarado '{lote}' pero la "
+            f"fecha_propuesta {fecha} cae en el trimestre '{derivado}'. "
+            f"{cl['regla']}"
+        )
+
+
 def fase1_resolver(doc, reg):
     """
     Orden obligatorio (integridad.resolucion_de_entradas.lote.orden_de_resolucion):
@@ -209,6 +247,11 @@ def fase1_resolver(doc, reg):
         # 'nasdaq' fuese inelegible para la repesca pese a figurar en la lista
         # cerrada de la enmienda 36: dos clausulas en contradiccion.
         regimen = primera.get("regimen")
+
+        # enmienda 41: el lote no es un campo elegible, se deriva de la
+        # fecha_propuesta. Se comprueba aqui, en el paso 2, porque es el punto
+        # exacto donde el lote queda fijado para la variable.
+        _lote_derivado_de_fecha(doc, id_res, n_primera, primera, lote)
 
         for n, e in lista[1:]:
             if e.get("lote") and e["lote"] != lote:
