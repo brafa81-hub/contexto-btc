@@ -6,8 +6,8 @@
   "append_only": true,
   "algoritmo_hash": "sha256",
   "genesis": "0000000000000000000000000000000000000000000000000000000000000000",
-  "ultimo_hash": "6d535abd04d82741c01f7050b00a1256f798b67a8d8ae63f4dd5b61b4da2677b",
-  "n_entradas": 36,
+  "ultimo_hash": "9fd0db0041bbfa97623f21bf8b5210e2c5b8c56593cdff30a81dcf51404d430a",
+  "n_entradas": 37,
   "regla": "Ninguna entrada se edita ni se borra. Una correccion se registra como entrada nueva que referencia la anterior. filtro.py verifica la cadena completa al arrancar y aborta si esta rota.",
   "canonizacion": "json.dumps(entrada_sin_hash, sort_keys=True, separators=(',',':'), ensure_ascii=False).encode('utf-8')"
  },
@@ -1323,6 +1323,68 @@
    "motivo": "Resultado de la ejecucion real de filtro.py sobre el lote 2026-Q3 con la serie anclada en la entrada 35 y el snapshot de precio congelado en fuente_de_precio.snapshot. La variable no supera el gate 1: la mediana en valor absoluto de las correlaciones por tramo del bloque_1 es 0.0638, por debajo del umbral 0.0849 sorteado por rotacion sobre 300 realizaciones del nulo. Ningun tramo resulta insuficiente. El gate 4 tampoco pasa: los signos por tramo son -1, +1, -1. El gate 3 si pasa, con un incremento de R2 de 1.57 puntos porcentuales frente a un umbral de 0.4855 y 44.5 observaciones efectivas sobre un minimo de 36, pero el veredicto lo fija el primer gate vinculante incumplido. El gate 2 no es vinculante y arroja empate, cociente 1.199 entre theta hacia adelante y hacia atras. La particion derivada por el motor coincide con la fecha comprometida en la entrada 35 y las dos cifras estructurales precomprometidas por la enmienda 38 reproducen exactamente: 808 activaciones sobre 2967 observaciones evaluables. El diagnostico estructural resulta admisible sin motivos de bloqueo. Se declara, conforme a repesca_v1.declaracion_obligatoria, que esta es una repesca del regimen v1 cuyo cribado se ha ejecutado con el antecedente conocido por el autor, que la garantia real de control de falsos positivos descansa en la confirmacion forward de cinco trimestres y que esta capa de gates detecta aproximadamente el 39 por ciento de un efecto real de theta 0.084 y deja pasar el 15 por ciento del ruido puro, por lo que el descarte es el desenlace mas probable incluso existiendo senal real. Consumido el cupo unico de repesca del id v1 vix conforme a repesca_v1.limites.una_por_id_v1.",
    "hash_anterior": "99dcd54d747f727c2849aea33e9389d92956999d8f2fc83b4823a82006dc63e2",
    "hash": "6d535abd04d82741c01f7050b00a1256f798b67a8d8ae63f4dd5b61b4da2677b"
+  },
+  {
+   "id": "dgs10_delta20",
+   "alias": "DGS10-D20",
+   "tipo_entrada": "ficha_congelada",
+   "familia": "macro",
+   "regimen": "v2",
+   "lote": "2026-Q3",
+   "fecha_propuesta": "2026-09-13",
+   "fecha_fin_ventana_test": "2026-09-13",
+   "fecha_corte_bloques": null,
+   "estado": "PROPUESTA",
+   "gate_alcanzado": null,
+   "metrica_continua": {
+    "definicion": "Delta20(t) = DGS10(t) - DGS10(t-20), donde t-20 es la vigesima observacion previa NO AUSENTE de DGS10 en orden cronologico de observacion. No se interpola ni se imputa ninguna fecha sin observacion. La serie derivada se calcula sobre el historial completo de DGS10 disponible (desde 1962), antes de cualquier recorte por la ventana de interes de BTC.",
+    "interpretacion": "Aceleracion alcista de los rendimientos soberanos de largo plazo (bono del Tesoro USA a 10 anios) como proxy observable de endurecimiento o repricing de las condiciones financieras. La hipotesis es que subidas rapidas e inusuales del yield presionan a la baja los activos de riesgo, incluyendo BTC, via coste de oportunidad y condiciones financieras mas restrictivas.",
+    "fuente": {
+     "serie": "FRED, serie DGS10 (10-Year Treasury Constant Maturity Rate)",
+     "endpoint": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10",
+     "verificado_en_vivo": "2026-09-13",
+     "rango_disponible": "1962-01-02 a 2026-09-10, dias habiles del mercado de Treasury (sin fines de semana ni festivos del mercado de bonos)",
+     "limitacion_declarada": "Serie de un mercado distinto al de BTC. El desfase de calendario implica que la mascara no puede activarse en fin de semana, mientras el retorno de BTC si se computa esos dias."
+    }
+   },
+   "mascara": {
+    "regla": "mascara(t) = 1 si Delta20(t) > Q80(t)",
+    "q_percentil": 80,
+    "tipo_ventana": "movil",
+    "longitud_ventana_dias": 365,
+    "solo_informacion_anterior_a_t": true,
+    "inclusividad": "estricta (>)",
+    "warm_up_dias": 365,
+    "warm_up_excluido_del_computo_de_bloques": true,
+    "origen": "Diseno propio para esta ficha. NO adopta la plantilla de ssr_capstables: esta es propuesta ORDINARIA con id nuevo, sin antecedente v1, por lo que hash_de_plantilla y signo_esperado_bilateral forzado (repesca_v1) no aplican. Verificado contra v2.json el 2026-09-13: hash_de_plantilla vive exclusivamente dentro de la seccion repesca_v1; ficha_congelada.mascara.campos_obligatorios no impone ningun valor de inclusividad o q_percentil.",
+    "tasa_de_activacion_verificada": "22.50% global sobre 2920 dias evaluables (2015-01-02 a 2026-09-03), calculado con el codigo exacto del motor (rolling 365D closed=left, interseccion con snapshot de precio conforme a enmienda 39). Corte de bloques 2020-11-02. Bloque_1 21.01% sobre 1461 obs (5.83 anios), bloque_2 23.99% sobre 1459 obs (5.83 anios). Variacion de mascara en los 6 tramos: 25.1% / 19.5% / 18.4% / 38.0% / 10.7% / 23.4%, ningun tramo en 0% ni saturado. Patron anual sin tendencia secular ni anios degenerados: 2015:27.1% 2016:26.4% 2017:8.8% 2018:24.5% 2019:21.2% 2020:20.7% 2021:27.1% 2022:43.8% 2023:11.2% 2024:19.6% 2025:9.6% 2026:33.5% -- el pico de 2022 coincide con el ciclo de subidas de tipos de la Fed, coherente con el mecanismo economico declarado, no ruido. Racha media activa 6.0 dias, por debajo del umbral de 60 que activaria el nulo de rotacion.",
+    "suficiencia_estructural_verificada": "Observaciones enmascaradas en bloque_2: 350, minimo doctrinal 20. Episodios independientes en bloque_2 con dias_episodio=30: 19, minimo doctrinal 8. Bloque_1 y bloque_2 de 5.83 anios cada uno, suelo doctrinal 3. Comprobado en vivo contra el motor real (filtro.py) antes de proponer esta ficha, conforme a las enmiendas 38/39.",
+    "limitacion_aceptada": "Un ciclo de tipos de interes muy prolongado (varios anios de subida o bajada sostenida) puede dominar la ventana movil de 365 dias, comprimiendo o inflando la tasa de activacion de forma persistente durante ese periodo. Mismo patron de riesgo declarado en baa_credit_spread."
+   },
+   "horizonte_N": 30,
+   "unidad_theta": "fraccion de retorno simple a 30 dias",
+   "theta_B2": null,
+   "M": 0.03,
+   "estado_M": "FIJADO",
+   "derivacion_M": "Valor por defecto del regimen v2, mismo utilizado en ssr_capstables. Anclado al menor salto de estado distinto de cero del bloque 07.",
+   "casilla_dashboard": {
+    "identificador": "contexto_tension_tipos_largo_plazo",
+    "existe_hoy": false,
+    "nota": "Ninguna casilla actual del dashboard es direccional, por lo que theta no puede mover ninguna existente. Esta casilla se creara si y solo si la variable se confirma.",
+    "granularidad": 0.03,
+    "estados_visibles": 3,
+    "funcion_D_theta": "D(theta) = 'desfavorable' si theta <= -0.03; 'neutral' si -0.03 < theta < 0.03; 'favorable' si theta >= 0.03"
+   },
+   "naturaleza_de_la_hipotesis": "Desplazamiento de localizacion, no de cola. El mecanismo postulado (subida rapida e inusual del yield soberano precede peor retorno de activos de riesgo, incluido BTC) es un desplazamiento del centro de la distribucion, por lo que la diferencia de medianas es el estadistico apropiado.",
+   "dias_episodio": 30,
+   "signo_esperado": "bilateral",
+   "justificacion_signo": "El mecanismo economico declarado en metrica_continua.interpretacion es direccional (subida de yield -> presion bajista sobre BTC), pero se declara signo_esperado bilateral por prudencia metodologica: es la unica formula del proyecto con error tipo I medido en este motor (0.043 frente a nominal 0.05); la formula unilateral no tiene calibracion medida aqui. El coste es menor potencia, aceptado expresamente frente al riesgo de usar una formula sin verificar.",
+   "consume_presupuesto_v2": false,
+   "nota_presupuesto": "Consumira presupuesto al transitar a EN_TEST.",
+   "fecha_registro": "2026-09-13",
+   "nota_origen": "Propuesta ORDINARIA con id nuevo, no repesca. Surge de la tabla de indicadores candidatos aportada por Rafa (sesion 2026-09-12), tras descartar el NIVEL del yield a 10 anios por riesgo de regimen/tendencia secular (mismo patron que hundio treasury_general_account, btc_dominance y wikipedia_pageviews_bitcoin) y redirigir a la VARIACION del yield a 20 dias habiles. Direccion, ventana y signo_esperado decididos tras consulta a 4 IAs externas (consenso 4/4 en ventana de 20 dias). Construccion de la serie derivada (definicion exacta del desfase y punto de partida antes del warm-up) decidida tras segunda consulta a 4 IAs externas, consenso 4/4 en ambas preguntas.",
+   "hash_anterior": "6d535abd04d82741c01f7050b00a1256f798b67a8d8ae63f4dd5b61b4da2677b",
+   "hash": "9fd0db0041bbfa97623f21bf8b5210e2c5b8c56593cdff30a81dcf51404d430a"
   }
  ]
 }
