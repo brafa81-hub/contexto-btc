@@ -6,16 +6,16 @@
   "append_only": true,
   "algoritmo_hash": "sha256",
   "genesis": "0000000000000000000000000000000000000000000000000000000000000000",
-  "ultimo_hash": "9fd0db0041bbfa97623f21bf8b5210e2c5b8c56593cdff30a81dcf51404d430a",
-  "n_entradas": 37,
+  "ultimo_hash": "931c5cdb43cf99625ad4a48f78c6bae16639e097b022d3de8d4f04cddaffe7d0",
+  "n_entradas": 39,
   "regla": "Ninguna entrada se edita ni se borra. Una correccion se registra como entrada nueva que referencia la anterior. filtro.py verifica la cadena completa al arrancar y aborta si esta rota.",
   "canonizacion": "json.dumps(entrada_sin_hash, sort_keys=True, separators=(',',':'), ensure_ascii=False).encode('utf-8')"
  },
  "presupuesto_por_trimestre": {
   "2026-Q3": {
-   "propuestas_usadas": 2,
+   "propuestas_usadas": 3,
    "familias_nuevas_usadas": 0,
-   "nota": "SSR pertenece a una familia del catalogo inicial, por lo que no consume cuota de familia nueva. baa_credit_spread paso a PENDIENTE_REVISION (entrada 33): libera su plaza, no consume presupuesto. vix_repesca ocupa esa plaza al transitar a EN_TEST (entrada 35).",
+   "nota": "SSR pertenece a una familia del catalogo inicial, por lo que no consume cuota de familia nueva. baa_credit_spread paso a PENDIENTE_REVISION (entrada 33): libera su plaza, no consume presupuesto. vix_repesca ocupa esa plaza al transitar a EN_TEST (entrada 35). dgs10_delta20, propuesta ordinaria con id nuevo, ocupa la tercera plaza al transitar a EN_TEST (entrada 38).",
    "nota_enmienda_29": "Los maximos viven solo en v2.json (presupuesto.autoridad). Aqui quedan unicamente los contadores de uso, que filtro.py contrasta contra el valor derivado del array entradas."
   }
  },
@@ -1385,6 +1385,50 @@
    "nota_origen": "Propuesta ORDINARIA con id nuevo, no repesca. Surge de la tabla de indicadores candidatos aportada por Rafa (sesion 2026-09-12), tras descartar el NIVEL del yield a 10 anios por riesgo de regimen/tendencia secular (mismo patron que hundio treasury_general_account, btc_dominance y wikipedia_pageviews_bitcoin) y redirigir a la VARIACION del yield a 20 dias habiles. Direccion, ventana y signo_esperado decididos tras consulta a 4 IAs externas (consenso 4/4 en ventana de 20 dias). Construccion de la serie derivada (definicion exacta del desfase y punto de partida antes del warm-up) decidida tras segunda consulta a 4 IAs externas, consenso 4/4 en ambas preguntas.",
    "hash_anterior": "6d535abd04d82741c01f7050b00a1256f798b67a8d8ae63f4dd5b61b4da2677b",
    "hash": "9fd0db0041bbfa97623f21bf8b5210e2c5b8c56593cdff30a81dcf51404d430a"
+  },
+  {
+   "id": "dgs10_delta20",
+   "tipo_entrada": "transicion_de_estado",
+   "estado": "EN_TEST",
+   "fecha_registro": "2026-09-13",
+   "gate_alcanzado": null,
+   "fecha_corte_bloques": "2020-11-02",
+   "activaciones_declaradas": 657,
+   "observaciones_evaluables_declaradas": 2920,
+   "sha256_serie_metrica": "a9a7a2c79b81f920287b4b96fb326ea8192d4e9dc026a56d682241b855b4c6e5",
+   "declaraciones_de_ejecucion": {
+    "construccion_de_la_serie_derivada": "DGS10 descargada el 2026-09-13 del endpoint declarado en la entrada 37: 16878 filas, de las que 720 son fechas sin observacion que la fuente marca con punto y se eliminan sin interpolar ni imputar. Quedan 16158 observaciones validas, de 1962-01-02 a 2026-09-10. Sobre esa serie limpia se calcula Delta20(t) = DGS10(t) - DGS10(t-20), con t-20 la vigesima observacion valida previa en orden de observacion, conforme a la definicion congelada. Las 20 primeras quedan indefinidas y se descartan. La serie derivada anclada por sha256_serie_metrica tiene 16138 filas, de 1962-01-30 a 2026-09-10. No se aplica ningun recorte previo al warm_up ni a la ventana de interes de BTC. La fuente no publica dato posterior al 2026-09-10 y fecha_fin_ventana_test es 2026-09-13, por lo que no se trunca nada a mano, conforme a protocolo.ventana_temporal.",
+    "orden_real_de_los_hechos": "Se hace constar expresamente que esta entrada NO se escribe antes de ejecutar los gates. La verificacion contra el motor y la ejecucion completa de filtro.py sobre el lote 2026-Q3 ocurrieron en la misma sesion del 2026-09-13, y el resultado del test ya era conocido por el autor cuando se redacto esta entrada. Se declara para que ningun auditor futuro pueda leer esta entrada como un precompromiso previo al resultado, que no lo es.",
+    "donde_vive_el_precompromiso_real": "El precompromiso de las cifras de activacion y particion es la entrada 37, escrita, hasheada y encadenada el 2026-09-13 antes de ejecutar ningun gate. Sus cifras se reproducen aqui porque el motor las confirmo, no porque se fijaran aqui.",
+    "reproduccion_de_las_cifras_precomprometidas": "Reproducen exactamente contra el motor real las cuatro cifras estructurales que la entrada 37 declara en prosa: activacion global 657 sobre 2920 observaciones evaluables, 22.50 por ciento; fecha de corte de bloques 2020-11-02; bloque_1 307 de 1461, 21.01 por ciento, y bloque_2 350 de 1459, 23.99 por ciento; 19 episodios independientes en bloque_2 con dias_episodio 30. Racha media de la mascara 6.0 dias, coincidente. A diferencia de vix_repesca, la verificacion previa de esta variable si reproduce.",
+    "discrepancias_menores_declaradas": "Dos cifras auxiliares de la prosa de la entrada 37 no coinciden con el informe del motor y se declaran sin corregir la ficha, que es inmutable. Primera: la entrada 37 dice 350 observaciones enmascaradas en bloque_2 y el motor informa 347. No es una diferencia de datos sino de definicion: el motor cuenta unicamente las observaciones enmascaradas con retorno a 30 dias computable dentro del snapshot de precio, y las tres ultimas del bloque_2 se quedan sin ventana. El minimo doctrinal es 20, por lo que la admisibilidad no queda afectada por ninguna de las dos lecturas. Segunda: el tercer tramo del bloque_1 figura en la prosa como 18.4 por ciento y el motor da 90 de 486, 18.52 por ciento; los otros dos tramos coinciden en 25.05 y 19.47 por ciento. Las cifras de seis tramos que la prosa de la entrada 37 recoge proceden del pre-chequeo manual; el motor particiona el bloque_1 en tres tramos y solo informa esos.",
+    "admisibilidad_estructural_verificada": "Verificada con las cifras reales del motor, no con las declaradas en prosa. Los tres tramos del bloque_1 presentan variacion de mascara, con observaciones efectivas 16.2, 16.3 y 16.2. Observaciones efectivas del bloque_1 44.1 sobre un minimo de 36 para el gate 3. Bloque_2 con 347 observaciones enmascaradas sobre un minimo de 20 y 19 episodios independientes sobre un minimo de 8. Bloques de 5.83 anios cada uno sobre un suelo de 3. El motor declara admisible true sin motivos de bloqueo.",
+    "interseccion_con_el_snapshot_de_precio": "12969 fechas de la mascara caen fuera del snapshot de precio congelado, 2015-01-01 a 2026-09-03, y se excluyen antes de particionar conforme a la enmienda 39. Es consecuencia esperada de calcular la serie derivada desde 1962 tal como exige la definicion congelada."
+   },
+   "motivo": "Transicion de dgs10_delta20 de PROPUESTA a EN_TEST para el lote 2026-Q3, propuesta ordinaria con id nuevo y sin antecedente v1. Fija como anclaje verificable por maquina la fecha de corte de bloques, el sha256 de la serie derivada que el motor consume por --metrica y el par de cifras estructurales de la enmienda 38, que filtro.py recalcula en la fase 3 y contra las que aborta si no coinciden. Se escribe esta entrada separada de la de resultado siguiendo el precedente de vix_repesca, entradas 35 y 36, y tras consulta a cuatro revisiones externas con consenso unanime a favor de mantener separadas la especificacion ejecutada y el desenlace del test. Las cuatro revisiones condicionan el valor de esa separacion a que la entrada se escriba antes de conocer el resultado, condicion que en este caso NO se cumple y que por ello se declara de forma expresa en declaraciones_de_ejecucion. La separacion se conserva por dos motivos que sobreviven a esa limitacion: el precompromiso real es anterior y esta en la entrada 37, y el registro conserva asi la misma forma en todas las variables del lote, sin que una quede documentada de manera distinta a otra por una circunstancia de sesion. Consume la tercera plaza ordinaria del presupuesto 2026-Q3, de doce, conforme a la nota de presupuesto de la entrada 37. No consume ningun cupo de repesca: dgs10_delta20 no es repesca y no declara repesca_de_id_v1. Se omiten sha256_motor y sha256_informe por corresponder a la entrada de resultado, y sha256_snapshot_metrica porque la ficha no declara ningun artefacto bruto distinto de la serie que el motor lee, conforme al criterio de la enmienda 35.",
+   "hash_anterior": "9fd0db0041bbfa97623f21bf8b5210e2c5b8c56593cdff30a81dcf51404d430a",
+   "hash": "0d2a264d618fb2528bf876b68ad8c321cd387e783372d9937c109aed3022a3f8"
+  },
+  {
+   "id": "dgs10_delta20",
+   "tipo_entrada": "transicion_de_estado",
+   "estado": "DESCARTADA_GATE_4",
+   "fecha_registro": "2026-09-13",
+   "gate_alcanzado": 4,
+   "fecha_corte_bloques": "2020-11-02",
+   "sha256_serie_metrica": "a9a7a2c79b81f920287b4b96fb326ea8192d4e9dc026a56d682241b855b4c6e5",
+   "sha256_motor": "f6458fcb744f6d179515de1c8606c23602ff3e519fe2064aec2652022004b59b",
+   "sha256_informe": "9d0d4f383bc6af41501b03f3cf66c00d43be02825680a99cda5018aa450cf6a7",
+   "declaraciones_de_ejecucion": {
+    "resultado_por_gate": "Gate 1 vinculante: PASA. Mediana en valor absoluto de las correlaciones por tramo del bloque_1 igual a 0.0945, por encima del umbral 0.0642 sorteado por rotacion sobre 300 realizaciones del nulo. Correlaciones por tramo 0.0888, -0.1455 y -0.0945, ningun tramo insuficiente. Gate 2 no vinculante: theta hacia adelante -0.0233 y hacia atras -0.0117, cociente 1.99, el efecto hacia adelante domina; ambito de informe de lote unicamente, sin efecto sobre el veredicto. Gate 3 vinculante: PASA. Incremento de R2 de 0.5609 puntos porcentuales frente a un umbral de 0.2628, con 44.1 observaciones efectivas sobre un minimo de 36 y base mayer, vol30 y mom30. Gate 4 vinculante: NO PASA. Signos por tramo +1, -1, -1. El veredicto lo fija el primer gate vinculante incumplido y el diagnostico de solape de bloques es 20.",
+    "lectura_del_fallo": "La variable supera el cribado de intensidad y el de informacion incremental sobre precio, volatilidad y momento, y el signo de la mediana de las correlaciones es negativo, coherente con el mecanismo economico declarado en la entrada 37, subida rapida del yield soberano asociada a peor retorno de BTC. Lo que no supera es la exigencia de estabilidad temporal del signo: el primer tramo del bloque_1, de 2015-01-02 a 2016-12-11, presenta signo opuesto a los otros dos. El motor advierte ademas que tres tramos con signo identico ocurren por azar con probabilidad un cuarto y que la tasa de este gate bajo ruido puro medida en este motor es 0.241, por lo que el gate 4 es un cribado y no evidencia de estabilidad.",
+    "reproduccion_del_precompromiso": "La particion derivada por el motor coincide con la fecha comprometida en la entrada 38 y las dos cifras estructurales precomprometidas por la enmienda 38 reproducen exactamente: 657 activaciones sobre 2920 observaciones evaluables. El diagnostico estructural resulta admisible sin motivos de bloqueo.",
+    "potencia_declarada": "Esta capa de gates detecta aproximadamente el 39 por ciento de un efecto real de theta 0.084 y deja pasar aproximadamente el 15 por ciento del ruido puro. El descarte aqui no demuestra que el efecto no exista. La garantia real de control de falsos positivos descansa en la confirmacion forward de cinco trimestres sobre datos que no existian al congelar la ficha.",
+    "orden_real_de_los_hechos": "La ejecucion de filtro.py que produce este resultado es anterior a la escritura de la entrada 38 y de esta, ambas redactadas en la misma sesion del 2026-09-13 con el resultado ya conocido. Declarado tambien en la entrada 38 para que la separacion entre ambas no se lea como un precompromiso previo al desenlace."
+   },
+   "motivo": "Resultado de la ejecucion real de filtro.py sobre el lote 2026-Q3, con la serie derivada anclada en la entrada 38 y el snapshot de precio congelado en fuente_de_precio.snapshot, 4264 dias de 2015-01-01 a 2026-09-03. La variable no supera el gate 4, de estabilidad de signo entre los tramos del bloque_1, y queda DESCARTADA_GATE_4. Supera los gates 1 y 3, ambos vinculantes, y el gate 2, no vinculante, arroja dominancia del efecto hacia adelante. El desglose por gate, la lectura del fallo y la reproduccion del precompromiso constan en declaraciones_de_ejecucion. Primera variable del proyecto que atraviesa los gates 1 y 3 y cae en el 4; el precedente inmediato, vix_repesca en la entrada 36, cayo ya en el gate 1. Se hace constar que dgs10_delta20 es propuesta ordinaria con id nuevo, no repesca, por lo que no consume ningun cupo de repesca_v1 y ningun id del regimen v1 queda agotado por este descarte. La plaza ordinaria del presupuesto 2026-Q3 consumida en la entrada 38 queda gastada y no se libera.",
+   "hash_anterior": "0d2a264d618fb2528bf876b68ad8c321cd387e783372d9937c109aed3022a3f8",
+   "hash": "931c5cdb43cf99625ad4a48f78c6bae16639e097b022d3de8d4f04cddaffe7d0"
   }
  ]
 }
