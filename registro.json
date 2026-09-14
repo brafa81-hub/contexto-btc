@@ -6,16 +6,16 @@
   "append_only": true,
   "algoritmo_hash": "sha256",
   "genesis": "0000000000000000000000000000000000000000000000000000000000000000",
-  "ultimo_hash": "f00b5aa99543f178d84dfd8703b5154f76ae8c7a9979f8ff0d495956c19f0f72",
-  "n_entradas": 40,
+  "ultimo_hash": "06e73b7c16bab1972042ce602003ac07719427636c035044e76296b4f2120dbc",
+  "n_entradas": 41,
   "regla": "Ninguna entrada se edita ni se borra. Una correccion se registra como entrada nueva que referencia la anterior. filtro.py verifica la cadena completa al arrancar y aborta si esta rota.",
   "canonizacion": "json.dumps(entrada_sin_hash, sort_keys=True, separators=(',',':'), ensure_ascii=False).encode('utf-8')"
  },
  "presupuesto_por_trimestre": {
   "2026-Q3": {
-   "propuestas_usadas": 3,
+   "propuestas_usadas": 4,
    "familias_nuevas_usadas": 0,
-   "nota": "SSR pertenece a una familia del catalogo inicial, por lo que no consume cuota de familia nueva. baa_credit_spread paso a PENDIENTE_REVISION (entrada 33): libera su plaza, no consume presupuesto. vix_repesca ocupa esa plaza al transitar a EN_TEST (entrada 35). dgs10_delta20, propuesta ordinaria con id nuevo, ocupa la tercera plaza al transitar a EN_TEST (entrada 38).",
+   "nota": "SSR pertenece a una familia del catalogo inicial, por lo que no consume cuota de familia nueva. baa_credit_spread paso a PENDIENTE_REVISION (entrada 33): libera su plaza, no consume presupuesto. vix_repesca ocupa esa plaza al transitar a EN_TEST (entrada 35). dgs10_delta20, propuesta ordinaria con id nuevo, ocupa la tercera plaza al transitar a EN_TEST (entrada 38). dgs2_delta20, propuesta ordinaria con id nuevo, ocupa la cuarta al transitar a EN_TEST (entrada 41).",
    "nota_enmienda_29": "Los maximos viven solo en v2.json (presupuesto.autoridad). Aqui quedan unicamente los contadores de uso, que filtro.py contrasta contra el valor derivado del array entradas."
   }
  },
@@ -1496,6 +1496,28 @@
    },
    "hash_anterior": "931c5cdb43cf99625ad4a48f78c6bae16639e097b022d3de8d4f04cddaffe7d0",
    "hash": "f00b5aa99543f178d84dfd8703b5154f76ae8c7a9979f8ff0d495956c19f0f72"
+  },
+  {
+   "id": "dgs2_delta20",
+   "tipo_entrada": "transicion_de_estado",
+   "estado": "EN_TEST",
+   "fecha_registro": "2026-09-14",
+   "gate_alcanzado": null,
+   "fecha_corte_bloques": "2020-11-02",
+   "activaciones_declaradas": 664,
+   "observaciones_evaluables_declaradas": 2920,
+   "sha256_serie_metrica": "9715e58e5e771f8c44ab66f03475bf4efcea319aa9503f0cdbd6f4fbed66b0fe",
+   "declaraciones_de_ejecucion": {
+    "construccion_de_la_serie_derivada": "DGS2 descargada del endpoint declarado en la entrada 40 (https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS2) y verificada en vivo el 2026-09-14: 13119 filas brutas, de las que 552 son fechas sin observacion que la fuente marca con punto y se eliminan sin interpolar ni imputar. Quedan 12567 observaciones validas, de 1976-06-01 a 2026-09-11. Sobre esa serie limpia se calcula Delta20(t) = DGS2(t) - DGS2(t-20), con t-20 la vigesima observacion valida previa en orden de observacion, conforme a la definicion congelada. Las 20 primeras quedan indefinidas y se descartan. La serie anclada por sha256_serie_metrica, ya presente en el repositorio, tiene 12546 filas de datos mas cabecera, de 1976-06-29 a 2026-09-10, y reproduce byte a byte la reconstruccion desde FRED en las 12546 fechas comunes con diferencia maxima 0.0. La unica diferencia con la descarga de hoy es la observacion del 2026-09-11, publicada por la fuente despues de generarse el fichero anclado; queda fuera de la serie y no se anade, para no alterar el artefacto ya congelado. No se aplica ningun recorte previo al warm_up ni a la ventana de interes de BTC.",
+    "orden_real_de_los_hechos": "Esta entrada se escribe ANTES de ejecutar ningun gate. En esta sesion no se ha calculado ningun p-valor, ningun estadistico de efecto ni ninguna correlacion con el retorno de BTC: solo la geometria de la mascara contra el calendario (diagnostico_estructural) y la verificacion de integridad del repositorio. El test real se ejecutara en una sesion posterior, con entrada propia. Se declara expresamente para diferenciar este caso del de dgs10_delta20, entrada 38, donde el resultado ya era conocido al redactar la transicion y asi se hizo constar.",
+    "reproduccion_de_las_cifras_precomprometidas": "Las cifras estructurales que la entrada 40 declara en prosa se han reproducido contra el motor real (filtro.py, funciones cargar_precio, cargar_metrica, construir_mascara, particionar y diagnostico_estructural, con el snapshot de precio 32c0b8ea... y la serie anclada) y coinciden exactamente: activacion global 664 sobre 2920 observaciones evaluables, 22.74 por ciento; fecha de corte de bloques 2020-11-02; bloque_1 272 de 1461, 18.62 por ciento, y bloque_2 392 de 1459, 26.87 por ciento; bloques de 5.83 anios cada uno; 16 episodios independientes en bloque_2 con dias_episodio 30; 390 observaciones enmascaradas en bloque_2 con la definicion del motor y 392 sin el filtro de retorno computable, ambas cifras ya anticipadas en la propia entrada 40; observaciones efectivas del bloque_1 44.1; racha media de la mascara 5.1 dias. No hay ninguna discrepancia que declarar.",
+    "admisibilidad_estructural_verificada": "El motor devuelve admisible true sin motivos de bloqueo. Los tres tramos del bloque_1 que particiona el motor presentan variacion de mascara, con activacion 19.5, 23.4 y 13.0 por ciento y observaciones efectivas 16.2, 16.3 y 16.2, sobre un minimo de 12. Observaciones efectivas del bloque_1 44.1 sobre un minimo de 36 para el gate 3. Bloque_2 con 390 observaciones enmascaradas sobre un minimo de 20 y 16 episodios independientes sobre un minimo de 8. Bloques de 5.83 anios cada uno sobre un suelo de 3.",
+    "interseccion_con_el_snapshot_de_precio": "Las fechas de la mascara anteriores a 2015-01-01 o posteriores a 2026-09-03 caen fuera del snapshot de precio congelado y se excluyen antes de particionar, conforme a la enmienda 39. Es consecuencia esperada de calcular la serie derivada desde 1976 tal como exige la definicion congelada.",
+    "reserva_declarada_sobre_el_riesgo_de_resultado": "Se hace constar, sin que altere ninguna regla ni ningun parametro, que el Delta20 de DGS2 presenta una correlacion de 0.808 con el Delta20 de DGS10 en el periodo 2015-2026, y que dgs10_delta20 fue descartada en el gate 4 por inestabilidad de signo entre tramos. El riesgo de repetir ese modo de fallo se asume de forma consciente y previa al test, y queda escrito aqui para que ningun analisis posterior pueda presentarse como si la reserva no existiese."
+   },
+   "motivo": "Transicion de dgs2_delta20 de PROPUESTA a EN_TEST para el lote 2026-Q3, propuesta ordinaria con id nuevo y sin antecedente v1. Fija como anclaje verificable por maquina la fecha de corte de bloques, el sha256 de la serie derivada que el motor consume por --metrica y el par de cifras estructurales de la enmienda 38, que filtro.py recalcula en la fase 3 y contra las que aborta si no coinciden. Se escribe separada de la entrada de resultado siguiendo el precedente de vix_repesca, entradas 35 y 36, y el consenso unanime de las cuatro revisiones externas de la sesion decimocuarta, que condicionaban el valor de esa separacion a que la entrada de EN_TEST se escribiese antes de conocer el resultado del test. Aqui esa condicion si se cumple: el test no se ejecuta en esta sesion. Consume la cuarta plaza ordinaria del presupuesto 2026-Q3, de doce. No consume ningun cupo de repesca: dgs2_delta20 no es repesca y no declara repesca_de_id_v1. Se omiten sha256_motor y sha256_informe por corresponder a la entrada de resultado, y sha256_snapshot_metrica porque la ficha no declara ningun artefacto bruto distinto de la serie que el motor lee, conforme al criterio de la enmienda 35.",
+   "hash_anterior": "f00b5aa99543f178d84dfd8703b5154f76ae8c7a9979f8ff0d495956c19f0f72",
+   "hash": "06e73b7c16bab1972042ce602003ac07719427636c035044e76296b4f2120dbc"
   }
  ]
 }
