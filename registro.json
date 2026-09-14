@@ -6,8 +6,8 @@
   "append_only": true,
   "algoritmo_hash": "sha256",
   "genesis": "0000000000000000000000000000000000000000000000000000000000000000",
-  "ultimo_hash": "931c5cdb43cf99625ad4a48f78c6bae16639e097b022d3de8d4f04cddaffe7d0",
-  "n_entradas": 39,
+  "ultimo_hash": "f00b5aa99543f178d84dfd8703b5154f76ae8c7a9979f8ff0d495956c19f0f72",
+  "n_entradas": 40,
   "regla": "Ninguna entrada se edita ni se borra. Una correccion se registra como entrada nueva que referencia la anterior. filtro.py verifica la cadena completa al arrancar y aborta si esta rota.",
   "canonizacion": "json.dumps(entrada_sin_hash, sort_keys=True, separators=(',',':'), ensure_ascii=False).encode('utf-8')"
  },
@@ -1429,6 +1429,73 @@
    "motivo": "Resultado de la ejecucion real de filtro.py sobre el lote 2026-Q3, con la serie derivada anclada en la entrada 38 y el snapshot de precio congelado en fuente_de_precio.snapshot, 4264 dias de 2015-01-01 a 2026-09-03. La variable no supera el gate 4, de estabilidad de signo entre los tramos del bloque_1, y queda DESCARTADA_GATE_4. Supera los gates 1 y 3, ambos vinculantes, y el gate 2, no vinculante, arroja dominancia del efecto hacia adelante. El desglose por gate, la lectura del fallo y la reproduccion del precompromiso constan en declaraciones_de_ejecucion. Primera variable del proyecto que atraviesa los gates 1 y 3 y cae en el 4; el precedente inmediato, vix_repesca en la entrada 36, cayo ya en el gate 1. Se hace constar que dgs10_delta20 es propuesta ordinaria con id nuevo, no repesca, por lo que no consume ningun cupo de repesca_v1 y ningun id del regimen v1 queda agotado por este descarte. La plaza ordinaria del presupuesto 2026-Q3 consumida en la entrada 38 queda gastada y no se libera.",
    "hash_anterior": "0d2a264d618fb2528bf876b68ad8c321cd387e783372d9937c109aed3022a3f8",
    "hash": "931c5cdb43cf99625ad4a48f78c6bae16639e097b022d3de8d4f04cddaffe7d0"
+  },
+  {
+   "id": "dgs2_delta20",
+   "alias": "DGS2-D20",
+   "tipo_entrada": "ficha_congelada",
+   "familia": "macro",
+   "regimen": "v2",
+   "lote": "2026-Q3",
+   "fecha_propuesta": "2026-09-14",
+   "fecha_fin_ventana_test": "2026-09-14",
+   "fecha_corte_bloques": null,
+   "estado": "PROPUESTA",
+   "gate_alcanzado": null,
+   "metrica_continua": {
+    "definicion": "Delta20(t) = DGS2(t) - DGS2(t-20), donde t-20 es la vigesima observacion previa NO AUSENTE de DGS2 en orden cronologico de observacion. No se interpola ni se imputa ninguna fecha sin observacion. La serie derivada se calcula sobre el historial completo de DGS2 disponible (desde 1976), antes de cualquier recorte por la ventana de interes de BTC.",
+    "interpretacion": "Aceleracion alcista de los rendimientos soberanos de corto plazo (bono del Tesoro USA a 2 anios) como proxy observable de repricing hawkish de la senda esperada de tipos oficiales. La hipotesis es que subidas rapidas e inusuales del yield a 2 anios encarecen el coste de oportunidad de mantener un activo sin rendimiento y endurecen las condiciones financieras, presionando a la baja los activos de riesgo, incluido BTC.",
+    "fuente": {
+     "serie": "FRED, serie DGS2 (2-Year Treasury Constant Maturity Rate)",
+     "endpoint": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS2",
+     "verificado_en_vivo": "2026-09-14",
+     "rango_disponible": "1976-06-01 a 2026-09-10, dias habiles del mercado de Treasury (sin fines de semana ni festivos del mercado de bonos)",
+     "limitacion_declarada": "Serie de un mercado distinto al de BTC. El desfase de calendario implica que la mascara no puede activarse en fin de semana, mientras el retorno de BTC si se computa esos dias."
+    }
+   },
+   "mascara": {
+    "regla": "mascara(t) = 1 si Delta20(t) > Q80(t)",
+    "q_percentil": 80,
+    "tipo_ventana": "movil",
+    "longitud_ventana_dias": 365,
+    "solo_informacion_anterior_a_t": true,
+    "inclusividad": "estricta (>)",
+    "warm_up_dias": 365,
+    "warm_up_excluido_del_computo_de_bloques": true,
+    "origen": "Diseno propio para esta ficha, con los mismos parametros que dgs10_delta20. NO adopta la plantilla de ssr_capstables: esta es propuesta ORDINARIA con id nuevo, sin antecedente v1, por lo que hash_de_plantilla y signo_esperado_bilateral forzado (repesca_v1) no aplican. Verificado contra v2.json el 2026-09-14: hash_de_plantilla vive exclusivamente dentro de la seccion repesca_v1; ficha_congelada.mascara.campos_obligatorios no impone ningun valor de inclusividad o q_percentil. Solo se testa la cola alta: la cola baja mezcla causas de signo economico opuesto (giro dovish frente a panico de recesion), el mismo defecto que llevo a descartar T10Y2Y.",
+    "tasa_de_activacion_verificada": "22.74% global sobre 2920 dias evaluables (2015-01-02 a 2026-09-03), calculado con el codigo exacto del motor (rolling 365D closed=left, interseccion con snapshot de precio conforme a enmienda 39, snapshot 32c0b8ea...). Corte de bloques 2020-11-02. Bloque_1 18.62% sobre 1461 obs (5.83 anios), bloque_2 26.87% sobre 1459 obs (5.83 anios). Variacion de mascara en los 6 tramos: 19.5% / 23.4% / 13.0% / 47.0% / 9.1% / 24.4%, ningun tramo en 0% ni saturado. Patron anual sin tendencia secular ni anios degenerados: 2015:20.3% 2016:21.6% 2017:20.8% 2018:20.9% 2019:15.6% 2020:12.7% 2021:42.6% 2022:47.8% 2023:7.2% 2024:20.8% 2025:9.2% 2026:38.2% -- los picos de 2021-2022 coinciden con el repricing de la senda de tipos previo y durante el ciclo de subidas de la Fed, coherente con el mecanismo economico declarado, no ruido. Racha media activa 5.1 dias, por debajo del umbral de 60 que activaria el nulo de rotacion.",
+    "suficiencia_estructural_verificada": "Observaciones enmascaradas en bloque_2: 390 con la definicion del motor (solo las que tienen retorno a 30 dias computable; 392 sin ese filtro), minimo doctrinal 20. Episodios independientes en bloque_2 con dias_episodio=30: 16, minimo doctrinal 8. Observaciones efectivas del bloque_1 para el gate 3: 44.1, minimo doctrinal 36. Bloque_1 y bloque_2 de 5.83 anios cada uno, suelo doctrinal 3. Los tres tramos del bloque_1 varian y superan el minimo de observaciones efectivas por tramo. Comprobado en vivo contra el motor real (filtro.py, diagnostico_estructural) antes de proponer esta ficha, conforme a las enmiendas 38/39: resultado admisible, sin motivos de rechazo.",
+    "limitacion_aceptada": "Un ciclo de tipos de interes muy prolongado (varios anios de subida o bajada sostenida) puede dominar la ventana movil de 365 dias, comprimiendo o inflando la tasa de activacion de forma persistente durante ese periodo. El riesgo es mayor en el tramo corto de la curva que en el largo, porque el 2 anios sigue mas de cerca la senda de tipos oficiales. Mismo patron de riesgo declarado en baa_credit_spread y en dgs10_delta20."
+   },
+   "horizonte_N": 30,
+   "unidad_theta": "fraccion de retorno simple a 30 dias",
+   "theta_B2": null,
+   "M": 0.03,
+   "estado_M": "FIJADO",
+   "derivacion_M": "Valor por defecto del regimen v2, mismo utilizado en ssr_capstables. Anclado al menor salto de estado distinto de cero del bloque 07.",
+   "casilla_dashboard": {
+    "identificador": "contexto_tension_tipos_corto_plazo",
+    "existe_hoy": false,
+    "nota": "Ninguna casilla actual del dashboard es direccional, por lo que theta no puede mover ninguna existente. Esta casilla se creara si y solo si la variable se confirma.",
+    "granularidad": 0.03,
+    "estados_visibles": 3,
+    "funcion_D_theta": "D(theta) = 'desfavorable' si theta <= -0.03; 'neutral' si -0.03 < theta < 0.03; 'favorable' si theta >= 0.03"
+   },
+   "naturaleza_de_la_hipotesis": "Desplazamiento de localizacion, no de cola. El mecanismo postulado (subida rapida e inusual del yield a 2 anios precede peor retorno de activos de riesgo, incluido BTC) es un desplazamiento del centro de la distribucion, por lo que la diferencia de medianas es el estadistico apropiado.",
+   "dias_episodio": 30,
+   "signo_esperado": "bilateral",
+   "justificacion_signo": "El mecanismo economico declarado en metrica_continua.interpretacion es direccional (subida rapida del yield a 2 anios -> presion bajista sobre BTC), pero se declara signo_esperado bilateral por prudencia metodologica: es la unica formula del proyecto con error tipo I medido en este motor (0.043 frente a nominal 0.05); la formula unilateral no tiene calibracion medida aqui. El coste es menor potencia, aceptado expresamente frente al riesgo de usar una formula sin verificar.",
+   "consume_presupuesto_v2": false,
+   "nota_presupuesto": "Consumira presupuesto al transitar a EN_TEST.",
+   "fecha_registro": "2026-09-14",
+   "nota_origen": "Propuesta ORDINARIA con id nuevo, no repesca. Surge de la descomposicion de T10Y2Y planteada por las IAs externas en la sesion del 2026-09-14: descartada la pendiente de la curva como variable por ser una resta cuyo mismo valor puede originarse en el tramo corto (Fed hawkish) o en el largo (miedo a recesion), se testan por separado sus dos componentes en variacion. Δ20(DGS10) ya se midio como dgs10_delta20 (supero gates 1 y 3, cayo en el gate 4 por inestabilidad de signo entre tramos); esta ficha mide el otro componente. Direccion decidida tras consulta a 5 IAs externas, consenso 5/5 a favor de testar unicamente la cola alta. Construccion de la serie derivada identica a la de dgs10_delta20, ya fijada por consenso 4/4 en consulta externa previa: desfase de 20 observaciones validas en la serie nativa de FRED y Delta20 calculado sobre el historial completo antes del warm-up. Se registra a sabiendas de que la serie Delta20 de DGS2 tiene una correlacion de 0.808 con la de DGS10 (2015-2026, n=2924), medida en vivo antes de proponer esta ficha. Consulta a 4 IAs externas sobre si ese solapamiento desaconsejaba consumir la plaza: ninguna lo considero veto automatico y todas condicionaron la decision a que existiese un mecanismo economico diferenciado, que aqui se declara en metrica_continua.interpretacion (el tramo corto refleja el repricing de la senda esperada de tipos oficiales, el largo las condiciones financieras y la prima de plazo). Las tres vias alternativas propuestas por las externas (ortogonalizar contra DGS10, condicionar por regimen, cribar por el signo en los tramos donde fallo dgs10_delta20) son inejecutables: las dos primeras son metrica compuesta y exigirian enmienda formal, y la tercera violaria la preregistracion al mirar el retorno de BTC antes de fijar la ficha. Se acepta expresamente el riesgo elevado de reproducir el fallo de gate 4 de dgs10_delta20.",
+   "declaracion_de_datos": {
+    "confirmado": "Serie DGS2 descargada de FRED y CSV derivado serie_dgs2_delta20.csv presente en el repositorio (sha256 9715e58e5e771f8c44ab66f03475bf4efcea319aa9503f0cdbd6f4fbed66b0fe, 12546 filas de datos mas cabecera, 1976-06-29 a 2026-09-10). Todas las cifras de tasa_de_activacion_verificada y suficiencia_estructural_verificada estan calculadas en vivo contra ese CSV y contra el snapshot de precio congelado del proyecto (snapshot_precio_btcusd.csv, sha256 32c0b8ea..., 2015-01-01 a 2026-09-03), con el codigo del propio motor.",
+    "estimado": "Ninguna cifra de esta ficha es estimada.",
+    "supuesto": "Se supone, sin poder verificarlo, que FRED no revisara retroactivamente observaciones historicas de DGS2 dentro de la ventana del test. Se supone tambien que el mecanismo economico postulado opera en la misma direccion en los distintos regimenes de politica monetaria del periodo 2015-2026; esa suposicion es precisamente lo que el gate 4 pone a prueba y lo que hizo caer a dgs10_delta20."
+   },
+   "hash_anterior": "931c5cdb43cf99625ad4a48f78c6bae16639e097b022d3de8d4f04cddaffe7d0",
+   "hash": "f00b5aa99543f178d84dfd8703b5154f76ae8c7a9979f8ff0d495956c19f0f72"
   }
  ]
 }
