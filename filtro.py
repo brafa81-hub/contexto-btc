@@ -36,7 +36,7 @@ import pandas as pd
 
 import cadena
 
-DOCTRINA_COMPATIBLE = "2.13"  # enmienda 41
+DOCTRINA_COMPATIBLE = "2.14"  # enmienda 42
 
 # Hueco declarado de la doctrina: estados.mapeo_salida_filtro_py.tabla traduce
 # la etiqueta interna PASA a EN_CONFIRMACION "solo si supera ademas el umbral BY
@@ -1284,6 +1284,145 @@ def _operador_mascara(ficha):
     )
 
 
+# =====================================================================
+# ENMIENDA 42 — HUECOS EN SERIES DE CANDIDATAS (protocolo.huecos_en_series)
+# =====================================================================
+
+_FREQ_CALENDARIO = {"natural": "D", "laborable_lunes_viernes": "B"}
+
+
+def _regimen_huecos(v, doc):
+    """True si la variable esta sujeta a la enmienda 42 (primera entrada)."""
+    corte = int(ruta(doc, "protocolo.huecos_en_series.aplicacion.desde_entrada"))
+    return int(v["historial"][0][0]) >= corte
+
+
+def _validar_declaracion_huecos(ficha, doc):
+    """Devuelve (declaracion_normalizada, problemas)."""
+    sec = ruta(doc, "protocolo.huecos_en_series")
+    mc = ficha.get("metrica_continua")
+    h = mc.get("huecos") if isinstance(mc, dict) else None
+    if not isinstance(h, dict):
+        return None, ["falta metrica_continua.huecos (enmienda 42)"]
+    faltan = [c for c in sec["declaracion_en_ficha"]["campos_obligatorios"] if c not in h]
+    if faltan:
+        return None, [f"metrica_continua.huecos sin campo(s) {faltan} (enmienda 42)"]
+    p = []
+    cal = h["calendario"]
+    if cal not in sec["calendarios_permitidos"] or cal not in _FREQ_CALENDARIO:
+        p.append(f"calendario '{cal}' fuera de {sec['calendarios_permitidos']}")
+        return None, p
+    freq = _FREQ_CALENDARIO[cal]
+    V = h["ventana_dependencia_dias"]
+    if not isinstance(V, int) or isinstance(V, bool) or V < 0:
+        p.append(f"ventana_dependencia_dias '{V}' no es un entero >= 0")
+    brutos = h["huecos_brutos"]
+    if not isinstance(brutos, list):
+        return None, p + ["huecos_brutos no es una lista"]
+    tramos, previo = [], None
+    for k, x in enumerate(brutos, start=1):
+        try:
+            a = pd.Timestamp(x["desde"]).normalize()
+            b = pd.Timestamp(x["hasta"]).normalize()
+        except Exception:
+            p.append(f"hueco {k}: 'desde'/'hasta' ausentes o no son fechas")
+            continue
+        if b < a:
+            p.append(f"hueco {k}: hasta < desde")
+            continue
+        if freq == "B" and (a.weekday() > 4 or b.weekday() > 4):
+            p.append(f"hueco {k}: limite en fin de semana con calendario laborable")
+            continue
+        if previo is not None and a <= previo:
+            p.append(f"hueco {k}: desordenado o solapado con el anterior")
+            continue
+        previo = b
+        tramos.append((a, b))
+    if p:
+        return None, p
+    return {"calendario": cal, "freq": freq, "V": V, "tramos": tramos}, []
+
+
+def verificar_huecos(metrica, ficha, doc):
+    """
+    Verificaciones de continuidad y propagacion. Devuelve
+    (problemas, dias_anulados, meta). No mira ningun retorno ni efecto.
+    """
+    sec = ruta(doc, "protocolo.huecos_en_series")
+    decl, p = _validar_declaracion_huecos(ficha, doc)
+    if p:
+        return p, pd.DatetimeIndex([]), {}
+    freq, V = decl["freq"], decl["V"]
+    idx = metrica.index
+
+    if idx.has_duplicates:
+        p.append(f"continuidad: {int(idx.duplicated().sum())} fecha(s) duplicada(s) en el CSV")
+    esperado = pd.date_range(idx.min(), idx.max(), freq=freq)
+    faltan = esperado.difference(idx)
+    sobran = idx.unique().difference(esperado)
+    if len(faltan):
+        p.append(f"continuidad: faltan {len(faltan)} fecha(s) del calendario "
+                 f"'{decl['calendario']}' (primera {faltan[0].date()})")
+    if len(sobran):
+        p.append(f"continuidad: {len(sobran)} fecha(s) fuera del calendario "
+                 f"'{decl['calendario']}' (primera {sobran[0].date()})")
+    if p:
+        return p, pd.DatetimeIndex([]), {}
+
+    largo = int(sec["arrastre_maximo_dias"]) + 1
+    inicio_cal = min([idx.min()] + [a for a, _ in decl["tramos"]])
+    fin_cal = max([idx.max()] + [b for _, b in decl["tramos"]])
+    cal = pd.date_range(inicio_cal, fin_cal, freq=freq)
+    pos = pd.Series(np.arange(len(cal)), index=cal)
+
+    anulados, largos = set(), []
+    for a, b in decl["tramos"]:
+        p0, p1 = int(pos[a]), int(pos[b])
+        if p1 - p0 + 1 >= largo:
+            largos.append({"desde": str(a.date()), "hasta": str(b.date()),
+                           "dias": p1 - p0 + 1})
+            fin = min(p1 + V, len(cal) - 1)
+            anulados.update(cal[p0:fin + 1])
+    anulados = pd.DatetimeIndex(sorted(anulados)).intersection(esperado)
+
+    vacios = metrica.index[metrica.isna()]
+    no_explicados = vacios.difference(anulados)
+    con_valor = anulados.difference(vacios)
+    if len(no_explicados):
+        p.append(f"propagacion: {len(no_explicados)} dia(s) vacio(s) que la "
+                 f"declaracion no explica (primero {no_explicados[0].date()})")
+    if len(con_valor):
+        p.append(f"propagacion: {len(con_valor)} dia(s) que la declaracion anula "
+                 f"y tienen valor (primero {con_valor[0].date()})")
+
+    meta = {"calendario": decl["calendario"], "ventana_dependencia_dias": V,
+            "huecos_brutos": len(decl["tramos"]), "huecos_largos": largos,
+            "dias_anulados": int(len(anulados))}
+    return p, anulados, meta
+
+
+def criterios_huecos(mask, b2, cobertura, anulados, dias_ep, doc):
+    """Criterios de admisibilidad adicionales. Devuelve (motivos, meta)."""
+    minimo_cob = float(ruta(doc, "protocolo.huecos_en_series.cobertura_minima_por_bloque"))
+    min_eps = int(ruta(doc, "protocolo.test_de_permutacion.episodios_independientes_minimos"))
+    motivos = []
+    for nombre, c in cobertura.items():
+        if c < minimo_cob:
+            motivos.append(f"cobertura del {nombre} {round(100 * c, 2)}% < "
+                           f"{round(100 * minimo_cob, 2)}% (enmienda 42)")
+    m2 = mask.loc[b2]
+    eps = episodios_independientes(m2.index[m2.values], dias_ep)
+    limpios = [e for e in eps
+               if not ((anulados >= e[0]) & (anulados <= e[-1])).any()]
+    if len(limpios) < min_eps:
+        motivos.append(f"solo {len(limpios)} episodios limpios en bloque_2 de "
+                       f"{len(eps)} (minimo {min_eps}, enmienda 42)")
+    return motivos, {"cobertura": {k: round(v, 4) for k, v in cobertura.items()},
+                     "cobertura_minima": minimo_cob,
+                     "episodios_bloque_2": len(eps),
+                     "episodios_limpios_bloque_2": len(limpios)}
+
+
 def construir_mascara(metrica, ficha):
     m = ficha["mascara"]
     if m["tipo_ventana"] != "movil":
@@ -1912,6 +2051,24 @@ def ejecutar(args):
         fecha_fin = pd.Timestamp(ficha["fecha_fin_ventana_test"])
         metrica = cargar_metrica(rutas_metrica[vid], fecha_fin,
                                  ent_tr.get("sha256_serie_metrica"))
+        # ---- Enmienda 42: verificacion de huecos antes de la mascara ----
+        regimen_42 = _regimen_huecos(v, doc)
+        anulados, meta_42 = pd.DatetimeIndex([]), None
+        if regimen_42:
+            prob_42, anulados, meta_42 = verificar_huecos(metrica, ficha, doc)
+            if prob_42:
+                r = {"id": vid, "estado": traducir("PROVISIONAL", doc),
+                     "motivo": "; ".join(prob_42),
+                     "huecos_enmienda_42": {"verificacion": "FALLA",
+                                            "problemas": prob_42}}
+                if args.solo_comprobar:
+                    print(f"\n[--solo-comprobar] [{vid}] NO ADMISIBLE (enmienda 42)")
+                    for x in prob_42:
+                        print(f"    BLOQUEO: {x}")
+                resultados[vid] = r
+                continue
+        # ---- fin enmienda 42 --------------------------------------------
+
         mask, meta_mask = construir_mascara(metrica, ficha)
         mask = mask[mask.index <= fecha_fin]
 
@@ -1946,8 +2103,25 @@ def ejecutar(args):
             meta_part["comprometida_en_transicion"] = str(comprometida)
             meta_part["coincide_con_la_derivada"] = True
 
+        # ---- Enmienda 42: corte sobre calendario completo; despues se ----
+        # excluyen los dias anulados de la mascara y se mide la cobertura.
+        cobertura_42 = None
+        if regimen_42:
+            validos = metrica.reindex(mask.index).notna()
+            cobertura_42 = {
+                "bloque_1": float(validos.loc[b1].mean()) if len(b1) else 0.0,
+                "bloque_2": float(validos.loc[b2].mean()) if len(b2) else 0.0,
+            }
+            mask = mask[validos.values]
+            b1 = b1[b1.isin(mask.index)]
+            b2 = b2[b2.isin(mask.index)]
+            meta_42["dias_anulados_excluidos_de_la_mascara"] = int((~validos).sum())
+        # ---- fin enmienda 42 --------------------------------------------
+
         r = {"id": vid, "mascara": meta_mask, "particion": meta_part,
              "racha_media_mascara": round(racha_media(mask), 1)}
+        if regimen_42:
+            r["huecos_enmienda_42"] = meta_42
 
         if r["racha_media_mascara"] > 60:
             r["aviso_racha"] = ruta(doc, "protocolo.gates_cualitativos.parametros."
@@ -1974,8 +2148,17 @@ def ejecutar(args):
         # variables el diagnostico se calcula igual (es informativo, no
         # condiciona nada) y la ejecucion continua normalmente a los gates.
         es_admision_nueva = v.get("admision_nueva_enmienda_38", True)
+        if regimen_42:
+            # protocolo.huecos_en_series.al_fallar.sin_grandfathering
+            es_admision_nueva = True
 
         diag = diagnostico_estructural(mask, b1, b2, ret, base, doc)
+        if regimen_42:
+            mot_42, crit_42 = criterios_huecos(mask, b2, cobertura_42, anulados,
+                                               diag["dias_episodio"], doc)
+            diag["enmienda_42"] = crit_42
+            diag["motivos"] += mot_42
+            diag["admisible"] = not diag["motivos"]
         r["diagnostico_estructural"] = diag
         if not es_admision_nueva:
             r["diagnostico_estructural"]["nota_grandfathering"] = (
@@ -2024,6 +2207,15 @@ def ejecutar(args):
             print(f"    bloque_2: {diag['observaciones_enmascaradas_bloque_2']} "
                   f"enmascaradas, {diag['episodios_independientes_bloque_2']} "
                   f"episodios independientes")
+            if "enmienda_42" in diag:
+                c42 = diag["enmienda_42"]
+                print(f"    enmienda 42: cobertura b1 "
+                      f"{round(100 * c42['cobertura']['bloque_1'], 2)}% / b2 "
+                      f"{round(100 * c42['cobertura']['bloque_2'], 2)}% (minimo "
+                      f"{round(100 * c42['cobertura_minima'], 2)}%) | episodios "
+                      f"limpios b2 {c42['episodios_limpios_bloque_2']} de "
+                      f"{c42['episodios_bloque_2']} | dias anulados "
+                      f"{meta_42['dias_anulados']}")
             for m in diag["motivos"]:
                 print(f"    {'BLOQUEO' if es_admision_nueva else 'aviso (no bloquea)'}: {m}")
             if es_admision_nueva:
@@ -2209,12 +2401,22 @@ def main(argv=None):
         doc = _cargar_json(args.doctrina)
         entrada = _cargar_json(args.validar_entrada)
         problemas = prohibicion_prospectiva(entrada, doc)
+        # Enmienda 42: una ficha nueva debe declarar sus huecos. La entrada
+        # candidata ocuparia el indice len(registro)+1.
+        try:
+            n_cand = len(_cargar_json(args.registro)["entradas"]) + 1
+        except Exception:
+            n_cand = None
+        corte_42 = int(ruta(doc, "protocolo.huecos_en_series.aplicacion.desde_entrada"))
+        if "metrica_continua" in entrada and (n_cand is None or n_cand >= corte_42):
+            _, p42 = _validar_declaracion_huecos(entrada, doc)
+            problemas += p42
         if problemas:
             print("RECHAZADA. No escribir esta entrada:")
             for p in problemas:
                 print("  - " + p)
             return 1
-        print("OK  la entrada no incumple la enmienda 31. "
+        print("OK  la entrada no incumple las enmiendas 31 ni 42. "
               "Puede escribirse con cadena.py")
         return 0
 

@@ -1,7 +1,7 @@
 {
   "meta": {
     "nombre": "Contexto-BTC — Protocolo de validacion v2",
-    "version_esquema": "2.13.0",
+    "version_esquema": "2.14.0",
     "fecha_creacion": "2026-09-03",
     "archivo_registro_asociado": "registro.json",
     "declaracion_obligatoria": "Batch-PRDS actua como cribado de descubrimiento. La garantia real de control de falsos positivos descansa en la confirmacion forward sobre datos que no existian cuando la variable fue propuesta.",
@@ -307,6 +307,20 @@
         ],
         "naturaleza": "Anade una verificacion y un campo obligatorio. No altera ningun gate, umbral, mascara, particion ni criterio estadistico. No modifica ninguna entrada del registro. Aplicacion prospectiva, sin grandfathering necesario: ninguna entrada existente la incumple.",
         "momento": "Lote 2026-Q3 sin test pendiente ni resultado contaminable. Ninguna variable en CONFIRMADA."
+      },
+      {
+        "n": 42,
+        "titulo": "huecos en las series de las variables candidatas",
+        "fecha": "2026-09-15",
+        "motivo": "La serie de active_addresses_delta20_ma7 (entrada 43) mostro un hueco de 9 dias. El motor leia los dias vacios de una metrica como mascara no activada y no existia regla de huecos fuera del precio. Parametros aprobados por Rafa tras consulta a 5 IAs externas.",
+        "partes": [
+          "1. Seccion protocolo.huecos_en_series: declaracion en ficha, calendario, arrastre maximo de 2 dias, regla de anulacion, cobertura minima del 90% por bloque y episodios limpios.",
+          "2. Aclaracion en ficha_congelada.alcance: la declaracion de huecos no es estado de disponibilidad (enmienda 29).",
+          "3. Ampliacion de protocolo.admisibilidad_estructural con dos criterios.",
+          "4. Implementacion en filtro.py: verificacion de continuidad y propagacion, exclusion de dias anulados de la mascara y criterios de admisibilidad; aviso en --validar-entrada."
+        ],
+        "naturaleza": "Anade verificaciones y criterios de admisibilidad. No altera ningun gate, umbral, estadistico ni el test de permutacion.",
+        "momento": "Lote 2026-Q3 sin test pendiente ni resultado contaminable. Aplicacion prospectiva desde la entrada 44."
       }
     ],
     "compatibilidad": {
@@ -624,7 +638,76 @@
       },
       "aislamiento_del_lote": "Una variable inadmisible no aborta la ejecucion. Antes de esta enmienda, un tramo sin variacion hacia abortar a gate1 en fase 4 y con el a todas las demas variables del lote.",
       "por_que_no_socava_el_precompromiso": "No cambia que constituye una variable admisible: los cuatro criterios ya eran obligatorios para que el test produjera un resultado interpretable. Cambia unicamente que el rechazo ocurre antes del precompromiso irreversible y no despues. Ninguno mira el resultado del test ni ningun estadistico de efecto.",
-      "aplicacion": "Prospectiva. El registro tiene 32 entradas al aprobarse esta enmienda; las entradas 1 a 32 no se reabren ni se reevaluan. Mismo criterio que las enmiendas 33, 34 y 35."
+      "aplicacion": "Prospectiva. El registro tiene 32 entradas al aprobarse esta enmienda; las entradas 1 a 32 no se reabren ni se reevaluan. Mismo criterio que las enmiendas 33, 34 y 35.",
+      "ampliacion_enmienda_42": {
+        "enmienda": 42,
+        "criterios_anadidos": [
+          "cobertura_por_bloque",
+          "episodios_limpios_bloque_2"
+        ],
+        "definicion": "protocolo.huecos_en_series.criterios_de_admisibilidad_adicionales",
+        "aplicacion": "Solo variables sujetas a protocolo.huecos_en_series.aplicacion."
+      }
+    },
+    "huecos_en_series": {
+      "enmienda": 42,
+      "objeto": "Tratamiento de los dias sin dato en la serie de la metrica continua de una variable candidata. Hasta esta enmienda la regla de huecos solo existia para el precio (fuente_de_precio.dias_faltantes); en las series de candidatas un dia vacio se leia como mascara no activada, lo que convierte la ausencia de dato en una observacion falsa.",
+      "aplicacion": {
+        "desde_entrada": 44,
+        "regla": "Se aplica a las variables cuya PRIMERA entrada en registro.json tenga indice mayor o igual que desde_entrada. Las variables con primera entrada 1 a 43 conservan exactamente el comportamiento anterior del motor, sin reevaluacion.",
+        "motivo_prospectivo": "Mismo criterio que las enmiendas 33, 34, 35 y 38."
+      },
+      "declaracion_en_ficha": {
+        "ruta_en_la_ficha": "metrica_continua.huecos",
+        "campos_obligatorios": [
+          "calendario",
+          "ventana_dependencia_dias",
+          "huecos_brutos"
+        ],
+        "calendario": "Calendario nativo de la serie. 'natural': todos los dias. 'laborable_lunes_viernes': de lunes a viernes; un festivo entre semana es un dia laborable sin dato.",
+        "ventana_dependencia_dias": "Entero >= 0, en dias del calendario declarado. El valor del dia t depende de los dias t-ventana a t. Ejemplo: media movil de 7 dias mas variacion a 20 dias sobre ella = 26.",
+        "huecos_brutos": "Lista, posiblemente vacia, de TODOS los tramos consecutivos sin dato de la fuente bruta dentro del snapshot, cada uno con 'desde' y 'hasta' (inclusive, AAAA-MM-DD, dias del calendario declarado). Ordenados y sin solaparse.",
+        "causa": "Clave opcional 'causa' en cada hueco. Solo descriptiva: el motor no la lee y no condiciona nada."
+      },
+      "calendarios_permitidos": [
+        "natural",
+        "laborable_lunes_viernes"
+      ],
+      "arrastre_maximo_dias": 2,
+      "hueco_largo": "hueco de arrastre_maximo_dias + 1 dias del calendario declarado o mas",
+      "regla_de_anulacion": "El dia t queda anulado si algun dia entre t - ventana_dependencia_dias y t (ambos inclusive, en dias del calendario declarado) pertenece a un hueco largo. Es deliberadamente conservadora: anula tambien dias intermedios de la ventana que la transformacion concreta no usa.",
+      "serie_transformada": "El CSV que consume el motor lista todos los dias del calendario declarado entre su primera y su ultima fecha. Los dias anulados van con valor vacio. Los huecos cortos se rellenan arrastrando el ultimo dato bruto antes de calcular la transformacion, igual que el precio.",
+      "verificaciones_de_filtro_py": [
+        "declaracion: metrica_continua.huecos existe y tiene forma valida",
+        "continuidad: el CSV no tiene fechas duplicadas, ni fechas fuera del calendario declarado, ni fechas del calendario que falten",
+        "propagacion: el conjunto de dias vacios del CSV es EXACTAMENTE el conjunto de dias anulados derivado de huecos_brutos y ventana_dependencia_dias"
+      ],
+      "tratamiento_de_los_dias_anulados": {
+        "percentil": "Un dia anulado no entra en la ventana movil del percentil.",
+        "particion": "La fecha de corte de bloques se deriva sobre el calendario completo, con los dias anulados incluidos, para que un hueco no desplace el corte.",
+        "mascara": "Tras particionar, los dias anulados se excluyen de la mascara. No cuentan como activados ni como no activados."
+      },
+      "criterios_de_admisibilidad_adicionales": [
+        {
+          "id": "cobertura_por_bloque",
+          "regla": "dias con valor / dias del calendario del bloque >= cobertura_minima_por_bloque, en bloque_1 y en bloque_2 por separado",
+          "dias_del_calendario_del_bloque": "tras warm-up e interseccion con el precio (enmienda 39), anulados incluidos"
+        },
+        {
+          "id": "episodios_limpios_bloque_2",
+          "regla": "numero de episodios independientes del bloque_2 sin ningun dia anulado entre su primer y su ultimo dia >= protocolo.test_de_permutacion.episodios_independientes_minimos",
+          "donde_se_aplica": "Solo en admisibilidad (enmienda 38). El test de permutacion y la capa de gates no cambian."
+        }
+      ],
+      "cobertura_minima_por_bloque": 0.9,
+      "al_fallar": {
+        "estado_asignado": "PENDIENTE_REVISION",
+        "consume_presupuesto": false,
+        "entra_en_correccion_BY": false,
+        "alcance": "Cualquier verificacion o criterio de esta seccion. Mismo destino y mismo aislamiento del lote que la enmienda 38.",
+        "sin_grandfathering": "Toda variable sujeta a esta seccion es posterior a ella, por lo que sus criterios bloquean siempre, tambien si la variable ya esta en EN_TEST pendiente."
+      },
+      "no_modifica": "Ningun gate, umbral, estadistico, particion de variables anteriores, ni la regla de precio. El motor de gates y el test de permutacion quedan congelados."
     }
   },
   "presupuesto": {
@@ -1308,6 +1391,10 @@
         "funcion_del_inventario": "El inventario comprueba EXISTENCIA, nunca obtiene el valor. La funcion que lo implementa devuelve un booleano y no puede devolver contenido de la doctrina.",
         "motivo": "Sin esta clausula la garantia de no-resolucion es solo una promesa escrita. Con ella es una propiedad del codigo, verificable en revision. Riesgo senalado de forma independiente por las cuatro revisiones externas del 04/09/2026.",
         "estado_verificado_2026_09_04": "filtro.py v2 ya cumple esta invariante: todas las llamadas al resolver sobre la doctrina usan literales del codigo, y la unica llamada sobre una entrada del registro usa un camino procedente de la doctrina."
+      },
+      "aclaracion_enmienda_42": {
+        "enmienda": 42,
+        "regla": "Declarar en metrica_continua.huecos los huecos brutos, el calendario y la ventana de dependencia NO es un estado de disponibilidad de datos. Describe la serie medida tal como queda congelada, con fecha y hash, y por tanto no caduca. Queda permitido y, para las variables sujetas a protocolo.huecos_en_series, es obligatorio."
       }
     },
     "marcadores_pendientes": {
