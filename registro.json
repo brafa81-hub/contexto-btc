@@ -6,8 +6,8 @@
   "append_only": true,
   "algoritmo_hash": "sha256",
   "genesis": "0000000000000000000000000000000000000000000000000000000000000000",
-  "ultimo_hash": "fa371e5aeb47fa0140904a86853ce2a9f886f819f6c4f2b173e66ce6ea1671a9",
-  "n_entradas": 42,
+  "ultimo_hash": "b74fa475f4d4817c088a8a1bafa3f4b56e10b58cb728987317cc1f9f8d1d07f2",
+  "n_entradas": 43,
   "regla": "Ninguna entrada se edita ni se borra. Una correccion se registra como entrada nueva que referencia la anterior. filtro.py verifica la cadena completa al arrancar y aborta si esta rota.",
   "canonizacion": "json.dumps(entrada_sin_hash, sort_keys=True, separators=(',',':'), ensure_ascii=False).encode('utf-8')"
  },
@@ -1539,6 +1539,35 @@
    "motivo": "Resultado de la ejecucion real de filtro.py sobre el lote 2026-Q3, con la serie derivada anclada por sha256 en la entrada 41 y el snapshot de precio congelado en fuente_de_precio.snapshot, 4264 dias de 2015-01-01 a 2026-09-03. La variable no supera el gate 1, de intensidad de la senal en los tramos del bloque_1, y queda DESCARTADA_GATE_1. Tampoco supera los gates 3 ni 4, igualmente vinculantes, y el gate 2, no vinculante, arroja dominancia del efecto hacia atras. El desglose por gate, la lectura del fallo y la reproduccion integra del precompromiso constan en declaraciones_de_ejecucion. Se hace constar que dgs2_delta20 es propuesta ordinaria con id nuevo, no repesca, por lo que no consume ningun cupo de repesca_v1 y ningun id del regimen v1 queda agotado por este descarte. La plaza ordinaria del presupuesto 2026-Q3 consumida en la entrada 41 queda gastada y no se libera: el consumo derivado del lote sigue siendo de cuatro sobre doce y no se modifica ningun contador con esta entrada.",
    "hash_anterior": "06e73b7c16bab1972042ce602003ac07719427636c035044e76296b4f2120dbc",
    "hash": "fa371e5aeb47fa0140904a86853ce2a9f886f819f6c4f2b173e66ce6ea1671a9"
+  },
+  {
+   "id": "active_addresses_delta20_ma7",
+   "tipo_entrada": "alta_retroactiva",
+   "familia": "actividad_red",
+   "lote": "2026-Q3",
+   "fecha_propuesta": "2026-09-15",
+   "estado": "DESCARTADA_PREVIA",
+   "gate_alcanzado": null,
+   "consume_presupuesto_v2": false,
+   "fecha_registro": "2026-09-15",
+   "fuente": {
+    "proveedor": "bitcoin-data.com (BGeometrics), API publica sin clave",
+    "endpoint": "https://bitcoin-data.com/v1/active-addresses/csv",
+    "verificado_en_vivo": "2026-09-15",
+    "transformacion": "Direcciones activas diarias suavizadas con media movil de 7 dias; variacion relativa a 20 dias sobre la serie suavizada",
+    "artefactos_en_repo": {
+     "generador": "serie_active_addresses.py",
+     "serie": "serie_active_addresses_delta20_ma7.csv",
+     "sha256_serie": "4d0328ad7367e8e882445dc6d92acfd105ac1be9084a8aa2472e39443df99e73"
+    },
+    "hallazgo_estructural": "Hueco de 9 dias consecutivos sin dato (2026-01-12 a 2026-01-20), unico en todo el historico desde 2015. Sin aviso publico de incidente del proveedor ni evento extremo de mercado coincidente. Registrado como limitacion conocida; no motiva este descarte."
+   },
+   "motivo": "La variable no se congela. NO es un fallo estructural: con el snapshot oficial de precio Bitstamp supera todos los minimos doctrinales (22 episodios independientes en bloque_2 frente a un minimo de 8, activacion global 20.71%, sin anios degenerados). Se descarta por AMBIGUEDAD DE MECANISMO, detectada antes de cualquier test contra el retorno de BTC: un pico de direcciones activas puede originarse tanto en demanda entrante (lectura alcista) como en distribucion en panico (lectura bajista), y la metrica no distingue entre ambos procesos. La mezcla de subregimenes de signo opuesto atenua el tamanio de efecto hacia cero por cancelacion, lo que compromete la potencia estadistica del test direccional antes de ejecutarlo. Separar cola alta y cola baja no resuelve la identificacion y solo anade multiplicidad. Decision tomada tras consulta a 5 IAs externas con prompt neutro (4 de 5 recomendaron descartar para test direccional) y arbitraje coincidente.",
+   "declaracion_de_sesgo": "Ningun resultado de test contra BTC fue calculado ni observado: la decision se tomo con informacion estructural (activacion, episodios) y razonamiento sobre el mecanismo. La ficha PROPUESTA redactada y validada con filtro.py --validar-entrada (hipotesis de cola alta) nunca se escribio en el registro ni se subio al repo, y queda obsoleta. La variable nunca estuvo en PROPUESTA ni en EN_TEST. La familia 'actividad_red' no se da de alta en catalogo_familias y no consume cuota de familias nuevas del trimestre.",
+   "nota_reformulacion": "Vias apuntadas y NO iniciadas: hipotesis no direccional (volatilidad o retorno absoluto) o desambiguacion combinando con condicion de tendencia. Cualquiera de ellas seria una variable distinta con id y ficha propios, y debera justificar su no equivalencia con este id (enmienda 32).",
+   "no_es_re_test": true,
+   "hash_anterior": "fa371e5aeb47fa0140904a86853ce2a9f886f819f6c4f2b173e66ce6ea1671a9",
+   "hash": "b74fa475f4d4817c088a8a1bafa3f4b56e10b58cb728987317cc1f9f8d1d07f2"
   }
  ]
 }
