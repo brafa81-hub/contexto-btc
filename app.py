@@ -340,6 +340,14 @@ col2.metric("Media 200 días", f"{s['vs_sma200']:+.1f}%", f"${s['sma200']:,.0f}"
 if pd.notna(s["vs_sma1000"]):
     col3.metric("Media 1000 días", f"{s['vs_sma1000']:+.1f}%", f"${s['sma1000']:,.0f}")
 
+if pd.notna(s["posicion_rango_365d"]):
+    st.metric(
+        "Posición en rango 365d",
+        f"{s['posicion_rango_365d']:.0f}%",
+        f"mínimo: ${s['min_365d']:,.0f} · máximo: ${s['max_365d']:,.0f}",
+        delta_color="off",
+    )
+
 st.divider()
 
 # ---------------------------------------------------------------
@@ -371,8 +379,17 @@ st.divider()
 st.subheader("03 · Momento del ciclo")
 col1, col2, col3 = st.columns(3)
 col1.metric("Caída desde máximos", f"{c['drawdown_actual']:+.1f}%", f"hace {c['dias_desde_ath']:.0f} días", delta_color="off")
-col2.metric("Volatilidad 90 días", f"{s['vol_actual']:.0f}%", f"histórica: {s['vol_historica']:.0f}%", delta_color="off")
+if pd.notna(s["vol_percentil"]):
+    col2.metric("Volatilidad 90 días", f"{s['vol_actual']:.0f}%", f"percentil {s['vol_percentil']:.0f} de su historia", delta_color="off")
+else:
+    col2.metric("Volatilidad 90 días", f"{s['vol_actual']:.0f}%")
 col3.metric("Rentabilidad 90 días", f"{c['ret_90d']:+.1f}%")
+if pd.notna(s["vol_percentil"]):
+    st.caption(
+        "Percentil calculado sobre los últimos 5 años, no toda la historia de BTC: "
+        "la volatilidad tiende a la baja desde 2021, así que un percentil bajo es "
+        "cada vez más habitual, no necesariamente excepcional."
+    )
 
 st.divider()
 

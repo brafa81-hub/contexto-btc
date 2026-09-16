@@ -61,10 +61,52 @@ def calcular_situacion(df: pd.DataFrame) -> dict:
     sma200 = close.rolling(200).mean().iloc[-1]
     sma1000 = close.rolling(1000).mean().iloc[-1] if len(close) >= 1000 else np.nan
 
-    # Volatilidad anualizada de los últimos 90 días vs histórica
+    # Posición en el rango de los últimos 365 días.
+    #
+    # ORIGEN DE LA VENTANA: se probó también 90d antes de decidir 365d.
+    # Con el snapshot del 2026-09-03, 90d daba 100% (pegado al techo reciente)
+    # mientras que 365d daba 34% (zona media-baja) — mismo precio, lecturas
+    # casi opuestas. 90d se descartó por ser mucho más inestable (6,78
+    # puntos/día de cambio medio vs 3,39 en 365d) y por solaparse con la
+    # rentabilidad a 90 días que ya muestra el bloque Ciclo. Se comprobó
+    # además que 365d y "52 semanas" dan resultado idéntico (correlación
+    # 1.000 entre ambas series), así que no hay ambigüedad de calendario.
+    if len(close) >= 365:
+        ult_365d = close.tail(365)
+        min_365d = ult_365d.min()
+        max_365d = ult_365d.max()
+        posicion_rango_365d = (precio - min_365d) / (max_365d - min_365d) * 100
+    else:
+        min_365d = np.nan
+        max_365d = np.nan
+        posicion_rango_365d = np.nan
+
+    # Volatilidad anualizada de los últimos 90 días, percentilizada sobre
+    # una ventana móvil de 5 años (1826 días) de esa misma serie de
+    # volatilidad rodante — no sobre toda la historia.
+    #
+    # ORIGEN DE LA VENTANA: se detectó que percentilizar sobre toda la
+    # historia (2015-2026) sesga el percentil a la baja con el paso del
+    # tiempo, porque BTC tiene una deriva estructural de volatilidad
+    # decreciente (media anual: 80,7% en 2021 → 42,5% en 2025, mercado
+    # cada vez más institucionalizado). Con toda la historia, el percentil
+    # de hoy sale 11 ("muy baja"); con ventana móvil de 5 años sale 15,2 —
+    # mismo dato, lectura menos distorsionada por épocas ya no
+    # representativas del régimen actual.
+    # Decisión tomada tras consulta a 6 IAs externas: 5 de 6 recomendaron
+    # ventana móvil de ~4 años (referencia: ciclo de halving de BTC), sin
+    # anclarla a fechas exactas de halving (rompería reproducibilidad y
+    # comparabilidad año a año). Rafa amplió a 5 años para capturar mejor
+    # el comportamiento posterior al halving sin depender de en qué punto
+    # exacto del ciclo caiga el snapshot.
     ret = close.pct_change()
     vol_actual = ret.tail(90).std() * np.sqrt(365) * 100
-    vol_historica = ret.std() * np.sqrt(365) * 100
+    vol90_serie = (ret.rolling(90).std() * np.sqrt(365) * 100).dropna()
+    ventana_vol = vol90_serie[vol90_serie.index >= vol90_serie.index[-1] - pd.Timedelta(days=1826)]
+    if len(ventana_vol) >= 100:
+        vol_percentil = (ventana_vol < vol_actual).mean() * 100
+    else:
+        vol_percentil = np.nan
 
     # Máximo histórico y distancia a él
     ath = close.max()
@@ -79,8 +121,11 @@ def calcular_situacion(df: pd.DataFrame) -> dict:
         "vs_sma50": (precio / sma50 - 1) * 100,
         "vs_sma200": (precio / sma200 - 1) * 100,
         "vs_sma1000": (precio / sma1000 - 1) * 100 if pd.notna(sma1000) else np.nan,
+        "min_365d": min_365d,
+        "max_365d": max_365d,
+        "posicion_rango_365d": posicion_rango_365d,
         "vol_actual": vol_actual,
-        "vol_historica": vol_historica,
+        "vol_percentil": vol_percentil,
         "ath": ath,
         "fecha_ath": fecha_ath,
         "dist_ath": dist_ath,
@@ -203,9 +248,15 @@ def generar_informe(df: pd.DataFrame, capital: Optional[float] = None) -> str:
         L.append(f"│  Media 1000 días:      ${s['sma1000']:>12,.0f}   ({s['vs_sma1000']:+.1f}%)")
     L.append(f"│  Máximo histórico:     ${s['ath']:>12,.0f}   ({s['dist_ath']:+.1f}%)")
     L.append(f"│  Fecha del máximo:      {s['fecha_ath'].strftime('%d/%m/%Y'):>12}")
+    if pd.notna(s["posicion_rango_365d"]):
+        L.append("│")
+        L.append(f"│  Posición en rango 365d: {s['posicion_rango_365d']:>5.0f}%")
+        L.append(f"│    (mínimo del año: ${s['min_365d']:,.0f} · máximo: ${s['max_365d']:,.0f})")
     L.append("│")
-    L.append(f"│  Volatilidad (90d):    {s['vol_actual']:>6.0f}%  anualizada")
-    L.append(f"│  Volatilidad histórica:{s['vol_historica']:>6.0f}%")
+    if pd.notna(s["vol_percentil"]):
+        L.append(f"│  Volatilidad (90d):    {s['vol_actual']:>6.0f}%  anualizada — percentil {s['vol_percentil']:>3.0f} de su historia")
+    else:
+        L.append(f"│  Volatilidad (90d):    {s['vol_actual']:>6.0f}%  anualizada")
     L.append("└" + "─" * 66)
     L.append("")
 
