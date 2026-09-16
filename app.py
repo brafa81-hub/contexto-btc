@@ -355,20 +355,25 @@ st.divider()
 # ---------------------------------------------------------------
 st.subheader("02 · ¿Caro o barato?")
 pct = v["percentil"]
-col1, col2 = st.columns([1, 2])
+col1, col2 = st.columns(2)
 with col1:
     st.metric(v["etiqueta"].title(), f"Percentil {pct:.0f}")
-    st.caption(f"Ratio precio/SMA200: {v['mayer_multiple']:.2f}")
 with col2:
-    st.progress(int(pct))
-    st.caption(f"En el {pct:.0f}% de su historia, BTC estuvo más barato que ahora en términos relativos.")
+    st.metric("Ratio precio/SMA200 (Mayer Multiple)", f"{v['mayer_multiple']:.2f}")
+st.progress(int(pct))
+st.caption(f"En el {pct:.0f}% de su historia, BTC estuvo más barato que ahora en términos relativos.")
 st.info(v["nota"], icon="ℹ️")
 st.caption(
     "⚠ Medido sobre 2011-2026: este percentil ordenaba bien el retorno del año "
     "siguiente hasta 2020, pero ese orden se rompió a partir de 2021 (la franja "
     "20-40 pasó a rendir peor que la 0-20 y que la 60-80). Lo único que ha "
     "mantenido el mismo signo en ambas épocas es que el 20% más caro va seguido "
-    "de peores retornos. Léelo como contexto histórico, no como señal actual."
+    "de peores retornos. Léelo como contexto histórico, no como señal actual. "
+    "Una razón de fondo: el techo del Mayer Multiple se ha ido reduciendo en cada "
+    "ciclo de halving (máximo 3,71 en 2016-2020, 2,82 en 2020-2024; el ciclo "
+    "2024-en curso lleva 1,53, cifra parcial porque el ciclo no ha terminado), así "
+    "que comparar contra toda la historia pesa cada vez más hacia picos antiguos "
+    "que ya no son representativos del rango actual."
 )
 
 st.divider()
