@@ -1,7 +1,7 @@
 {
   "meta": {
     "nombre": "Contexto-BTC — Protocolo de validacion v2",
-    "version_esquema": "2.14.0",
+    "version_esquema": "2.15.0",
     "fecha_creacion": "2026-09-03",
     "archivo_registro_asociado": "registro.json",
     "declaracion_obligatoria": "Batch-PRDS actua como cribado de descubrimiento. La garantia real de control de falsos positivos descansa en la confirmacion forward sobre datos que no existian cuando la variable fue propuesta.",
@@ -321,6 +321,22 @@
         ],
         "naturaleza": "Anade verificaciones y criterios de admisibilidad. No altera ningun gate, umbral, estadistico ni el test de permutacion.",
         "momento": "Lote 2026-Q3 sin test pendiente ni resultado contaminable. Aplicacion prospectiva desde la entrada 44."
+      },
+      {
+        "n": 43,
+        "titulo": "trimestres indefinidos en consistencia_minima de la confirmacion forward",
+        "fecha": "2026-09-19",
+        "motivo": "consistencia_minima exigia '3 de 5 trimestres con el signo esperado' sin definir que hacer con un trimestre cuyo theta es indefinido (sin dias activos o sin dias inactivos). En simulacion ese caso aparecio en torno al 7% de los trimestres, cifra medida con un generador que luego se demostro defectuoso y que debe volver a medirse. Contarlo como fallo —lo que hacia la implementacion de simulacion— rompia la simetria del nulo y bajaba la tasa bajo ruido puro del 50% teorico al 43% medido, es decir, castigaba a la variable por ausencia de datos y no por evidencia en contra. Consulta a 6 IAs externas: 6/6 a favor de excluir los indefinidos del recuento y 6/6 a favor de un suelo de trimestres definidos. Con 4 definidos, un empate 2-2 no es mayoria estricta y bajo la regla anterior habria sido terminal: con efecto real moderado eso mata en torno al 7% de variables buenas por azar, frente a un 2,6% de nulas que se salvan del descarte sin producir ninguna falsa confirmacion.",
+        "partes": [
+          "1. confirmacion_forward.criterios_de_confirmacion, criterio consistencia_minima: nueva regla con exclusion de indefinidos, suelo de 3 definidos y mayoria estricta de los definidos.",
+          "2. Registro obligatorio de cuantos y cuales trimestres resultaron indefinidos en la entrada de resultado, sin convertirlo en gate.",
+          "3. Nota en estados.lista PENDIENTE_REVISION: segunda via de entrada, sin devolucion de presupuesto y sin exclusion de m_efectivo.",
+          "4. Nota en estados.lista RECHAZADA_FORWARD: queda reservado al fallo con evidencia suficiente.",
+          "5. filtro.py: DOCTRINA_COMPATIBLE pasa a '2.15'."
+        ],
+        "naturaleza": "Cierra un hueco de doctrina y hace no terminal un desenlace por insuficiencia estructural. Reutiliza el estado existente PENDIENTE_REVISION en vez de crear uno nuevo. No altera ningun gate, umbral, mascara, particion, el test de permutacion, Benjamini-Yekutieli ni los otros dos criterios forward (signo_agregado y magnitud). No modifica ninguna entrada del registro. La ventana forward sigue siendo de 5 trimestres fijos.",
+        "momento": "Lote 2026-Q3. Ninguna variable ha alcanzado CONFIRMADA ni ha completado ventana forward, y filtro.py aun no implementa la etapa de confirmacion forward, por lo que ningun resultado existente puede verse contaminado. Aplicacion prospectiva.",
+        "reserva_declarada": "La tasa de indefinicion del 7,1% procede de la simulacion con el generador de n_historico=1200 dias, que incumple el minimo estructural de 3 anios por bloque de protocolo.particion_datos. No es cifra firme y debe volver a medirse con el generador corregido. El suelo de 3 es robusto a ese numero, pero la cifra no debe citarse como garantia."
       }
     ],
     "compatibilidad": {
@@ -835,8 +851,22 @@
         },
         {
           "id": "consistencia_minima",
-          "regla": "al menos 3 de los 5 trimestres presentan el signo esperado",
-          "justificacion": "Impide que un unico trimestre extremo arrastre el agregado y disfrace una relacion inexistente. Es la unica salvaguarda que mira los trimestres por separado, y esta prefijada."
+          "regla": "Un trimestre es indefinido si no contiene ningun dia activo o ningun dia inactivo. Los trimestres indefinidos se excluyen del recuento. El criterio se cumple si hay al menos 3 trimestres definidos y una mayoria estricta de ellos presenta el signo esperado (>=3 de 5, >=3 de 4, >=2 de 3). Si hay menos de 3 trimestres definidos, o si los definidos quedan en empate, la confirmacion forward no produce veredicto y la variable pasa a PENDIENTE_REVISION. No es un descarte. El presupuesto ya consumido no se devuelve.",
+          "justificacion": "Impide que un unico trimestre extremo arrastre el agregado y disfrace una relacion inexistente. Es la unica salvaguarda que mira los trimestres por separado, y esta prefijada.",
+          "enmienda": 43,
+          "regla_anterior": "al menos 3 de los 5 trimestres presentan el signo esperado",
+          "tabla_de_mayoria": {
+            "5_definidos": "se cumple con >=3",
+            "4_definidos": "se cumple con >=3; empate 2-2 -> PENDIENTE_REVISION",
+            "3_definidos": "se cumple con >=2",
+            "menos_de_3_definidos": "PENDIENTE_REVISION"
+          },
+          "definicion_de_trimestre_indefinido": "Trimestre sin ningun dia activo o sin ningun dia inactivo dentro de la mascara, tras aplicar la exclusion de bordes de confirmacion_forward.separacion_entre_trimestres (enmienda 4). En ese trimestre theta no esta definido y no admite signo.",
+          "registro_de_indefinidos": {
+            "regla": "La entrada de resultado de la confirmacion forward registra cuantos trimestres resultaron indefinidos y cuales.",
+            "es_gate": false,
+            "motivo": "La indefinicion no tiene por que ser aleatoria: se concentrara en variables de baja activacion. Dejarla visible permite detectarlo sin convertirla en un criterio de descarte no calibrado."
+          }
         }
       ]
     },
@@ -910,7 +940,8 @@
       },
       {
         "id": "PENDIENTE_REVISION",
-        "descripcion": "Historia insuficiente. No consume presupuesto ni entra en BY"
+        "descripcion": "Historia insuficiente. No consume presupuesto ni entra en BY",
+        "enmienda_43": "Segunda via de entrada a este estado: confirmacion forward sin veredicto por menos de 3 trimestres definidos o por empate entre los definidos. Por esa via la variable ya era EN_TEST y ya paso Benjamini-Yekutieli, de modo que el presupuesto ya consumido no se devuelve y la exclusion de protocolo.correccion_multiple.m_efectivo.no_cuentan, limitada a la historia insuficiente, no le aplica. La descripcion del estado describe la via original y no cambia: el registro es append-only."
       },
       {
         "id": "RECHAZADA_PVALOR",
@@ -926,7 +957,8 @@
       },
       {
         "id": "RECHAZADA_FORWARD",
-        "descripcion": "No supera alguno de los 3 criterios forward"
+        "descripcion": "No supera alguno de los 3 criterios forward",
+        "enmienda_43": "Ni la falta del suelo de 3 trimestres definidos ni el empate entre los definidos producen este estado: ambos van a PENDIENTE_REVISION. Este estado queda reservado al fallo con evidencia suficiente para juzgar."
       },
       {
         "id": "SELLADA_V1",
