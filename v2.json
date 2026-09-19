@@ -1,7 +1,7 @@
 {
   "meta": {
     "nombre": "Contexto-BTC — Protocolo de validacion v2",
-    "version_esquema": "2.15.0",
+    "version_esquema": "2.16.0",
     "fecha_creacion": "2026-09-03",
     "archivo_registro_asociado": "registro.json",
     "declaracion_obligatoria": "Batch-PRDS actua como cribado de descubrimiento. La garantia real de control de falsos positivos descansa en la confirmacion forward sobre datos que no existian cuando la variable fue propuesta.",
@@ -337,6 +337,20 @@
         "naturaleza": "Cierra un hueco de doctrina y hace no terminal un desenlace por insuficiencia estructural. Reutiliza el estado existente PENDIENTE_REVISION en vez de crear uno nuevo. No altera ningun gate, umbral, mascara, particion, el test de permutacion, Benjamini-Yekutieli ni los otros dos criterios forward (signo_agregado y magnitud). No modifica ninguna entrada del registro. La ventana forward sigue siendo de 5 trimestres fijos.",
         "momento": "Lote 2026-Q3. Ninguna variable ha alcanzado CONFIRMADA ni ha completado ventana forward, y filtro.py aun no implementa la etapa de confirmacion forward, por lo que ningun resultado existente puede verse contaminado. Aplicacion prospectiva.",
         "reserva_declarada": "La tasa de indefinicion del 7,1% procede de la simulacion con el generador de n_historico=1200 dias, que incumple el minimo estructural de 3 anios por bloque de protocolo.particion_datos. No es cifra firme y debe volver a medirse con el generador corregido. El suelo de 3 es robusto a ese numero, pero la cifra no debe citarse como garantia."
+      },
+      {
+        "n": 44,
+        "titulo": "naturaleza del test de confirmacion forward + cierre de propuesta de exposicion continua",
+        "fecha": "2026-09-19",
+        "motivo": "La doctrina describia la confirmacion forward como la garantia real de control de falsos positivos sin declarar que no es un test de significancia. La calibracion del 19/20-sep-2026, ya limpia de los dos artefactos previos (calentamiento de mascara y n_historico=1200), mide una tasa de autorizacion bajo ruido puro del 22,0% [IC95% 14,4%-32,1%] sobre 82 supervivientes de 2100 replicas, muy lejos de un alpha del 5%. Llamarlo test de significancia era falso y podia inducir a leer 'variable confirmada' como 'estadisticamente significativa en el periodo forward'. La enmienda no cambia ninguna regla: fija por escrito lo que el criterio es y lo que la palabra 'confirmada' significa.",
+        "partes": [
+          "1. confirmacion_forward.naturaleza_del_test: campo nuevo, puramente declarativo, con las cifras medidas, la lectura de 'variable confirmada' como consistencia direccional sobre datos posteriores a la propuesta, y la atribucion del control del error tipo I principalmente a la cadena gates -> test de permutacion -> Benjamini-Yekutieli.",
+          "2. filtro.py: DOCTRINA_COMPATIBLE pasa a '2.16'. Unico cambio necesario en codigo, consecuencia mecanica del bump de version; el campo nuevo no interviene en ningun calculo."
+        ],
+        "naturaleza": "Enmienda declarativa. No altera ningun gate, umbral, mascara, particion, el test de permutacion, Benjamini-Yekutieli, la ventana forward de 5 trimestres ni ninguno de los tres criterios de confirmacion (signo_agregado, magnitud, consistencia_minima). No modifica ninguna entrada del registro ni ningun calculo de filtro.py.",
+        "momento": "Lote 2026-Q3. Ninguna variable ha alcanzado CONFIRMADA ni ha completado ventana forward. Aplicacion prospectiva y retrospectiva a la vez: al no cambiar ningun calculo, no puede contaminar resultado alguno.",
+        "reserva_declarada": "Las cifras del campo (22,0% bajo ruido puro, factor ~4,5 de reduccion de falsos positivos, 0,86% de paso de ruido puro en el pipeline completo) son condicionales al generador sintetico usado (block bootstrap de bloques de 20 dias, metrica AR(1) phi=0,985, mascara percentil movil Q80/365d) y no son propiedades analiticas del criterio. Tampoco se ha separado cuanto de la tasa medida procede del eps_min=8 real frente al cambio de n_historico en si.",
+        "nota_propuesta_b_cerrada": "En la misma sesion se cierra, como DESCARTADA POR AHORA y sin cambio de regla alguno, la propuesta de sustituir la unidad de informacion del forward (episodios discretos) por exposicion continua sobre retornos diarios. Motivo: no aumenta la informacion disponible —en los 455 dias del forward hay ~2-4 episodios independientes midiendose como se mida, por fuerte dependencia serial, y el block bootstrap no crea tamano muestral efectivo sino que lo corrige a la baja—, solo la complejidad y el coste de recalibracion, ademas de romper la comparabilidad con las variables ya en pipeline. Y no hay problema medido que resolver: el forward deja pasar el 0,86% del ruido puro y el 74,1% del efecto medio en el pipeline completo. Se reabriria solo si datos reales futuros muestran que el forward descarta variables buenas de forma sistematica; no con simulacion. Esta nota se registra como historial de decision, no como regla."
       }
     ],
     "compatibilidad": {
@@ -831,6 +845,7 @@
       "evaluacion_por_trimestre": false,
       "nota": "Los trimestres individuales se registran para auditoria, pero no se juzgan uno a uno. Un trimestre aislado de BTC es una observacion demasiado ruidosa para decidir nada."
     },
+    "naturaleza_del_test": "La confirmacion forward NO es un test de significancia estadistica: no calcula p-valor, no tiene hipotesis nula declarada ni nivel alpha, y su tasa de autorizacion bajo ruido puro, medida por simulacion (19/20-sep-2026, generador corregido, 82 supervivientes de 2100 replicas), es del 22,0% [IC95% 14,4%-32,1%], no del 5%. Es un test de CONSISTENCIA DIRECCIONAL sobre datos que no existian cuando la variable fue propuesta: comprueba que el efecto estimado fuera de muestra conserva el signo, al menos la mitad de la magnitud de theta_B2 y una mayoria direccional entre los trimestres definidos. Su valor reside en la independencia del dato, no en el control del error tipo I. En consecuencia, \"variable confirmada\" significa \"ha superado el cribado y ha mostrado comportamiento direccionalmente consistente en datos posteriores a su propuesta\", y NO significa \"se ha demostrado estadisticamente significativa en el periodo forward\". El control del error tipo I del sistema descansa principalmente en la cadena gates -> test de permutacion -> Benjamini-Yekutieli; la confirmacion forward lo reduce adicionalmente en un factor medido de ~4,5 pero no lo garantiza por si sola. Estas cifras son condicionales al generador sintetico usado para medirlas y no son propiedades analiticas del criterio.",
     "criterios_de_confirmacion": {
       "todos_obligatorios": true,
       "criterios": [
