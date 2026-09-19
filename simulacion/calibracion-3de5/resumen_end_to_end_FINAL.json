@@ -1,0 +1,166 @@
+{
+  "meta": {
+    "fecha": "2026-09-20",
+    "generador": "n_historico=4260, calentamiento mascara 365d, eps_min_b2=8 real, phi uniforme=0.985, phi concentrado=0.997",
+    "v2json_sha256_verificado": "8f92a305cb8fd4937c75080f984573c2b04ffbd7aad831eb8854ca08681e6ed0",
+    "v2json_version_esquema": "2.16.0",
+    "filtro_py_sha256_verificado": "54845d1d993c3a482f66b978c376de1f9800db96137233814c70bba069ad0ea9",
+    "q_nominal_by": 0.2,
+    "lote_n_sintetico": 12,
+    "pipeline_end_to_end_py_sha256": "04e5a9cc606d35957ea01dc1d4d735cb93fba0c17f77a4ec6d1679bebbabd66d"
+  },
+  "resultados": {
+    "uniforme": {
+      "ruido_puro": {
+        "theta_nominal": 0.0,
+        "n_replicas": 1200,
+        "n_gates_perm_pvalor": 42,
+        "tasa_gates_perm_pct": 3.5,
+        "ic95_gates_perm_pct": [
+          2.6,
+          4.697
+        ],
+        "n_aceptados_by": 0,
+        "n_autoriza_e2e_completo": 0,
+        "tasa_e2e_completo_pct": 0.0,
+        "ic95_e2e_completo_pct": [
+          0,
+          0.319
+        ]
+      },
+      "efecto_bajo": {
+        "theta_nominal": 0.042,
+        "n_replicas": 400,
+        "n_gates_perm_pvalor": 168,
+        "tasa_gates_perm_pct": 42.0,
+        "ic95_gates_perm_pct": [
+          37.262,
+          46.891
+        ],
+        "n_aceptados_by": 34,
+        "n_autoriza_e2e_completo": 19,
+        "tasa_e2e_completo_pct": 4.75,
+        "ic95_e2e_completo_pct": [
+          3.062,
+          7.299
+        ],
+        "theta_b2_realizado_mediana": 0.0596,
+        "theta_f_realizado_mediana": 0.0422
+      },
+      "efecto_medio": {
+        "theta_nominal": 0.084,
+        "n_replicas": 400,
+        "n_gates_perm_pvalor": 355,
+        "tasa_gates_perm_pct": 88.75,
+        "ic95_gates_perm_pct": [
+          85.278,
+          91.485
+        ],
+        "n_aceptados_by": 318,
+        "n_autoriza_e2e_completo": 250,
+        "tasa_e2e_completo_pct": 62.5,
+        "ic95_e2e_completo_pct": [
+          57.658,
+          67.104
+        ],
+        "theta_b2_realizado_mediana": 0.087,
+        "theta_f_realizado_mediana": 0.0868
+      },
+      "efecto_alto": {
+        "theta_nominal": 0.168,
+        "n_replicas": 400,
+        "n_gates_perm_pvalor": 400,
+        "tasa_gates_perm_pct": 100.0,
+        "ic95_gates_perm_pct": [
+          99.049,
+          100
+        ],
+        "n_aceptados_by": 400,
+        "n_autoriza_e2e_completo": 384,
+        "tasa_e2e_completo_pct": 96.0,
+        "ic95_e2e_completo_pct": [
+          93.602,
+          97.523
+        ],
+        "theta_b2_realizado_mediana": 0.1691,
+        "theta_f_realizado_mediana": 0.1689
+      }
+    },
+    "concentrado": {
+      "ruido_puro": {
+        "theta_nominal": 0.0,
+        "n_replicas": 1200,
+        "n_gates_perm_pvalor": 26,
+        "tasa_gates_perm_pct": 2.167,
+        "ic95_gates_perm_pct": [
+          1.483,
+          3.156
+        ],
+        "n_aceptados_by": 1,
+        "n_autoriza_e2e_completo": 0,
+        "tasa_e2e_completo_pct": 0.0,
+        "ic95_e2e_completo_pct": [
+          0,
+          0.319
+        ]
+      },
+      "efecto_bajo": {
+        "theta_nominal": 0.042,
+        "n_replicas": 400,
+        "n_gates_perm_pvalor": 138,
+        "tasa_gates_perm_pct": 34.5,
+        "ic95_gates_perm_pct": [
+          30.009,
+          39.286
+        ],
+        "n_aceptados_by": 39,
+        "n_autoriza_e2e_completo": 17,
+        "tasa_e2e_completo_pct": 4.25,
+        "ic95_e2e_completo_pct": [
+          2.67,
+          6.7
+        ],
+        "theta_b2_realizado_mediana": 0.0635,
+        "theta_f_realizado_mediana": 0.0414
+      },
+      "efecto_medio": {
+        "theta_nominal": 0.084,
+        "n_replicas": 400,
+        "n_gates_perm_pvalor": 346,
+        "tasa_gates_perm_pct": 86.5,
+        "ic95_gates_perm_pct": [
+          82.802,
+          89.504
+        ],
+        "n_aceptados_by": 296,
+        "n_autoriza_e2e_completo": 208,
+        "tasa_e2e_completo_pct": 52.0,
+        "ic95_e2e_completo_pct": [
+          47.108,
+          56.854
+        ],
+        "theta_b2_realizado_mediana": 0.0894,
+        "theta_f_realizado_mediana": 0.0768
+      },
+      "efecto_alto": {
+        "theta_nominal": 0.168,
+        "n_replicas": 400,
+        "n_gates_perm_pvalor": 399,
+        "tasa_gates_perm_pct": 99.75,
+        "ic95_gates_perm_pct": [
+          98.598,
+          99.956
+        ],
+        "n_aceptados_by": 399,
+        "n_autoriza_e2e_completo": 362,
+        "tasa_e2e_completo_pct": 90.5,
+        "ic95_e2e_completo_pct": [
+          87.229,
+          93.0
+        ],
+        "theta_b2_realizado_mediana": 0.1686,
+        "theta_f_realizado_mediana": 0.1626
+      }
+    }
+  }
+}
