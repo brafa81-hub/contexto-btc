@@ -10,6 +10,14 @@ sinteticos tras el "hoy" de cada replica, mismo mecanismo de remuestreo.
 Verificado sin el bug de acumulacion de sesiones anteriores: cada bloque de
 bootstrap se toma de un INDICE ALEATORIO INDEPENDIENTE sobre la serie base
 (sin arrastrar offset acumulado entre bloques sucesivos).
+
+CORREGIDO (sesion Sonnet, 19/20-sep-2026): n_historico por defecto pasa de
+1200 a 4260 dias. Con 1200 (bloques de ~1,6 anios cada uno) el generador
+incumplia protocolo.particion_datos.minimo_por_bloque_anios=3 de la propia
+doctrina: toda replica seria NO ADMISIBLE por el motor real antes de contar
+episodios. 4260 = 2 bloques de 2130 dias (5,83 anios cada uno), el tamano
+real medido en las variables del registro (dgs10_delta20, dgs2_delta20,
+vix_repesca). Detectado y corregido en sesion Opus previa (ver bitacora).
 """
 
 import numpy as np
@@ -49,7 +57,7 @@ def _block_bootstrap_indices(n_total, n_salida, bloque, rng):
     return np.array(idx[:n_salida])
 
 
-def generar_replica(semilla, n_historico=1200, n_forward_dias=455,
+def generar_replica(semilla, n_historico=4260, n_forward_dias=455,
                      bloque=20, phi=0.985, theta_nominal=0.0,
                      percentil_mascara=80, ventana_mascara=365):
     """
