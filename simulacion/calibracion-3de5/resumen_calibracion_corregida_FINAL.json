@@ -1,0 +1,62 @@
+{
+  "ruido_puro": {
+    "theta_nominal": 0.0,
+    "n_replicas_generadas": 2100,
+    "n_llega_a_forward": 82,
+    "tasa_llega_a_forward_pct": 3.9,
+    "P_autoriza_los_3_pct": 22.0,
+    "IC95_wilson": [
+      14.4,
+      32.1
+    ],
+    "P_signo_agregado_pct": 51.2,
+    "P_magnitud_pct": 53.7,
+    "P_consistencia_minima_pct": 56.1,
+    "P_sin_veredicto_pct": 15.9
+  },
+  "efecto_bajo": {
+    "theta_nominal": 0.042,
+    "n_replicas_generadas": 300,
+    "n_llega_a_forward": 125,
+    "tasa_llega_a_forward_pct": 41.7,
+    "P_autoriza_los_3_pct": 51.2,
+    "IC95_wilson": [
+      42.5,
+      59.8
+    ],
+    "P_signo_agregado_pct": 80.0,
+    "P_magnitud_pct": 65.6,
+    "P_consistencia_minima_pct": 79.2,
+    "P_sin_veredicto_pct": 12.0
+  },
+  "efecto_medio": {
+    "theta_nominal": 0.084,
+    "n_replicas_generadas": 300,
+    "n_llega_a_forward": 284,
+    "tasa_llega_a_forward_pct": 94.7,
+    "P_autoriza_los_3_pct": 78.2,
+    "IC95_wilson": [
+      73.0,
+      82.6
+    ],
+    "P_signo_agregado_pct": 95.8,
+    "P_magnitud_pct": 81.7,
+    "P_consistencia_minima_pct": 94.4,
+    "P_sin_veredicto_pct": 3.9
+  },
+  "efecto_alto": {
+    "theta_nominal": 0.168,
+    "n_replicas_generadas": 300,
+    "n_llega_a_forward": 300,
+    "tasa_llega_a_forward_pct": 100.0,
+    "P_autoriza_los_3_pct": 94.0,
+    "IC95_wilson": [
+      90.7,
+      96.2
+    ],
+    "P_signo_agregado_pct": 100.0,
+    "P_magnitud_pct": 95.3,
+    "P_consistencia_minima_pct": 98.7,
+    "P_sin_veredicto_pct": 1.3
+  }
+}
