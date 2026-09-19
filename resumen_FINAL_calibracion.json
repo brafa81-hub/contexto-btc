@@ -1,0 +1,38 @@
+{
+  "ruido_puro (theta=0)": {
+    "n": 65,
+    "P_autoriza_pct": 20.0,
+    "IC95_low": 12.1,
+    "IC95_high": 31.3,
+    "P_signo_pct": 47.7,
+    "P_magnitud_pct": 50.8,
+    "P_consistencia_3de5_pct": 35.4
+  },
+  "efecto_bajo (theta=0.042)": {
+    "n": 80,
+    "P_autoriza_pct": 40.0,
+    "IC95_low": 30.0,
+    "IC95_high": 51.0,
+    "P_signo_pct": 71.2,
+    "P_magnitud_pct": 61.2,
+    "P_consistencia_3de5_pct": 61.2
+  },
+  "efecto_medio (theta=0.084)": {
+    "n": 362,
+    "P_autoriza_pct": 64.1,
+    "IC95_low": 59.0,
+    "IC95_high": 68.9,
+    "P_signo_pct": 91.7,
+    "P_magnitud_pct": 73.8,
+    "P_consistencia_3de5_pct": 84.3
+  },
+  "efecto_alto (theta=0.168)": {
+    "n": 185,
+    "P_autoriza_pct": 93.0,
+    "IC95_low": 88.3,
+    "IC95_high": 95.8,
+    "P_signo_pct": 99.5,
+    "P_magnitud_pct": 93.5,
+    "P_consistencia_3de5_pct": 98.9
+  }
+}
