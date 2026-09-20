@@ -1,0 +1,100 @@
+{
+  "uniforme": {
+    "n_total_en_confirmacion_bajo_medio_alto": 752,
+    "n_confirmada": 653,
+    "n_no_confirmada": 99,
+    "predictores_mezclando_niveles": {
+      "theta_B2": {
+        "mediana_confirmada": 0.1438557259856573,
+        "mediana_no_confirmada": 0.0879698592217534,
+        "mannwhitney_p": 1.1860321444352894e-09,
+        "correlacion_punto_biserial": 0.22464435636602476,
+        "correlacion_p": 4.667785784199127e-10
+      },
+      "p_valor": {
+        "mediana_confirmada": 0.0,
+        "mediana_no_confirmada": 0.0,
+        "mannwhitney_p": 0.7216181794805709,
+        "correlacion_punto_biserial": 0.0002857012090291336,
+        "correlacion_p": 0.9937592959562108
+      },
+      "episodios_b2": {
+        "mediana_confirmada": 19.0,
+        "mediana_no_confirmada": 20.0,
+        "mannwhitney_p": 0.5011591244216336,
+        "correlacion_punto_biserial": -0.0182676409100583,
+        "correlacion_p": 0.6169659746869097
+      }
+    },
+    "theta_B2_terciles": [
+      0.09899128901891706,
+      0.1613987599504213
+    ],
+    "tasa_confirmada_por_tercil_theta_B2": {
+      "bajo": {
+        "n": 251,
+        "n_confirmada": 192,
+        "tasa_confirmada": 0.7649402390438247
+      },
+      "medio": {
+        "n": 250,
+        "n_confirmada": 225,
+        "tasa_confirmada": 0.9
+      },
+      "alto": {
+        "n": 251,
+        "n_confirmada": 236,
+        "tasa_confirmada": 0.9402390438247012
+      }
+    }
+  },
+  "concentrado": {
+    "n_total_en_confirmacion_bajo_medio_alto": 734,
+    "n_confirmada": 587,
+    "n_no_confirmada": 147,
+    "predictores_mezclando_niveles": {
+      "theta_B2": {
+        "mediana_confirmada": 0.14618971177892395,
+        "mediana_no_confirmada": 0.09625747983574943,
+        "mannwhitney_p": 1.000732405099062e-09,
+        "correlacion_punto_biserial": 0.2243165975695759,
+        "correlacion_p": 7.975917639357221e-10
+      },
+      "p_valor": {
+        "mediana_confirmada": 0.0,
+        "mediana_no_confirmada": 0.0,
+        "mannwhitney_p": 0.08280554651015838,
+        "correlacion_punto_biserial": -0.015600785120082632,
+        "correlacion_p": 0.6730479602681123
+      },
+      "episodios_b2": {
+        "mediana_confirmada": 17.0,
+        "mediana_no_confirmada": 17.0,
+        "mannwhitney_p": 0.7551478719179837,
+        "correlacion_punto_biserial": -0.003705589339078751,
+        "correlacion_p": 0.9201675436587097
+      }
+    },
+    "theta_B2_terciles": [
+      0.09779706139008204,
+      0.1613865717726356
+    ],
+    "tasa_confirmada_por_tercil_theta_B2": {
+      "bajo": {
+        "n": 245,
+        "n_confirmada": 166,
+        "tasa_confirmada": 0.6775510204081633
+      },
+      "medio": {
+        "n": 244,
+        "n_confirmada": 198,
+        "tasa_confirmada": 0.8114754098360656
+      },
+      "alto": {
+        "n": 245,
+        "n_confirmada": 223,
+        "tasa_confirmada": 0.9102040816326531
+      }
+    }
+  }
+}
