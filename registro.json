@@ -6,8 +6,8 @@
   "append_only": true,
   "algoritmo_hash": "sha256",
   "genesis": "0000000000000000000000000000000000000000000000000000000000000000",
-  "ultimo_hash": "63a630bf1615d65804f417c9b324fce6bce6515c354d1964c57d9bdfc6b6bd87",
-  "n_entradas": 44,
+  "ultimo_hash": "f54995e4ad92e55f1877ff1016f6449306e31cba4e27ddb14b112370a493f4bb",
+  "n_entradas": 45,
   "regla": "Ninguna entrada se edita ni se borra. Una correccion se registra como entrada nueva que referencia la anterior. filtro.py verifica la cadena completa al arrancar y aborta si esta rota.",
   "canonizacion": "json.dumps(entrada_sin_hash, sort_keys=True, separators=(',',':'), ensure_ascii=False).encode('utf-8')"
  },
@@ -1602,6 +1602,33 @@
    "no_es_re_test": true,
    "hash_anterior": "b74fa475f4d4817c088a8a1bafa3f4b56e10b58cb728987317cc1f9f8d1d07f2",
    "hash": "63a630bf1615d65804f417c9b324fce6bce6515c354d1964c57d9bdfc6b6bd87"
+  },
+  {
+   "id": "nfci_delta",
+   "tipo_entrada": "alta_retroactiva",
+   "familia": "macro",
+   "lote": "2026-Q3",
+   "fecha_propuesta": "2026-09-22",
+   "estado": "DESCARTADA_PREVIA",
+   "gate_alcanzado": null,
+   "consume_presupuesto_v2": false,
+   "fecha_registro": "2026-09-22",
+   "fuente": {
+    "proveedor": "FRED, serie NFCI (Chicago Fed National Financial Conditions Index)",
+    "endpoint": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=NFCI",
+    "verificado_en_vivo": "2026-09-22",
+    "rango_bruto": "1971-01-08 a 2026-09-11, 2906 observaciones semanales (fecha de referencia viernes), 3 decimales",
+    "sha256_bruto_descarga_2026_09_22": "5f05630ba19a141ea212861bde9b81b437be2786eb0aebbdf68415684d9111dd",
+    "nota_bruto": "Descarga no subida al repositorio: la serie cambia en cada publicacion, por lo que el hash solo documenta la version consultada el 2026-09-22.",
+    "publicacion": "Miercoles 8:30 ET con datos hasta el viernes anterior; jueves si hay festivo federal el miercoles o antes en esa semana (Chicago Fed, FAQ y pagina de datos actuales).",
+    "transformacion": "No fijada. La mascara no llego a disenarse."
+   },
+   "motivo": "La variable no se congela. NO es un fallo estadistico ni de mecanismo: es INCOMPATIBILIDAD ESTRUCTURAL con el motor, detectada antes de disenar la mascara. (1) D8: la Chicago Fed declara que el NFCI actualiza su historia completa en cada publicacion semanal (modelo de factores reestimado y normalizado sobre toda la muestra desde 1971). comprobar_solape_identico de filtro.py exige identidad bit a bit sin tolerancia en el tramo solapado, por lo que la confirmacion forward abortaria siempre y la variable nunca podria alcanzar CONFIRMADA. (2) Contaminacion del propio test: los valores historicos descargados hoy incorporan informacion posterior a su fecha (normalizacion y reestimacion con datos hasta 2026); no existen vintages gratuitos accesibles (ALFRED fuera de dominios permitidos). (3) Calendario: la enmienda 42 solo admite calendarios 'natural' y 'laborable_lunes_viernes' con arrastre maximo de 2 dias; una serie semanal no encaja sin reinterpretar la doctrina. Alternativa de enmendar D8 considerada y rechazada: debilitaria la integridad del protocolo y no resolveria el punto (2). Arbitraje de Claude y decision de Rafa.",
+   "declaracion_de_sesgo": "Ningun resultado de test contra BTC fue calculado ni observado. No se diseno mascara, no se calculo tasa de activacion, ni diagnostico_estructural, ni redundancia con baa_credit_spread o vix_repesca. La decision se tomo solo con documentacion oficial de la fuente y el codigo de filtro.py. La variable nunca estuvo en PROPUESTA ni en EN_TEST.",
+   "nota_origen": "Candidata B de la consulta a 6 IAs externas del 2026-09-21/22 (5/6 direccion univoca, control liveliness superado). Signo esperado indicado por Rafa: negativo; no llego a fijarse en ficha.",
+   "no_es_re_test": true,
+   "hash_anterior": "63a630bf1615d65804f417c9b324fce6bce6515c354d1964c57d9bdfc6b6bd87",
+   "hash": "f54995e4ad92e55f1877ff1016f6449306e31cba4e27ddb14b112370a493f4bb"
   }
  ]
 }
