@@ -19,6 +19,7 @@
  "lote_BY": "las variables del lote en la misma replica forman un lote; m = max(3, n con p-valor), igual que filtro.py",
  "enmienda_42": "no se aplica al placebo: el barajado mueve valores, no el calendario de observacion; los dias sin dato siguen donde estaban",
  "contaje_independencia": "la cota de falsos positivos se calcula con el numero de REPLICAS (barajados distintos), no con variables x replicas",
+ "placebo_secundario": "control sintetico AR(1) por variable, ajustado por autocorrelacion lag-1 y desviacion tipica de la serie real; una serie sintetica por variable, generada una vez (misma para todas las replicas); mismo calendario de observacion que la variable real de origen y MISMO indice de bootstrap que el placebo real de cada replica; se compara su tasa de paso por etapa contra el placebo real (punto 1); diagnostico, no correctivo; NO se le calcula confirmacion_forward",
  "variables": [
   {
    "id": "vix_repesca",
@@ -93,5 +94,5 @@
   "serie_dgs10_delta20.csv": "a9a7a2c79b81f920",
   "serie_dgs2_delta20.csv": "9715e58e5e771f8c"
  },
- "sha_script": "bf5d5da5a903c2d40065663f6a4c7b57b44781887cb0e4ae937430fbdc5b3107"
+ "sha_script": "1ad97d60f448b353378ccf1132093a000558966bcd9d5e37f57f26ff3c6bf75e"
 }

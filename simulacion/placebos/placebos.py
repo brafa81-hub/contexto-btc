@@ -160,6 +160,14 @@ def congelar():
                        "calendario de observacion; los dias sin dato siguen donde estaban",
         "contaje_independencia": "la cota de falsos positivos se calcula con el numero "
                                  "de REPLICAS (barajados distintos), no con variables x replicas",
+        "placebo_secundario": "control sintetico AR(1) por variable, ajustado por "
+                              "autocorrelacion lag-1 y desviacion tipica de la serie real; "
+                              "una serie sintetica por variable, generada una vez (misma "
+                              "para todas las replicas); mismo calendario de observacion "
+                              "que la variable real de origen y MISMO indice de bootstrap "
+                              "que el placebo real de cada replica; se compara su tasa de "
+                              "paso por etapa contra el placebo real (punto 1); diagnostico, "
+                              "no correctivo; NO se le calcula confirmacion_forward",
         "variables": vars_cfg,
         "excluidas": EXCLUIDAS,
         "sha_entradas": {**SHA_ENTRADA, **{v["csv"]: v["sha"] for v in LOTE_HUMO}},
@@ -207,6 +215,49 @@ def placebo_de(serie, cal, idx):
 
 
 # ---------------------------------------------------------------------
+# PLACEBO SECUNDARIO / CONTROL SINTETICO (punto 7 del diseno, 21-sep-2026)
+# AR(1) ajustado por autocorrelacion lag-1 y desviacion tipica de la
+# variable real, sobre el MISMO calendario nativo de observacion (mismas
+# fechas con dato, mismos huecos) y el MISMO bloque/indice de bootstrap
+# que el placebo real de esa replica. Es diagnostico, no correctivo: si
+# diverge del placebo real, se reporta, no se "arregla".
+# ---------------------------------------------------------------------
+def parametros_ar1(serie):
+    x = serie.dropna().values.astype(float)
+    mu = x.mean()
+    xc = x - mu
+    denom = (xc[:-1] ** 2).sum()
+    phi = float((xc[1:] * xc[:-1]).sum() / denom) if denom > 0 else 0.0
+    phi = min(max(phi, -0.999), 0.999)
+    resid = xc[1:] - phi * xc[:-1]
+    sigma_eps = float(resid.std(ddof=1)) if len(resid) > 1 else float(xc.std(ddof=1))
+    sigma_x = float(xc.std(ddof=1))
+    return {"mu": float(mu), "phi": phi, "sigma_eps": sigma_eps, "sigma_x": sigma_x}
+
+
+def serie_sintetica_ar1(serie, rng):
+    """Genera una serie AR(1) del mismo largo y mismo indice (mismas
+    fechas con dato) que `serie`, con la autocorrelacion lag-1 y la
+    escala (desv. tipica) de la variable real."""
+    p = parametros_ar1(serie)
+    n = len(serie.dropna())
+    if n == 0:
+        return serie.copy()
+    eps = rng.normal(0.0, p["sigma_eps"], size=n)
+    x = np.empty(n)
+    x[0] = rng.normal(0.0, p["sigma_x"])
+    for t in range(1, n):
+        x[t] = p["phi"] * x[t - 1] + eps[t]
+    return pd.Series(x + p["mu"], index=serie.dropna().index)
+
+
+def placebo_sintetico_de(serie_sint, cal, idx):
+    """Mismo mecanismo que placebo_de pero partiendo de la serie sintetica
+    (mismo calendario de observacion que la variable real de origen)."""
+    return placebo_de(serie_sint, cal, idx)
+
+
+# ---------------------------------------------------------------------
 # PIPELINE: replica exacta de filtro.ejecutar para una variable
 # ---------------------------------------------------------------------
 def etapa_test(met_test, ficha, precio, ret, base, doc, n_tramos):
@@ -248,6 +299,8 @@ def protegido(fn, *a):
         return {"etapa": "aborto_motor", "motivo": str(e)[:200]}
     except RuntimeError as e:
         return {"etapa": "error_rotacion", "motivo": str(e)[:200]}
+    except filtro.Aborto as e:
+        return {"etapa": "error_rotacion", "motivo": str(e)[:200]}
 
 
 def ejecutar(escala, n_replicas, salida, identidad=False):
@@ -275,17 +328,25 @@ def ejecutar(escala, n_replicas, salida, identidad=False):
         f["fecha_fin_ventana_test"] = str(fin_test.date())
         fichas[v["id"]] = f
     rng = np.random.default_rng(SEMILLA + 1000 * escala)
+    rng_sint = np.random.default_rng(SEMILLA + 1000 * escala + 500000)
+    # Series sinteticas AR(1) generadas UNA vez por variable (misma serie
+    # sintetica para todas las replicas; lo que cambia entre replicas es
+    # el barajado/bootstrap, igual que con la variable real).
+    series_sint = {vid: serie_sintetica_ar1(series[vid], rng_sint) for vid in series}
     replicas = []
     t0 = time.time()
     for r in range(n_replicas):
         idx = np.arange(len(cal)) if identidad else stationary_bootstrap(len(cal), L, rng)
-        res = {}
+        res, res_sint = {}, {}
         pl_ext = {}
         for vid in series:
             pl = placebo_de(series[vid], cal, idx)
             pl_ext[vid] = pl
             res[vid] = protegido(etapa_test, pl[pl.index <= fin_test], fichas[vid],
                                  precio_test, ret, base, doc, n_tramos)
+            pl_s = placebo_sintetico_de(series_sint[vid], cal, idx)
+            res_sint[vid] = protegido(etapa_test, pl_s[pl_s.index <= fin_test], fichas[vid],
+                                      precio_test, ret, base, doc, n_tramos)
         pv = {vid: x["p_valor"] for vid, x in res.items() if x["etapa"] == "con_pvalor"}
         if pv:
             acept, by = filtro.benjamini_yekutieli(pv, doc)
@@ -304,14 +365,28 @@ def ejecutar(escala, n_replicas, salida, identidad=False):
                     except SystemExit as e:
                         res[vid]["forward"] = "aborto_motor"
                         res[vid]["motivo_forward"] = str(e)[:200]
-        replicas.append({"replica": r, "resultados": res})
+        pv_sint = {vid: x["p_valor"] for vid, x in res_sint.items() if x["etapa"] == "con_pvalor"}
+        if pv_sint:
+            acept_s, by_s = filtro.benjamini_yekutieli(pv_sint, doc)
+            for vid in pv_sint:
+                res_sint[vid]["pasa_BY"] = vid in acept_s
+                res_sint[vid]["m_BY"] = by_s["m_efectivo"]
+                # Nota: el control sintetico es diagnostico. No se le calcula
+                # confirmacion forward (comparar solo hasta BY es suficiente
+                # para el diagnostico del 18% de la prueba de humo).
+        replicas.append({"replica": r, "resultados": res, "resultados_sintetico": res_sint})
         print(f"  replica {r + 1}/{n_replicas} ({time.time() - t0:.0f}s): "
               + " | ".join(f"{k}:{v['etapa']}{'+BY' if v.get('pasa_BY') else ''}"
                            f"{'+' + v['forward'] if v.get('forward') else ''}"
-                           for k, v in res.items()), flush=True)
+                           for k, v in res.items())
+              + "  [sint] "
+              + " | ".join(f"{k}:{v['etapa']}{'+BY' if v.get('pasa_BY') else ''}"
+                           for k, v in res_sint.items()), flush=True)
     out = {"config_sha256": sha(CONFIG), "escala_bloque": escala, "bloque_medio": L,
            "identidad": identidad, "n_replicas": n_replicas,
-           "embudo": embudo(replicas), "replicas": replicas}
+           "embudo": embudo(replicas),
+           "embudo_sintetico": embudo(replicas, clave="resultados_sintetico"),
+           "replicas": replicas}
     with open(salida, "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, indent=1, default=float)
     print(json.dumps(out["embudo"], ensure_ascii=False, indent=1))
@@ -322,12 +397,12 @@ ORDEN = ["particion", "admision_38", "insuficiencia_gates", "error_rotacion",
          "aborto_motor", "gate1", "gate3", "gate4", "permutacion_insuficiencia", "con_pvalor"]
 
 
-def embudo(replicas):
+def embudo(replicas, clave="resultados"):
     por_var, total = {}, {"llega_pvalor": 0, "pasa_BY": 0, "CONFIRMADA": 0}
     rep_con_confirmada = 0
     for rp in replicas:
         alguna = False
-        for vid, x in rp["resultados"].items():
+        for vid, x in rp[clave].items():
             d = por_var.setdefault(vid, {k: 0 for k in ORDEN + ["pasa_BY", "CONFIRMADA",
                                                                 "RECHAZADA_FORWARD", "PENDIENTE_REVISION"]})
             d[x["etapa"]] += 1
