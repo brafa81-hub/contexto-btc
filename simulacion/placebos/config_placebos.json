@@ -1,0 +1,97 @@
+{
+ "naturaleza": "carril de placebos; NO consume presupuesto; NO es candidata",
+ "mide": "tasa de falsos positivos del pipeline completo bajo nula realista; NO la tasa base",
+ "algoritmo": "stationary bootstrap (Politis-Romano 1994) sobre calendario diario comun, bloques de longitud geometrica, circular; MISMA secuencia de indices para todas las variables del lote (punto 4); cada variable conserva su propio calendario de observacion",
+ "tramo_comun": [
+  "2013-01-01",
+  "2026-09-03"
+ ],
+ "dias_tramo": 4994,
+ "bloque_medio_base": 34,
+ "bloque_medio_sensibilidad": 68,
+ "regla_bloque": "max(30, ventana de cada variable); comun = maximo del lote; >= 20 bloques o la variable se excluye",
+ "calendario_placebo": {
+  "fecha_fin_test": "2025-06-05",
+  "forward": "455 dias hasta 2026-09-03"
+ },
+ "M": 0.03,
+ "semilla": 20260921,
+ "lote_BY": "las variables del lote en la misma replica forman un lote; m = max(3, n con p-valor), igual que filtro.py",
+ "enmienda_42": "no se aplica al placebo: el barajado mueve valores, no el calendario de observacion; los dias sin dato siguen donde estaban",
+ "contaje_independencia": "la cota de falsos positivos se calcula con el numero de REPLICAS (barajados distintos), no con variables x replicas",
+ "variables": [
+  {
+   "id": "vix_repesca",
+   "csv": "serie_vix.csv",
+   "sha": "476f91733659d841",
+   "ventana_formula": "nivel diario del VIX; el valor de t no depende de dias previos",
+   "V_obs": 0,
+   "V_dias_naturales": 0,
+   "bloque_minimo_propio": 30,
+   "signo_esperado": "bilateral",
+   "cubre_tramo_comun": true,
+   "bloques_esperados_base": 146.9,
+   "cumple_min_bloques_base": true,
+   "cumple_min_bloques_sensibilidad": true
+  },
+  {
+   "id": "baa_credit_spread",
+   "csv": "baa10y_serie_2026-09-08.csv",
+   "sha": "7a90bd8777b70392",
+   "ventana_formula": "nivel diario BAA10Y publicado por FRED; sin dependencia de dias previos",
+   "V_obs": 0,
+   "V_dias_naturales": 0,
+   "bloque_minimo_propio": 30,
+   "signo_esperado": "negativo",
+   "cubre_tramo_comun": true,
+   "bloques_esperados_base": 146.9,
+   "cumple_min_bloques_base": true,
+   "cumple_min_bloques_sensibilidad": true
+  },
+  {
+   "id": "dgs10_delta20",
+   "csv": "serie_dgs10_delta20.csv",
+   "sha": "a9a7a2c79b81f920",
+   "ventana_formula": "DGS10(t) - DGS10(t-20 observaciones no ausentes)",
+   "V_obs": 20,
+   "V_dias_naturales": 34,
+   "bloque_minimo_propio": 34,
+   "signo_esperado": "bilateral",
+   "cubre_tramo_comun": true,
+   "bloques_esperados_base": 146.9,
+   "cumple_min_bloques_base": true,
+   "cumple_min_bloques_sensibilidad": true
+  },
+  {
+   "id": "dgs2_delta20",
+   "csv": "serie_dgs2_delta20.csv",
+   "sha": "9715e58e5e771f8c",
+   "ventana_formula": "DGS2(t) - DGS2(t-20 observaciones no ausentes)",
+   "V_obs": 20,
+   "V_dias_naturales": 33,
+   "bloque_minimo_propio": 33,
+   "signo_esperado": "bilateral",
+   "cubre_tramo_comun": true,
+   "bloques_esperados_base": 146.9,
+   "cumple_min_bloques_base": true,
+   "cumple_min_bloques_sensibilidad": true
+  }
+ ],
+ "excluidas": [
+  {
+   "id": "ssr_capstables",
+   "motivo": "historia desde 2018-10-27: no cubre el tramo comun de barajado (desde 2013), requisito para aplicar la MISMA permutacion a todo el lote (punto 4 del diseno). No se fuerza."
+  }
+ ],
+ "sha_entradas": {
+  "v2.json": "8f92a305cb8fd493",
+  "registro.json": "571c04c6d5fa7d79",
+  "filtro.py": "657961a762cef7f0",
+  "snapshot_precio_btcusd.csv": "32c0b8ea8a66f011",
+  "serie_vix.csv": "476f91733659d841",
+  "baa10y_serie_2026-09-08.csv": "7a90bd8777b70392",
+  "serie_dgs10_delta20.csv": "a9a7a2c79b81f920",
+  "serie_dgs2_delta20.csv": "9715e58e5e771f8c"
+ },
+ "sha_script": "bf5d5da5a903c2d40065663f6a4c7b57b44781887cb0e4ae937430fbdc5b3107"
+}

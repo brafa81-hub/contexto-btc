@@ -1,0 +1,609 @@
+{
+ "config_sha256": "5fe3c883df4d3bcfe0b989f2a21a4ac8c64ff83267202834441135c1338e42ea",
+ "escala_bloque": 1,
+ "bloque_medio": 34,
+ "identidad": false,
+ "n_replicas": 25,
+ "embudo": {
+  "por_variable": {
+   "vix_repesca": {
+    "particion": 0,
+    "admision_38": 0,
+    "insuficiencia_gates": 0,
+    "error_rotacion": 0,
+    "aborto_motor": 0,
+    "gate1": 10,
+    "gate3": 3,
+    "gate4": 7,
+    "permutacion_insuficiencia": 0,
+    "con_pvalor": 5,
+    "pasa_BY": 0,
+    "CONFIRMADA": 0,
+    "RECHAZADA_FORWARD": 0,
+    "PENDIENTE_REVISION": 0
+   },
+   "baa_credit_spread": {
+    "particion": 0,
+    "admision_38": 3,
+    "insuficiencia_gates": 0,
+    "error_rotacion": 0,
+    "aborto_motor": 0,
+    "gate1": 13,
+    "gate3": 3,
+    "gate4": 1,
+    "permutacion_insuficiencia": 0,
+    "con_pvalor": 5,
+    "pasa_BY": 0,
+    "CONFIRMADA": 0,
+    "RECHAZADA_FORWARD": 0,
+    "PENDIENTE_REVISION": 0
+   },
+   "dgs10_delta20": {
+    "particion": 0,
+    "admision_38": 0,
+    "insuficiencia_gates": 0,
+    "error_rotacion": 0,
+    "aborto_motor": 0,
+    "gate1": 11,
+    "gate3": 4,
+    "gate4": 5,
+    "permutacion_insuficiencia": 0,
+    "con_pvalor": 5,
+    "pasa_BY": 0,
+    "CONFIRMADA": 0,
+    "RECHAZADA_FORWARD": 0,
+    "PENDIENTE_REVISION": 0
+   },
+   "dgs2_delta20": {
+    "particion": 0,
+    "admision_38": 0,
+    "insuficiencia_gates": 0,
+    "error_rotacion": 0,
+    "aborto_motor": 0,
+    "gate1": 14,
+    "gate3": 4,
+    "gate4": 4,
+    "permutacion_insuficiencia": 0,
+    "con_pvalor": 3,
+    "pasa_BY": 0,
+    "CONFIRMADA": 0,
+    "RECHAZADA_FORWARD": 0,
+    "PENDIENTE_REVISION": 0
+   }
+  },
+  "totales": {
+   "llega_pvalor": 18,
+   "pasa_BY": 0,
+   "CONFIRMADA": 0
+  },
+  "replicas": 25,
+  "replicas_con_alguna_CONFIRMADA": 0,
+  "cota_sup_95_por_replica_si_0": 0.12
+ },
+ "replicas": [
+  {
+   "replica": 0,
+   "resultados": {
+    "vix_repesca": {
+     "etapa": "gate4"
+    },
+    "baa_credit_spread": {
+     "etapa": "gate4"
+    },
+    "dgs10_delta20": {
+     "etapa": "gate3"
+    },
+    "dgs2_delta20": {
+     "etapa": "gate3"
+    }
+   }
+  },
+  {
+   "replica": 1,
+   "resultados": {
+    "vix_repesca": {
+     "etapa": "gate1"
+    },
+    "baa_credit_spread": {
+     "etapa": "gate1"
+    },
+    "dgs10_delta20": {
+     "etapa": "gate1"
+    },
+    "dgs2_delta20": {
+     "etapa": "gate4"
+    }
+   }
+  },
+  {
+   "replica": 2,
+   "resultados": {
+    "vix_repesca": {
+     "etapa": "gate3"
+    },
+    "baa_credit_spread": {
+     "etapa": "gate1"
+    },
+    "dgs10_delta20": {
+     "etapa": "con_pvalor",
+     "p_valor": 0.951,
+     "theta_B2": 0.004273949473493577,
+     "episodios": 17,
+     "pasa_BY": false,
+     "m_BY": 3
+    },
+    "dgs2_delta20": {
+     "etapa": "con_pvalor",
+     "p_valor": 0.8165,
+     "theta_B2": -0.015281598174147981,
+     "episodios": 19,
+     "pasa_BY": false,
+     "m_BY": 3
+    }
+   }
+  },
+  {
+   "replica": 3,
+   "resultados": {
+    "vix_repesca": {
+     "etapa": "gate1"
+    },
+    "baa_credit_spread": {
+     "etapa": "gate1"
+    },
+    "dgs10_delta20": {
+     "etapa": "gate1"
+    },
+    "dgs2_delta20": {
+     "etapa": "gate1"
+    }
+   }
+  },
+  {
+   "replica": 4,
+   "resultados": {
+    "vix_repesca": {
+     "etapa": "gate3"
+    },
+    "baa_credit_spread": {
+     "etapa": "admision_38",
+     "motivos": [
+      "solo 7 episodios independientes en bloque_2 (minimo 8, dias_episodio=30)"
+     ]
+    },
+    "dgs10_delta20": {
+     "etapa": "gate4"
+    },
+    "dgs2_delta20": {
+     "etapa": "gate1"
+    }
+   }
+  },
+  {
+   "replica": 5,
+   "resultados": {
+    "vix_repesca": {
+     "etapa": "gate4"
+    },
+    "baa_credit_spread": {
+     "etapa": "gate1"
+    },
+    "dgs10_delta20": {
+     "etapa": "gate3"
+    },
+    "dgs2_delta20": {
+     "etapa": "gate1"
+    }
+   }
+  },
+  {
+   "replica": 6,
+   "resultados": {
+    "vix_repesca": {
+     "etapa": "gate4"
+    },
+    "baa_credit_spread": {
+     "etapa": "con_pvalor",
+     "p_valor": 0.3855,
+     "theta_B2": -0.034866647487273916,
+     "episodios": 8,
+     "pasa_BY": false,
+     "m_BY": 3
+    },
+    "dgs10_delta20": {
+     "etapa": "gate3"
+    },
+    "dgs2_delta20": {
+     "etapa": "gate1"
+    }
+   }
+  },
+  {
+   "replica": 7,
+   "resultados": {
+    "vix_repesca": {
+     "etapa": "gate1"
+    },
+    "baa_credit_spread": {
+     "etapa": "gate1"
+    },
+    "dgs10_delta20": {
+     "etapa": "gate1"
+    },
+    "dgs2_delta20": {
+     "etapa": "gate1"
+    }
+   }
+  },
+  {
+   "replica": 8,
+   "resultados": {
+    "vix_repesca": {
+     "etapa": "gate1"
+    },
+    "baa_credit_spread": {
+     "etapa": "con_pvalor",
+     "p_valor": 0.6655,
+     "theta_B2": 0.01890741415777808,
+     "episodios": 16,
+     "pasa_BY": false,
+     "m_BY": 3
+    },
+    "dgs10_delta20": {
+     "etapa": "gate1"
+    },
+    "dgs2_delta20": {
+     "etapa": "gate1"
+    }
+   }
+  },
+  {
+   "replica": 9,
+   "resultados": {
+    "vix_repesca": {
+     "etapa": "gate1"
+    },
+    "baa_credit_spread": {
+     "etapa": "con_pvalor",
+     "p_valor": 0.8555,
+     "theta_B2": 0.05596337690301856,
+     "episodios": 11,
+     "pasa_BY": false,
+     "m_BY": 3
+    },
+    "dgs10_delta20": {
+     "etapa": "con_pvalor",
+     "p_valor": 0.3455,
+     "theta_B2": 0.06827890675649417,
+     "episodios": 16,
+     "pasa_BY": false,
+     "m_BY": 3
+    },
+    "dgs2_delta20": {
+     "etapa": "gate3"
+    }
+   }
+  },
+  {
+   "replica": 10,
+   "resultados": {
+    "vix_repesca": {
+     "etapa": "gate3"
+    },
+    "baa_credit_spread": {
+     "etapa": "gate1"
+    },
+    "dgs10_delta20": {
+     "etapa": "gate4"
+    },
+    "dgs2_delta20": {
+     "etapa": "gate3"
+    }
+   }
+  },
+  {
+   "replica": 11,
+   "resultados": {
+    "vix_repesca": {
+     "etapa": "gate1"
+    },
+    "baa_credit_spread": {
+     "etapa": "con_pvalor",
+     "p_valor": 0.5835,
+     "theta_B2": 0.013005308261851645,
+     "episodios": 13,
+     "pasa_BY": false,
+     "m_BY": 3
+    },
+    "dgs10_delta20": {
+     "etapa": "gate1"
+    },
+    "dgs2_delta20": {
+     "etapa": "gate4"
+    }
+   }
+  },
+  {
+   "replica": 12,
+   "resultados": {
+    "vix_repesca": {
+     "etapa": "con_pvalor",
+     "p_valor": 0.8305,
+     "theta_B2": 0.014729253355078686,
+     "episodios": 17,
+     "pasa_BY": false,
+     "m_BY": 3
+    },
+    "baa_credit_spread": {
+     "etapa": "gate3"
+    },
+    "dgs10_delta20": {
+     "etapa": "gate1"
+    },
+    "dgs2_delta20": {
+     "etapa": "gate1"
+    }
+   }
+  },
+  {
+   "replica": 13,
+   "resultados": {
+    "vix_repesca": {
+     "etapa": "con_pvalor",
+     "p_valor": 0.9345,
+     "theta_B2": 0.006467549978347642,
+     "episodios": 11,
+     "pasa_BY": false,
+     "m_BY": 3
+    },
+    "baa_credit_spread": {
+     "etapa": "gate1"
+    },
+    "dgs10_delta20": {
+     "etapa": "con_pvalor",
+     "p_valor": 0.9575,
+     "theta_B2": 0.0036125161777472714,
+     "episodios": 20,
+     "pasa_BY": false,
+     "m_BY": 3
+    },
+    "dgs2_delta20": {
+     "etapa": "gate4"
+    }
+   }
+  },
+  {
+   "replica": 14,
+   "resultados": {
+    "vix_repesca": {
+     "etapa": "gate4"
+    },
+    "baa_credit_spread": {
+     "etapa": "gate1"
+    },
+    "dgs10_delta20": {
+     "etapa": "con_pvalor",
+     "p_valor": 0.3865,
+     "theta_B2": -0.062170554913808296,
+     "episodios": 18,
+     "pasa_BY": false,
+     "m_BY": 3
+    },
+    "dgs2_delta20": {
+     "etapa": "gate1"
+    }
+   }
+  },
+  {
+   "replica": 15,
+   "resultados": {
+    "vix_repesca": {
+     "etapa": "con_pvalor",
+     "p_valor": 0.495,
+     "theta_B2": -0.04414771368916115,
+     "episodios": 10,
+     "pasa_BY": false,
+     "m_BY": 3
+    },
+    "baa_credit_spread": {
+     "etapa": "admision_38",
+     "motivos": [
+      "solo 7 episodios independientes en bloque_2 (minimo 8, dias_episodio=30)"
+     ]
+    },
+    "dgs10_delta20": {
+     "etapa": "gate1"
+    },
+    "dgs2_delta20": {
+     "etapa": "gate1"
+    }
+   }
+  },
+  {
+   "replica": 16,
+   "resultados": {
+    "vix_repesca": {
+     "etapa": "gate1"
+    },
+    "baa_credit_spread": {
+     "etapa": "admision_38",
+     "motivos": [
+      "solo 7 episodios independientes en bloque_2 (minimo 8, dias_episodio=30)"
+     ]
+    },
+    "dgs10_delta20": {
+     "etapa": "gate3"
+    },
+    "dgs2_delta20": {
+     "etapa": "gate4"
+    }
+   }
+  },
+  {
+   "replica": 17,
+   "resultados": {
+    "vix_repesca": {
+     "etapa": "con_pvalor",
+     "p_valor": 0.615,
+     "theta_B2": 0.033592737140755724,
+     "episodios": 12,
+     "pasa_BY": false,
+     "m_BY": 3
+    },
+    "baa_credit_spread": {
+     "etapa": "gate1"
+    },
+    "dgs10_delta20": {
+     "etapa": "gate4"
+    },
+    "dgs2_delta20": {
+     "etapa": "gate1"
+    }
+   }
+  },
+  {
+   "replica": 18,
+   "resultados": {
+    "vix_repesca": {
+     "etapa": "con_pvalor",
+     "p_valor": 0.6815,
+     "theta_B2": 0.02351133066940103,
+     "episodios": 12,
+     "pasa_BY": false,
+     "m_BY": 3
+    },
+    "baa_credit_spread": {
+     "etapa": "gate1"
+    },
+    "dgs10_delta20": {
+     "etapa": "gate1"
+    },
+    "dgs2_delta20": {
+     "etapa": "gate1"
+    }
+   }
+  },
+  {
+   "replica": 19,
+   "resultados": {
+    "vix_repesca": {
+     "etapa": "gate1"
+    },
+    "baa_credit_spread": {
+     "etapa": "gate1"
+    },
+    "dgs10_delta20": {
+     "etapa": "gate4"
+    },
+    "dgs2_delta20": {
+     "etapa": "gate3"
+    }
+   }
+  },
+  {
+   "replica": 20,
+   "resultados": {
+    "vix_repesca": {
+     "etapa": "gate1"
+    },
+    "baa_credit_spread": {
+     "etapa": "gate1"
+    },
+    "dgs10_delta20": {
+     "etapa": "gate4"
+    },
+    "dgs2_delta20": {
+     "etapa": "con_pvalor",
+     "p_valor": 0.969,
+     "theta_B2": 0.001777146827228293,
+     "episodios": 15,
+     "pasa_BY": false,
+     "m_BY": 3
+    }
+   }
+  },
+  {
+   "replica": 21,
+   "resultados": {
+    "vix_repesca": {
+     "etapa": "gate4"
+    },
+    "baa_credit_spread": {
+     "etapa": "gate3"
+    },
+    "dgs10_delta20": {
+     "etapa": "con_pvalor",
+     "p_valor": 0.452,
+     "theta_B2": -0.04040182632203726,
+     "episodios": 17,
+     "pasa_BY": false,
+     "m_BY": 3
+    },
+    "dgs2_delta20": {
+     "etapa": "con_pvalor",
+     "p_valor": 0.6055,
+     "theta_B2": -0.03432251156535493,
+     "episodios": 19,
+     "pasa_BY": false,
+     "m_BY": 3
+    }
+   }
+  },
+  {
+   "replica": 22,
+   "resultados": {
+    "vix_repesca": {
+     "etapa": "gate4"
+    },
+    "baa_credit_spread": {
+     "etapa": "gate3"
+    },
+    "dgs10_delta20": {
+     "etapa": "gate1"
+    },
+    "dgs2_delta20": {
+     "etapa": "gate1"
+    }
+   }
+  },
+  {
+   "replica": 23,
+   "resultados": {
+    "vix_repesca": {
+     "etapa": "gate1"
+    },
+    "baa_credit_spread": {
+     "etapa": "gate1"
+    },
+    "dgs10_delta20": {
+     "etapa": "gate1"
+    },
+    "dgs2_delta20": {
+     "etapa": "gate1"
+    }
+   }
+  },
+  {
+   "replica": 24,
+   "resultados": {
+    "vix_repesca": {
+     "etapa": "gate4"
+    },
+    "baa_credit_spread": {
+     "etapa": "con_pvalor",
+     "p_valor": 0.5155,
+     "theta_B2": -0.0012005945736549561,
+     "episodios": 12,
+     "pasa_BY": false,
+     "m_BY": 3
+    },
+    "dgs10_delta20": {
+     "etapa": "gate1"
+    },
+    "dgs2_delta20": {
+     "etapa": "gate1"
+    }
+   }
+  }
+ ]
+}
