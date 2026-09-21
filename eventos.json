@@ -1,0 +1,12 @@
+[
+  {
+    "fecha": "2026-09-21",
+    "generado": "2026-09-21T20:23:21.511774+00:00",
+    "retorno_pct": 7.09,
+    "direccion": "subida",
+    "umbral_pct": 6.94,
+    "vol_referencia_pct": 2.31,
+    "analisis": "# Análisis de contexto — BTC +7.1% (21/09/2026)\n\n**Aviso previo:** No tengo acceso a datos de mercado ni noticias en tiempo real, y la fecha del evento está fuera de mi ventana de información verificada. Esto significa que no puedo identificar la causa concreta de este movimiento específico. Lo que sigue es contexto estructural y patrones históricos, no una explicación confirmada del evento actual.\n\n**1. VERIFICACIÓN**\n- Cierto (según tu panel): el movimiento de +7.1% ocurrió y superó el umbral estadístico (±6.9%) calculado sobre una volatilidad reciente de 2.3% diario — es decir, un movimiento de ~3 desviaciones estándar, estadísticamente atípico.\n- No verificado por mí: la causa. No tengo feed de noticias, on-chain data ni order books de esa fecha. Cualquier narrativa causal en este momento sería especulación no fundamentada de mi parte.\n- Recomendación práctica: cruzar esta alerta con al menos una fuente primaria (flujos de ETF, funding rates de futuros, noticias regulatorias, comunicados macro de esa jornada) antes de asumir una causa.\n\n**2. MECANISMO**\nSin causa confirmada, los mecanismos típicos que generan saltos de esta magnitud en BTC son:\n- Shock de liquidez: liquidaciones masivas de posiciones cortas apalancadas (short squeeze), que se autoalimentan.\n- Catalizador macro: sorpresa en política monetaria (recorte de tasas no anticipado, lenguaje dovish de la Fed).\n- Catalizador específico cripto: aprobación/flujo relevante de ETF spot, adopción institucional anunciada, evento regulatorio favorable.\n- Rumor o filtración que luego se confirma o desmiente.\nCualquiera de estos es plausible; ninguno se puede confirmar sin datos externos.\n\n**3. DIRECCIÓN Y MAGNITUD**\nHistóricamente, movimientos de BTC >6-7% en un día no son raros en términos absolutos (ocurren varias veces al año), pero sí lo son relativo a un régimen de baja volatilidad (2.3% diario implica un mercado inusualmente calmado antes del salto). Episodios comparables: reversión post-crash de marzo 2020, rallies tras aprobación de ETF spot en 2024, o squeezes tras liquidaciones masivas en futuros. La magnitud (+7.1%) es coherente con un evento de \"cola\" dentro de esos prec",
+    "modelo": "claude-sonnet-5"
+  }
+]
