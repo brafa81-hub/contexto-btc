@@ -6,8 +6,8 @@
   "append_only": true,
   "algoritmo_hash": "sha256",
   "genesis": "0000000000000000000000000000000000000000000000000000000000000000",
-  "ultimo_hash": "b74fa475f4d4817c088a8a1bafa3f4b56e10b58cb728987317cc1f9f8d1d07f2",
-  "n_entradas": 43,
+  "ultimo_hash": "63a630bf1615d65804f417c9b324fce6bce6515c354d1964c57d9bdfc6b6bd87",
+  "n_entradas": 44,
   "regla": "Ninguna entrada se edita ni se borra. Una correccion se registra como entrada nueva que referencia la anterior. filtro.py verifica la cadena completa al arrancar y aborta si esta rota.",
   "canonizacion": "json.dumps(entrada_sin_hash, sort_keys=True, separators=(',',':'), ensure_ascii=False).encode('utf-8')"
  },
@@ -1568,6 +1568,40 @@
    "no_es_re_test": true,
    "hash_anterior": "fa371e5aeb47fa0140904a86853ce2a9f886f819f6c4f2b173e66ce6ea1671a9",
    "hash": "b74fa475f4d4817c088a8a1bafa3f4b56e10b58cb728987317cc1f9f8d1d07f2"
+  },
+  {
+   "id": "liveliness_delta20",
+   "tipo_entrada": "alta_retroactiva",
+   "familia": "estructura_tenencia",
+   "lote": "2026-Q3",
+   "fecha_propuesta": "2026-09-21",
+   "estado": "DESCARTADA_PREVIA",
+   "gate_alcanzado": null,
+   "consume_presupuesto_v2": false,
+   "fecha_registro": "2026-09-21",
+   "fuente": {
+    "proveedor": "bitcoin-data.com (BGeometrics), API publica sin clave",
+    "endpoint": "https://bitcoin-data.com/v1/liveliness/csv",
+    "verificado_en_vivo": "2026-09-21",
+    "rango_bruto": "2009-01-09 a 2026-09-20, 6464 dias, calendario natural, sin huecos ni duplicados",
+    "transformacion": "Delta20(t) = liveliness(t) - liveliness(t-20), calendario natural, calculado sobre el historial completo desde 2009",
+    "artefactos_en_repo": {
+     "bruto": "liveliness_raw.csv",
+     "sha256_bruto": "ab4f61247a371822c6a965c57e375601031db0d378811cb4a2a45a2156f35e32",
+     "generador": "serie_liveliness.py",
+     "sha256_generador": "34784cfe5cea97693db475e3078baa540c6f2d38aad3be7eae0d375c4316abdd",
+     "serie": "serie_liveliness_delta20.csv",
+     "sha256_serie": "73a52e5515dd1b1715aa1f048636812dab43825b5d7562457f13f7443855615d"
+    },
+    "mascara_evaluada_no_congelada": "Delta20 > Q80 movil de 365 dias (closed=left, solo informacion anterior a t), estricta, warm-up 365 dias. Unica configuracion evaluada, fijada antes de cualquier diagnostico por analogia con dgs2_delta20.",
+    "hallazgo_estructural": "Admisible en todos los minimos doctrinales con diagnostico_estructural de filtro.py (snapshot 32c0b8ea...): activacion global 21.69% (bloque_1 24.06%, bloque_2 19.32%), corte de bloques 2020-11-01, 412 observaciones enmascaradas y 13 episodios independientes en bloque_2 (minimos 20 y 8), 64.4 observaciones efectivas en bloque_1 (minimo 36), racha media 14.2 dias. Patron anual: 2015:24.4 2016:24.6 2017:48.8 2018:6.3 2019:23.0 2020:29.8 2021:7.4 2022:19.7 2023:15.6 2024:40.7 2025:12.9 2026:0.0. Limitacion: 265 dias consecutivos sin activacion (2025-12-13 a 2026-09-03, ultima activacion 2025-12-12), con riesgo de trimestres forward sin episodios. Correlacion de Delta20 liveliness con Delta20 del log-precio contemporaneo 0.226 (n=4264): no hay redundancia con el precio."
+   },
+   "motivo": "La variable no se congela. NO es un fallo estructural. Se descarta por AMBIGUEDAD DIRECCIONAL DEL MECANISMO, detectada antes de cualquier test contra el retorno de BTC: la subida inusual de liveliness indica que se mueven monedas antiguas, pero no quien ni por que. La cola alta se activa en fases de signo economico opuesto: distribucion en techos (2017 49%, enero-marzo 2024 100%), capitulaciones (marzo 2020 39%, junio 2022 47%, noviembre 2022 70%) y arranque alcista (noviembre-diciembre 2020 100%), ademas de movimientos custodiales sin intencion economica (exchanges, ETF, Mt. Gox). La mezcla de subregimenes de signo opuesto atenua el efecto hacia cero por cancelacion. La cola baja tampoco es univoca (dormancia en mercado bajista frente a acumulacion). Mismo patron que active_addresses_delta20_ma7 y T10Y2Y. Consulta a 6 IAs externas con prompt neutro: 6/6 consideran el mecanismo no univoco y 6/6 desaconsejan el test direccional tal cual; todas proponen reformular en vez de descartar el fenomeno, pero ninguna de las reformulaciones es ejecutable como esta ficha (ver nota_reformulacion). Arbitraje coincidente de Claude y decision de Rafa.",
+   "declaracion_de_sesgo": "Ningun resultado de test contra BTC fue calculado ni observado. La decision se tomo con informacion estructural (activacion, episodios), razonamiento sobre el mecanismo y el cruce de los meses de activacion con fases de mercado conocidas, sin calcular ningun retorno futuro. La ficha PROPUESTA nunca se redacto en el registro. La variable nunca estuvo en PROPUESTA ni en EN_TEST. La familia 'estructura_tenencia' no se da de alta en catalogo_familias y no consume cuota de familias nuevas del trimestre. Las cifras orientativas del pre-chequeo del 2026-09-21 (correlacion de nivel ~0.45, de Delta20 ~0.14 en ~1000 dias) se calcularon fuera del motor y no forman parte de esta decision.",
+   "nota_reformulacion": "Vias apuntadas por las IAs externas y NO iniciadas: (1) condicionar por regimen (MVRV, SMA200, distancia al maximo): metrica compuesta, exige enmienda formal; (2) liveliness ajustada por entidad: solo en fuentes de pago (Glassnode); (3) CDD por cohortes o bandas de edad: de pago en BGeometrics; (4) hipotesis no direccional (volatilidad o retorno absoluto): incompatible con definicion_de_efecto, inmutable. Cualquiera de ellas seria una variable distinta con id y ficha propios, y debera justificar su no equivalencia con este id (enmienda 32).",
+   "no_es_re_test": true,
+   "hash_anterior": "b74fa475f4d4817c088a8a1bafa3f4b56e10b58cb728987317cc1f9f8d1d07f2",
+   "hash": "63a630bf1615d65804f417c9b324fce6bce6515c354d1964c57d9bdfc6b6bd87"
   }
  ]
 }
