@@ -36,7 +36,7 @@ import pandas as pd
 
 import cadena
 
-DOCTRINA_COMPATIBLE = "2.17"  # enmienda 45
+DOCTRINA_COMPATIBLE = "3.0"  # enmienda 46 (protocolo v3)
 
 # Hueco declarado de la doctrina: estados.mapeo_salida_filtro_py.tabla traduce
 # la etiqueta interna PASA a EN_CONFIRMACION "solo si supera ademas el umbral BY
@@ -1844,15 +1844,25 @@ def test_permutacion(mask_b2, ret, doc, signo_esperado):
     real = float(z[z["m"]]["retorno_N"].median() - z[~z["m"]]["retorno_N"].median())
     vals = z["retorno_N"].values
     n = len(sel)
-    rng = np.random.default_rng(tp["semilla"])
 
-    difs = []
-    for _ in range(tp["n_permutaciones"]):
-        i = rng.integers(0, max(1, len(vals) - n))
-        bloque = vals[i:i + n]
-        resto = np.delete(vals, slice(i, i + n))
-        difs.append(np.median(bloque) - np.median(resto))
-    difs = np.array(difs)
+    # Enmienda 46 (protocolo v3): nulo por rotacion circular de la mascara.
+    # Desplazamientos enteros uniformes en [excl, L - excl], con reemplazo,
+    # excl = dias_episodio. Equivalente exacto de nulos.p_rotacion.
+    rc = tp["rotacion_circular"]
+    if rc["exclusion_dias"]["regla"] != "exclusion = dias_episodio":
+        abortar("rotacion_circular.exclusion_dias.regla no reconocida por este filtro.py")
+    excl = dias_ep
+    mvals = z["m"].values.astype(bool)
+    L = len(vals)
+    if L <= 2 * excl:
+        abortar(f"bloque_2 demasiado corto para la rotacion circular "
+                f"({L} dias con dato, exclusion {excl})")
+    rng = np.random.default_rng(tp["semilla"])
+    desplazamientos = rng.integers(excl, L - excl + 1, tp["n_permutaciones"])
+    difs = np.empty(len(desplazamientos))
+    for k, s in enumerate(desplazamientos):
+        mm = np.roll(mvals, int(s))
+        difs[k] = np.median(vals[mm]) - np.median(vals[~mm])
 
     if signo_esperado == "positivo":
         p = float((difs >= real).mean())
