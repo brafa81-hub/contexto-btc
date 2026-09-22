@@ -1,0 +1,21 @@
+== M3 (gemelos) — rechazo p<=0,05; no evaluable cuenta como no rechazo ==
+replicas: 1000
+delta20  n_suf=1000 | RESTR: esperada(sup)=3.2% [solo evaluables 5.0%, n_ev=644] contraria=5.2% no_eval=35.6% n_adm_mediana=334
+         ROT: esperada(sup)=3.9% contraria=7.2% | cola sup=3.9%
+         EPI: esperada(sup)=3.0% contraria=7.4% | cola sup=3.0%
+mayer    n_suf=705 | RESTR: esperada(inf)=9.5% [solo evaluables 10.7%, n_ev=625] contraria=1.3% no_eval=11.3% n_adm_mediana=700
+         ROT: esperada(inf)=9.5% contraria=0.3% | cola sup=0.3%
+         EPI: esperada(inf)=11.2% contraria=0.3% | cola sup=0.3%
+vol30    n_suf=998 | RESTR: esperada(inf)=0.0% [solo evaluables 0.0%, n_ev=0] contraria=0.0% no_eval=100.0% n_adm_mediana=0
+         ROT: esperada(inf)=5.8% contraria=7.8% | cola sup=7.8%
+         EPI: esperada(inf)=4.8% contraria=6.2% | cola sup=6.2%
+
+== uniforme: 1000 replicas ==
+ruido_puro    sin gates: rechazo=5.9% (k=59/1000) no_eval=1.4% | pasan gates=23 | CONFIRMADA=0/1000=0.0% IC95=[0.0%,0.4%]
+efecto_medio  sin gates: rechazo=69.2% (k=692/1000) no_eval=1.4% | pasan gates=370 | CONFIRMADA=200/1000=20.0% IC95=[17.6%,22.6%]
+efecto_alto   sin gates: rechazo=98.5% (k=985/1000) no_eval=1.4% | pasan gates=898 | CONFIRMADA=827/1000=82.7% IC95=[80.2%,85.0%]
+
+== concentrado: 1000 replicas ==
+ruido_puro    sin gates: rechazo=6.4% (k=64/1000) no_eval=3.2% | pasan gates=24 | CONFIRMADA=0/1000=0.0% IC95=[0.0%,0.4%]
+efecto_medio  sin gates: rechazo=63.6% (k=636/1000) no_eval=3.2% | pasan gates=287 | CONFIRMADA=105/1000=10.5% IC95=[8.7%,12.6%]
+efecto_alto   sin gates: rechazo=96.6% (k=966/1000) no_eval=3.2% | pasan gates=809 | CONFIRMADA=719/1000=71.9% IC95=[69.0%,74.7%]
