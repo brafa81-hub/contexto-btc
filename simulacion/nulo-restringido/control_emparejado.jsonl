@@ -1,0 +1,1000 @@
+{"i": 0, "mayer": {"suf": true, "rot": {"sup": 0.9605, "inf": 0.0395}}, "ctrl": {"suf": true, "rot": {"sup": 0.318, "inf": 0.682}}, "act": 480, "act_c": 480}
+{"i": 1, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 543, "act_c": 543}
+{"i": 2, "mayer": {"suf": true, "rot": {"sup": 0.4915, "inf": 0.5085}}, "ctrl": {"suf": true, "rot": {"sup": 0.5645, "inf": 0.4355}}, "act": 449, "act_c": 449}
+{"i": 3, "mayer": {"suf": true, "rot": {"sup": 0.403, "inf": 0.597}}, "ctrl": {"suf": true, "rot": {"sup": 0.257, "inf": 0.743}}, "act": 486, "act_c": 486}
+{"i": 4, "mayer": {"suf": true, "rot": {"sup": 0.516, "inf": 0.484}}, "ctrl": {"suf": true, "rot": {"sup": 0.0165, "inf": 0.9835}}, "act": 560, "act_c": 560}
+{"i": 5, "mayer": {"suf": true, "rot": {"sup": 0.3245, "inf": 0.6755}}, "ctrl": {"suf": true, "rot": {"sup": 0.899, "inf": 0.101}}, "act": 690, "act_c": 690}
+{"i": 6, "mayer": {"suf": true, "rot": {"sup": 0.212, "inf": 0.788}}, "ctrl": {"suf": true, "rot": {"sup": 0.402, "inf": 0.598}}, "act": 578, "act_c": 578}
+{"i": 7, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 570, "act_c": 570}
+{"i": 8, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 503, "act_c": 503}
+{"i": 9, "mayer": {"suf": true, "rot": {"sup": 0.816, "inf": 0.184}}, "ctrl": {"suf": true, "rot": {"sup": 0.787, "inf": 0.213}}, "act": 488, "act_c": 488}
+{"i": 10, "mayer": {"suf": true, "rot": {"sup": 0.848, "inf": 0.152}}, "ctrl": {"suf": true, "rot": {"sup": 0.0835, "inf": 0.9165}}, "act": 584, "act_c": 584}
+{"i": 11, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.907, "inf": 0.093}}, "act": 479, "act_c": 479}
+{"i": 12, "mayer": {"suf": true, "rot": {"sup": 0.7495, "inf": 0.2505}}, "ctrl": {"suf": true, "rot": {"sup": 0.6275, "inf": 0.3725}}, "act": 432, "act_c": 432}
+{"i": 13, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 373, "act_c": 373}
+{"i": 14, "mayer": {"suf": true, "rot": {"sup": 0.464, "inf": 0.536}}, "ctrl": {"suf": true, "rot": {"sup": 0.4475, "inf": 0.5525}}, "act": 460, "act_c": 460}
+{"i": 15, "mayer": {"suf": true, "rot": {"sup": 0.5275, "inf": 0.473}}, "ctrl": {"suf": true, "rot": {"sup": 0.959, "inf": 0.041}}, "act": 401, "act_c": 401}
+{"i": 16, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.582, "inf": 0.418}}, "act": 536, "act_c": 536}
+{"i": 17, "mayer": {"suf": true, "rot": {"sup": 0.3415, "inf": 0.6585}}, "ctrl": {"suf": true, "rot": {"sup": 0.2805, "inf": 0.7195}}, "act": 464, "act_c": 464}
+{"i": 18, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.856, "inf": 0.144}}, "act": 523, "act_c": 523}
+{"i": 19, "mayer": {"suf": true, "rot": {"sup": 0.225, "inf": 0.775}}, "ctrl": {"suf": true, "rot": {"sup": 0.939, "inf": 0.061}}, "act": 387, "act_c": 387}
+{"i": 20, "mayer": {"suf": true, "rot": {"sup": 0.2495, "inf": 0.7505}}, "ctrl": {"suf": true, "rot": {"sup": 0.0505, "inf": 0.9495}}, "act": 569, "act_c": 569}
+{"i": 21, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.0445, "inf": 0.9555}}, "act": 642, "act_c": 642}
+{"i": 22, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 524, "act_c": 524}
+{"i": 23, "mayer": {"suf": true, "rot": {"sup": 0.5755, "inf": 0.4245}}, "ctrl": {"suf": true, "rot": {"sup": 0.032, "inf": 0.968}}, "act": 418, "act_c": 418}
+{"i": 24, "mayer": {"suf": true, "rot": {"sup": 0.371, "inf": 0.629}}, "ctrl": {"suf": true, "rot": {"sup": 0.2575, "inf": 0.7425}}, "act": 471, "act_c": 471}
+{"i": 25, "mayer": {"suf": true, "rot": {"sup": 0.2035, "inf": 0.7965}}, "ctrl": {"suf": true, "rot": {"sup": 0.1705, "inf": 0.8295}}, "act": 562, "act_c": 562}
+{"i": 26, "mayer": {"suf": true, "rot": {"sup": 0.9535, "inf": 0.0465}}, "ctrl": {"suf": true, "rot": {"sup": 0.5965, "inf": 0.4035}}, "act": 524, "act_c": 524}
+{"i": 27, "mayer": {"suf": true, "rot": {"sup": 0.927, "inf": 0.073}}, "ctrl": {"suf": true, "rot": {"sup": 0.6515, "inf": 0.3485}}, "act": 409, "act_c": 409}
+{"i": 28, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.201, "inf": 0.799}}, "act": 346, "act_c": 346}
+{"i": 29, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 475, "act_c": 475}
+{"i": 30, "mayer": {"suf": true, "rot": {"sup": 0.6985, "inf": 0.3015}}, "ctrl": {"suf": true, "rot": {"sup": 0.4055, "inf": 0.5945}}, "act": 350, "act_c": 350}
+{"i": 31, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.9655, "inf": 0.0345}}, "act": 584, "act_c": 584}
+{"i": 32, "mayer": {"suf": true, "rot": {"sup": 0.1655, "inf": 0.8345}}, "ctrl": {"suf": true, "rot": {"sup": 0.686, "inf": 0.314}}, "act": 436, "act_c": 436}
+{"i": 33, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 435, "act_c": 435}
+{"i": 34, "mayer": {"suf": true, "rot": {"sup": 0.4715, "inf": 0.5285}}, "ctrl": {"suf": true, "rot": {"sup": 0.7415, "inf": 0.2585}}, "act": 585, "act_c": 585}
+{"i": 35, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 563, "act_c": 563}
+{"i": 36, "mayer": {"suf": true, "rot": {"sup": 0.1435, "inf": 0.8565}}, "ctrl": {"suf": true, "rot": {"sup": 0.578, "inf": 0.422}}, "act": 507, "act_c": 507}
+{"i": 37, "mayer": {"suf": true, "rot": {"sup": 0.7565, "inf": 0.2435}}, "ctrl": {"suf": true, "rot": {"sup": 0.4975, "inf": 0.503}}, "act": 479, "act_c": 479}
+{"i": 38, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 607, "act_c": 607}
+{"i": 39, "mayer": {"suf": true, "rot": {"sup": 0.6705, "inf": 0.3295}}, "ctrl": {"suf": true, "rot": {"sup": 0.945, "inf": 0.055}}, "act": 432, "act_c": 432}
+{"i": 40, "mayer": {"suf": true, "rot": {"sup": 0.109, "inf": 0.891}}, "ctrl": {"suf": true, "rot": {"sup": 0.73, "inf": 0.27}}, "act": 619, "act_c": 619}
+{"i": 41, "mayer": {"suf": true, "rot": {"sup": 0.8165, "inf": 0.1835}}, "ctrl": {"suf": true, "rot": {"sup": 0.23, "inf": 0.77}}, "act": 479, "act_c": 479}
+{"i": 42, "mayer": {"suf": true, "rot": {"sup": 0.2905, "inf": 0.7095}}, "ctrl": {"suf": true, "rot": {"sup": 0.246, "inf": 0.754}}, "act": 509, "act_c": 509}
+{"i": 43, "mayer": {"suf": true, "rot": {"sup": 0.8185, "inf": 0.1815}}, "ctrl": {"suf": true, "rot": {"sup": 0.538, "inf": 0.463}}, "act": 445, "act_c": 445}
+{"i": 44, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 472, "act_c": 472}
+{"i": 45, "mayer": {"suf": true, "rot": {"sup": 0.0215, "inf": 0.9785}}, "ctrl": {"suf": true, "rot": {"sup": 0.0185, "inf": 0.9815}}, "act": 554, "act_c": 554}
+{"i": 46, "mayer": {"suf": true, "rot": {"sup": 0.7065, "inf": 0.2935}}, "ctrl": {"suf": true, "rot": {"sup": 0.645, "inf": 0.355}}, "act": 455, "act_c": 455}
+{"i": 47, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 501, "act_c": 501}
+{"i": 48, "mayer": {"suf": true, "rot": {"sup": 0.973, "inf": 0.027}}, "ctrl": {"suf": true, "rot": {"sup": 0.924, "inf": 0.076}}, "act": 389, "act_c": 389}
+{"i": 49, "mayer": {"suf": true, "rot": {"sup": 0.532, "inf": 0.4695}}, "ctrl": {"suf": true, "rot": {"sup": 0.695, "inf": 0.305}}, "act": 496, "act_c": 496}
+{"i": 50, "mayer": {"suf": true, "rot": {"sup": 0.973, "inf": 0.027}}, "ctrl": {"suf": true, "rot": {"sup": 0.4595, "inf": 0.544}}, "act": 374, "act_c": 374}
+{"i": 51, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 559, "act_c": 559}
+{"i": 52, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 593, "act_c": 593}
+{"i": 53, "mayer": {"suf": true, "rot": {"sup": 0.6395, "inf": 0.3605}}, "ctrl": {"suf": true, "rot": {"sup": 0.4045, "inf": 0.5955}}, "act": 437, "act_c": 437}
+{"i": 54, "mayer": {"suf": true, "rot": {"sup": 0.992, "inf": 0.008}}, "ctrl": {"suf": true, "rot": {"sup": 0.6975, "inf": 0.3025}}, "act": 497, "act_c": 497}
+{"i": 55, "mayer": {"suf": true, "rot": {"sup": 0.984, "inf": 0.016}}, "ctrl": {"suf": true, "rot": {"sup": 0.6985, "inf": 0.3015}}, "act": 460, "act_c": 460}
+{"i": 56, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 370, "act_c": 370}
+{"i": 57, "mayer": {"suf": true, "rot": {"sup": 0.8125, "inf": 0.189}}, "ctrl": {"suf": true, "rot": {"sup": 0.27, "inf": 0.73}}, "act": 533, "act_c": 533}
+{"i": 58, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 512, "act_c": 512}
+{"i": 59, "mayer": {"suf": true, "rot": {"sup": 0.7415, "inf": 0.2585}}, "ctrl": {"suf": true, "rot": {"sup": 0.542, "inf": 0.458}}, "act": 506, "act_c": 506}
+{"i": 60, "mayer": {"suf": true, "rot": {"sup": 0.467, "inf": 0.533}}, "ctrl": {"suf": true, "rot": {"sup": 0.008, "inf": 0.992}}, "act": 597, "act_c": 597}
+{"i": 61, "mayer": {"suf": true, "rot": {"sup": 0.639, "inf": 0.361}}, "ctrl": {"suf": true, "rot": {"sup": 0.02, "inf": 0.98}}, "act": 537, "act_c": 537}
+{"i": 62, "mayer": {"suf": true, "rot": {"sup": 0.4215, "inf": 0.5785}}, "ctrl": {"suf": true, "rot": {"sup": 0.7075, "inf": 0.2925}}, "act": 591, "act_c": 591}
+{"i": 63, "mayer": {"suf": true, "rot": {"sup": 0.709, "inf": 0.291}}, "ctrl": {"suf": true, "rot": {"sup": 0.3885, "inf": 0.6115}}, "act": 460, "act_c": 460}
+{"i": 64, "mayer": {"suf": true, "rot": {"sup": 0.4955, "inf": 0.511}}, "ctrl": {"suf": true, "rot": {"sup": 0.569, "inf": 0.4315}}, "act": 545, "act_c": 545}
+{"i": 65, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.414, "inf": 0.586}}, "act": 752, "act_c": 752}
+{"i": 66, "mayer": {"suf": true, "rot": {"sup": 0.7515, "inf": 0.2485}}, "ctrl": {"suf": true, "rot": {"sup": 0.8235, "inf": 0.1765}}, "act": 400, "act_c": 400}
+{"i": 67, "mayer": {"suf": true, "rot": {"sup": 0.5205, "inf": 0.4795}}, "ctrl": {"suf": true, "rot": {"sup": 0.1365, "inf": 0.8635}}, "act": 514, "act_c": 514}
+{"i": 68, "mayer": {"suf": true, "rot": {"sup": 0.513, "inf": 0.487}}, "ctrl": {"suf": true, "rot": {"sup": 0.75, "inf": 0.25}}, "act": 472, "act_c": 472}
+{"i": 69, "mayer": {"suf": true, "rot": {"sup": 0.9975, "inf": 0.0025}}, "ctrl": {"suf": true, "rot": {"sup": 0.113, "inf": 0.887}}, "act": 336, "act_c": 336}
+{"i": 70, "mayer": {"suf": true, "rot": {"sup": 0.7515, "inf": 0.2485}}, "ctrl": {"suf": true, "rot": {"sup": 0.4775, "inf": 0.5225}}, "act": 342, "act_c": 342}
+{"i": 71, "mayer": {"suf": true, "rot": {"sup": 0.968, "inf": 0.032}}, "ctrl": {"suf": true, "rot": {"sup": 0.7115, "inf": 0.2885}}, "act": 439, "act_c": 439}
+{"i": 72, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.737, "inf": 0.263}}, "act": 482, "act_c": 482}
+{"i": 73, "mayer": {"suf": true, "rot": {"sup": 0.6125, "inf": 0.3875}}, "ctrl": {"suf": true, "rot": {"sup": 0.813, "inf": 0.187}}, "act": 481, "act_c": 481}
+{"i": 74, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 508, "act_c": 508}
+{"i": 75, "mayer": {"suf": true, "rot": {"sup": 0.9715, "inf": 0.0285}}, "ctrl": {"suf": true, "rot": {"sup": 0.2285, "inf": 0.7715}}, "act": 417, "act_c": 417}
+{"i": 76, "mayer": {"suf": true, "rot": {"sup": 0.2805, "inf": 0.7195}}, "ctrl": {"suf": true, "rot": {"sup": 0.6565, "inf": 0.3435}}, "act": 420, "act_c": 420}
+{"i": 77, "mayer": {"suf": true, "rot": {"sup": 0.5805, "inf": 0.4195}}, "ctrl": {"suf": true, "rot": {"sup": 0.0, "inf": 1.0}}, "act": 472, "act_c": 472}
+{"i": 78, "mayer": {"suf": true, "rot": {"sup": 0.955, "inf": 0.045}}, "ctrl": {"suf": true, "rot": {"sup": 0.473, "inf": 0.527}}, "act": 492, "act_c": 492}
+{"i": 79, "mayer": {"suf": true, "rot": {"sup": 0.1545, "inf": 0.8455}}, "ctrl": {"suf": true, "rot": {"sup": 0.0885, "inf": 0.9115}}, "act": 503, "act_c": 503}
+{"i": 80, "mayer": {"suf": true, "rot": {"sup": 0.8105, "inf": 0.1895}}, "ctrl": {"suf": true, "rot": {"sup": 0.4545, "inf": 0.5455}}, "act": 560, "act_c": 560}
+{"i": 81, "mayer": {"suf": true, "rot": {"sup": 0.647, "inf": 0.353}}, "ctrl": {"suf": true, "rot": {"sup": 0.8095, "inf": 0.1905}}, "act": 506, "act_c": 506}
+{"i": 82, "mayer": {"suf": true, "rot": {"sup": 0.2005, "inf": 0.7995}}, "ctrl": {"suf": true, "rot": {"sup": 0.8985, "inf": 0.1015}}, "act": 350, "act_c": 350}
+{"i": 83, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 485, "act_c": 485}
+{"i": 84, "mayer": {"suf": true, "rot": {"sup": 0.2255, "inf": 0.7745}}, "ctrl": {"suf": true, "rot": {"sup": 0.6695, "inf": 0.3305}}, "act": 589, "act_c": 589}
+{"i": 85, "mayer": {"suf": true, "rot": {"sup": 0.5715, "inf": 0.4285}}, "ctrl": {"suf": true, "rot": {"sup": 0.3495, "inf": 0.651}}, "act": 542, "act_c": 542}
+{"i": 86, "mayer": {"suf": true, "rot": {"sup": 0.1465, "inf": 0.8535}}, "ctrl": {"suf": true, "rot": {"sup": 0.0395, "inf": 0.9605}}, "act": 607, "act_c": 607}
+{"i": 87, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 304, "act_c": 304}
+{"i": 88, "mayer": {"suf": true, "rot": {"sup": 0.7905, "inf": 0.2095}}, "ctrl": {"suf": true, "rot": {"sup": 0.4585, "inf": 0.5415}}, "act": 401, "act_c": 401}
+{"i": 89, "mayer": {"suf": true, "rot": {"sup": 0.319, "inf": 0.681}}, "ctrl": {"suf": true, "rot": {"sup": 0.9565, "inf": 0.0435}}, "act": 492, "act_c": 492}
+{"i": 90, "mayer": {"suf": true, "rot": {"sup": 0.5585, "inf": 0.4415}}, "ctrl": {"suf": true, "rot": {"sup": 0.6915, "inf": 0.3085}}, "act": 635, "act_c": 635}
+{"i": 91, "mayer": {"suf": true, "rot": {"sup": 0.6845, "inf": 0.3155}}, "ctrl": {"suf": true, "rot": {"sup": 0.2965, "inf": 0.7035}}, "act": 542, "act_c": 542}
+{"i": 92, "mayer": {"suf": true, "rot": {"sup": 0.4945, "inf": 0.5055}}, "ctrl": {"suf": true, "rot": {"sup": 0.8975, "inf": 0.1025}}, "act": 482, "act_c": 482}
+{"i": 93, "mayer": {"suf": true, "rot": {"sup": 0.251, "inf": 0.749}}, "ctrl": {"suf": true, "rot": {"sup": 0.7155, "inf": 0.2845}}, "act": 511, "act_c": 511}
+{"i": 94, "mayer": {"suf": true, "rot": {"sup": 0.361, "inf": 0.639}}, "ctrl": {"suf": true, "rot": {"sup": 0.351, "inf": 0.649}}, "act": 594, "act_c": 594}
+{"i": 95, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 525, "act_c": 525}
+{"i": 96, "mayer": {"suf": true, "rot": {"sup": 0.863, "inf": 0.137}}, "ctrl": {"suf": true, "rot": {"sup": 0.561, "inf": 0.441}}, "act": 503, "act_c": 503}
+{"i": 97, "mayer": {"suf": true, "rot": {"sup": 0.3535, "inf": 0.6465}}, "ctrl": {"suf": true, "rot": {"sup": 0.9255, "inf": 0.0745}}, "act": 609, "act_c": 609}
+{"i": 98, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 608, "act_c": 608}
+{"i": 99, "mayer": {"suf": true, "rot": {"sup": 0.7565, "inf": 0.2435}}, "ctrl": {"suf": true, "rot": {"sup": 0.0765, "inf": 0.9235}}, "act": 376, "act_c": 376}
+{"i": 100, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 605, "act_c": 605}
+{"i": 101, "mayer": {"suf": true, "rot": {"sup": 0.207, "inf": 0.793}}, "ctrl": {"suf": true, "rot": {"sup": 0.7575, "inf": 0.2425}}, "act": 601, "act_c": 601}
+{"i": 102, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.4555, "inf": 0.5445}}, "act": 560, "act_c": 560}
+{"i": 103, "mayer": {"suf": true, "rot": {"sup": 0.3595, "inf": 0.6405}}, "ctrl": {"suf": true, "rot": {"sup": 0.045, "inf": 0.955}}, "act": 623, "act_c": 623}
+{"i": 104, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 523, "act_c": 523}
+{"i": 105, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.9115, "inf": 0.0885}}, "act": 514, "act_c": 514}
+{"i": 106, "mayer": {"suf": true, "rot": {"sup": 0.483, "inf": 0.517}}, "ctrl": {"suf": true, "rot": {"sup": 0.2545, "inf": 0.7455}}, "act": 464, "act_c": 464}
+{"i": 107, "mayer": {"suf": true, "rot": {"sup": 0.948, "inf": 0.052}}, "ctrl": {"suf": true, "rot": {"sup": 0.884, "inf": 0.116}}, "act": 489, "act_c": 489}
+{"i": 108, "mayer": {"suf": true, "rot": {"sup": 0.806, "inf": 0.194}}, "ctrl": {"suf": true, "rot": {"sup": 0.1035, "inf": 0.8965}}, "act": 492, "act_c": 492}
+{"i": 109, "mayer": {"suf": true, "rot": {"sup": 0.7595, "inf": 0.2405}}, "ctrl": {"suf": true, "rot": {"sup": 0.9065, "inf": 0.0935}}, "act": 619, "act_c": 619}
+{"i": 110, "mayer": {"suf": true, "rot": {"sup": 0.467, "inf": 0.533}}, "ctrl": {"suf": true, "rot": {"sup": 0.002, "inf": 0.998}}, "act": 460, "act_c": 460}
+{"i": 111, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.758, "inf": 0.242}}, "act": 474, "act_c": 474}
+{"i": 112, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 582, "act_c": 582}
+{"i": 113, "mayer": {"suf": true, "rot": {"sup": 0.737, "inf": 0.263}}, "ctrl": {"suf": true, "rot": {"sup": 0.624, "inf": 0.376}}, "act": 637, "act_c": 637}
+{"i": 114, "mayer": {"suf": true, "rot": {"sup": 0.3245, "inf": 0.6755}}, "ctrl": {"suf": true, "rot": {"sup": 0.3015, "inf": 0.6985}}, "act": 465, "act_c": 465}
+{"i": 115, "mayer": {"suf": true, "rot": {"sup": 0.644, "inf": 0.356}}, "ctrl": {"suf": true, "rot": {"sup": 0.9055, "inf": 0.0945}}, "act": 384, "act_c": 384}
+{"i": 116, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.827, "inf": 0.173}}, "act": 601, "act_c": 601}
+{"i": 117, "mayer": {"suf": true, "rot": {"sup": 0.25, "inf": 0.75}}, "ctrl": {"suf": true, "rot": {"sup": 0.602, "inf": 0.398}}, "act": 525, "act_c": 525}
+{"i": 118, "mayer": {"suf": true, "rot": {"sup": 0.5485, "inf": 0.4515}}, "ctrl": {"suf": true, "rot": {"sup": 0.648, "inf": 0.352}}, "act": 547, "act_c": 547}
+{"i": 119, "mayer": {"suf": true, "rot": {"sup": 0.7545, "inf": 0.2455}}, "ctrl": {"suf": true, "rot": {"sup": 0.8505, "inf": 0.1495}}, "act": 530, "act_c": 530}
+{"i": 120, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 604, "act_c": 604}
+{"i": 121, "mayer": {"suf": true, "rot": {"sup": 0.8485, "inf": 0.1515}}, "ctrl": {"suf": true, "rot": {"sup": 0.651, "inf": 0.349}}, "act": 660, "act_c": 660}
+{"i": 122, "mayer": {"suf": true, "rot": {"sup": 0.1995, "inf": 0.8005}}, "ctrl": {"suf": true, "rot": {"sup": 0.822, "inf": 0.178}}, "act": 504, "act_c": 504}
+{"i": 123, "mayer": {"suf": true, "rot": {"sup": 0.1325, "inf": 0.8675}}, "ctrl": {"suf": true, "rot": {"sup": 0.63, "inf": 0.37}}, "act": 457, "act_c": 457}
+{"i": 124, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 630, "act_c": 630}
+{"i": 125, "mayer": {"suf": true, "rot": {"sup": 0.971, "inf": 0.029}}, "ctrl": {"suf": true, "rot": {"sup": 0.877, "inf": 0.123}}, "act": 456, "act_c": 456}
+{"i": 126, "mayer": {"suf": true, "rot": {"sup": 0.921, "inf": 0.079}}, "ctrl": {"suf": true, "rot": {"sup": 0.896, "inf": 0.104}}, "act": 574, "act_c": 574}
+{"i": 127, "mayer": {"suf": true, "rot": {"sup": 0.3845, "inf": 0.6155}}, "ctrl": {"suf": true, "rot": {"sup": 0.08, "inf": 0.92}}, "act": 539, "act_c": 539}
+{"i": 128, "mayer": {"suf": true, "rot": {"sup": 0.984, "inf": 0.016}}, "ctrl": {"suf": true, "rot": {"sup": 0.0635, "inf": 0.9365}}, "act": 373, "act_c": 373}
+{"i": 129, "mayer": {"suf": true, "rot": {"sup": 0.875, "inf": 0.125}}, "ctrl": {"suf": true, "rot": {"sup": 0.526, "inf": 0.474}}, "act": 448, "act_c": 448}
+{"i": 130, "mayer": {"suf": true, "rot": {"sup": 1.0, "inf": 0.0}}, "ctrl": {"suf": true, "rot": {"sup": 0.5875, "inf": 0.4125}}, "act": 434, "act_c": 434}
+{"i": 131, "mayer": {"suf": true, "rot": {"sup": 0.6345, "inf": 0.3655}}, "ctrl": {"suf": true, "rot": {"sup": 0.1325, "inf": 0.8675}}, "act": 651, "act_c": 651}
+{"i": 132, "mayer": {"suf": true, "rot": {"sup": 0.8575, "inf": 0.1425}}, "ctrl": {"suf": true, "rot": {"sup": 0.067, "inf": 0.933}}, "act": 645, "act_c": 645}
+{"i": 133, "mayer": {"suf": true, "rot": {"sup": 0.9865, "inf": 0.0135}}, "ctrl": {"suf": true, "rot": {"sup": 0.3785, "inf": 0.6215}}, "act": 544, "act_c": 544}
+{"i": 134, "mayer": {"suf": true, "rot": {"sup": 0.3565, "inf": 0.6435}}, "ctrl": {"suf": true, "rot": {"sup": 0.1025, "inf": 0.8975}}, "act": 447, "act_c": 447}
+{"i": 135, "mayer": {"suf": true, "rot": {"sup": 0.779, "inf": 0.221}}, "ctrl": {"suf": true, "rot": {"sup": 0.4955, "inf": 0.5045}}, "act": 545, "act_c": 545}
+{"i": 136, "mayer": {"suf": true, "rot": {"sup": 0.158, "inf": 0.842}}, "ctrl": {"suf": true, "rot": {"sup": 0.519, "inf": 0.481}}, "act": 434, "act_c": 434}
+{"i": 137, "mayer": {"suf": true, "rot": {"sup": 0.652, "inf": 0.348}}, "ctrl": {"suf": true, "rot": {"sup": 0.2955, "inf": 0.7045}}, "act": 553, "act_c": 553}
+{"i": 138, "mayer": {"suf": true, "rot": {"sup": 0.224, "inf": 0.776}}, "ctrl": {"suf": true, "rot": {"sup": 0.5585, "inf": 0.4415}}, "act": 349, "act_c": 349}
+{"i": 139, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 441, "act_c": 441}
+{"i": 140, "mayer": {"suf": true, "rot": {"sup": 0.791, "inf": 0.209}}, "ctrl": {"suf": true, "rot": {"sup": 0.7375, "inf": 0.2625}}, "act": 470, "act_c": 470}
+{"i": 141, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.3695, "inf": 0.6305}}, "act": 470, "act_c": 470}
+{"i": 142, "mayer": {"suf": true, "rot": {"sup": 0.0705, "inf": 0.9295}}, "ctrl": {"suf": true, "rot": {"sup": 0.0375, "inf": 0.9625}}, "act": 562, "act_c": 562}
+{"i": 143, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 501, "act_c": 501}
+{"i": 144, "mayer": {"suf": true, "rot": {"sup": 0.9905, "inf": 0.0095}}, "ctrl": {"suf": true, "rot": {"sup": 0.961, "inf": 0.039}}, "act": 527, "act_c": 527}
+{"i": 145, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 537, "act_c": 537}
+{"i": 146, "mayer": {"suf": true, "rot": {"sup": 0.625, "inf": 0.375}}, "ctrl": {"suf": true, "rot": {"sup": 0.4865, "inf": 0.5135}}, "act": 511, "act_c": 511}
+{"i": 147, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 665, "act_c": 665}
+{"i": 148, "mayer": {"suf": true, "rot": {"sup": 0.118, "inf": 0.882}}, "ctrl": {"suf": true, "rot": {"sup": 0.2365, "inf": 0.7635}}, "act": 529, "act_c": 529}
+{"i": 149, "mayer": {"suf": true, "rot": {"sup": 0.2295, "inf": 0.7705}}, "ctrl": {"suf": true, "rot": {"sup": 0.7315, "inf": 0.2685}}, "act": 476, "act_c": 476}
+{"i": 150, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 543, "act_c": 543}
+{"i": 151, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 571, "act_c": 571}
+{"i": 152, "mayer": {"suf": true, "rot": {"sup": 0.0655, "inf": 0.9345}}, "ctrl": {"suf": true, "rot": {"sup": 0.954, "inf": 0.046}}, "act": 430, "act_c": 430}
+{"i": 153, "mayer": {"suf": true, "rot": {"sup": 0.992, "inf": 0.008}}, "ctrl": {"suf": true, "rot": {"sup": 0.2465, "inf": 0.7535}}, "act": 523, "act_c": 523}
+{"i": 154, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 436, "act_c": 436}
+{"i": 155, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 409, "act_c": 409}
+{"i": 156, "mayer": {"suf": true, "rot": {"sup": 0.9475, "inf": 0.0525}}, "ctrl": {"suf": true, "rot": {"sup": 0.207, "inf": 0.793}}, "act": 442, "act_c": 442}
+{"i": 157, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.7315, "inf": 0.2685}}, "act": 413, "act_c": 413}
+{"i": 158, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.869, "inf": 0.131}}, "act": 459, "act_c": 459}
+{"i": 159, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 524, "act_c": 524}
+{"i": 160, "mayer": {"suf": true, "rot": {"sup": 1.0, "inf": 0.0}}, "ctrl": {"suf": true, "rot": {"sup": 0.8015, "inf": 0.1985}}, "act": 434, "act_c": 434}
+{"i": 161, "mayer": {"suf": true, "rot": {"sup": 0.7495, "inf": 0.2505}}, "ctrl": {"suf": true, "rot": {"sup": 0.059, "inf": 0.941}}, "act": 574, "act_c": 574}
+{"i": 162, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.072, "inf": 0.928}}, "act": 419, "act_c": 419}
+{"i": 163, "mayer": {"suf": true, "rot": {"sup": 0.849, "inf": 0.151}}, "ctrl": {"suf": true, "rot": {"sup": 0.6805, "inf": 0.3195}}, "act": 514, "act_c": 514}
+{"i": 164, "mayer": {"suf": true, "rot": {"sup": 0.456, "inf": 0.544}}, "ctrl": {"suf": true, "rot": {"sup": 0.0735, "inf": 0.9265}}, "act": 612, "act_c": 612}
+{"i": 165, "mayer": {"suf": true, "rot": {"sup": 0.9225, "inf": 0.0775}}, "ctrl": {"suf": true, "rot": {"sup": 0.4485, "inf": 0.5515}}, "act": 563, "act_c": 563}
+{"i": 166, "mayer": {"suf": true, "rot": {"sup": 0.8485, "inf": 0.1515}}, "ctrl": {"suf": true, "rot": {"sup": 0.7685, "inf": 0.2315}}, "act": 490, "act_c": 490}
+{"i": 167, "mayer": {"suf": true, "rot": {"sup": 0.617, "inf": 0.383}}, "ctrl": {"suf": true, "rot": {"sup": 0.0615, "inf": 0.9385}}, "act": 503, "act_c": 503}
+{"i": 168, "mayer": {"suf": true, "rot": {"sup": 0.557, "inf": 0.443}}, "ctrl": {"suf": true, "rot": {"sup": 0.4335, "inf": 0.5665}}, "act": 320, "act_c": 320}
+{"i": 169, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 391, "act_c": 391}
+{"i": 170, "mayer": {"suf": true, "rot": {"sup": 0.7625, "inf": 0.2375}}, "ctrl": {"suf": true, "rot": {"sup": 0.803, "inf": 0.197}}, "act": 400, "act_c": 400}
+{"i": 171, "mayer": {"suf": true, "rot": {"sup": 0.745, "inf": 0.255}}, "ctrl": {"suf": true, "rot": {"sup": 0.882, "inf": 0.118}}, "act": 496, "act_c": 496}
+{"i": 172, "mayer": {"suf": true, "rot": {"sup": 0.7565, "inf": 0.2435}}, "ctrl": {"suf": true, "rot": {"sup": 0.442, "inf": 0.558}}, "act": 571, "act_c": 571}
+{"i": 173, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 546, "act_c": 546}
+{"i": 174, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.6525, "inf": 0.3475}}, "act": 509, "act_c": 509}
+{"i": 175, "mayer": {"suf": true, "rot": {"sup": 0.5195, "inf": 0.4805}}, "ctrl": {"suf": true, "rot": {"sup": 0.5205, "inf": 0.4795}}, "act": 460, "act_c": 460}
+{"i": 176, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.4885, "inf": 0.5115}}, "act": 609, "act_c": 609}
+{"i": 177, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.88, "inf": 0.1205}}, "act": 533, "act_c": 533}
+{"i": 178, "mayer": {"suf": true, "rot": {"sup": 0.861, "inf": 0.139}}, "ctrl": {"suf": true, "rot": {"sup": 0.714, "inf": 0.286}}, "act": 511, "act_c": 511}
+{"i": 179, "mayer": {"suf": true, "rot": {"sup": 0.6985, "inf": 0.3015}}, "ctrl": {"suf": true, "rot": {"sup": 0.769, "inf": 0.231}}, "act": 495, "act_c": 495}
+{"i": 180, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 443, "act_c": 443}
+{"i": 181, "mayer": {"suf": true, "rot": {"sup": 0.7055, "inf": 0.2945}}, "ctrl": {"suf": true, "rot": {"sup": 0.6215, "inf": 0.3785}}, "act": 565, "act_c": 565}
+{"i": 182, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.4205, "inf": 0.5795}}, "act": 501, "act_c": 501}
+{"i": 183, "mayer": {"suf": true, "rot": {"sup": 0.0915, "inf": 0.9085}}, "ctrl": {"suf": true, "rot": {"sup": 0.084, "inf": 0.916}}, "act": 434, "act_c": 434}
+{"i": 184, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 433, "act_c": 433}
+{"i": 185, "mayer": {"suf": true, "rot": {"sup": 0.27, "inf": 0.73}}, "ctrl": {"suf": true, "rot": {"sup": 0.6435, "inf": 0.3565}}, "act": 575, "act_c": 575}
+{"i": 186, "mayer": {"suf": true, "rot": {"sup": 0.178, "inf": 0.822}}, "ctrl": {"suf": true, "rot": {"sup": 1.0, "inf": 0.0}}, "act": 433, "act_c": 433}
+{"i": 187, "mayer": {"suf": true, "rot": {"sup": 0.556, "inf": 0.444}}, "ctrl": {"suf": true, "rot": {"sup": 0.4015, "inf": 0.5985}}, "act": 421, "act_c": 421}
+{"i": 188, "mayer": {"suf": true, "rot": {"sup": 0.282, "inf": 0.718}}, "ctrl": {"suf": true, "rot": {"sup": 0.065, "inf": 0.935}}, "act": 422, "act_c": 422}
+{"i": 189, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 508, "act_c": 508}
+{"i": 190, "mayer": {"suf": true, "rot": {"sup": 0.9405, "inf": 0.0595}}, "ctrl": {"suf": true, "rot": {"sup": 0.6945, "inf": 0.3055}}, "act": 425, "act_c": 425}
+{"i": 191, "mayer": {"suf": true, "rot": {"sup": 0.242, "inf": 0.7595}}, "ctrl": {"suf": true, "rot": {"sup": 0.6835, "inf": 0.317}}, "act": 437, "act_c": 437}
+{"i": 192, "mayer": {"suf": true, "rot": {"sup": 0.9875, "inf": 0.0125}}, "ctrl": {"suf": true, "rot": {"sup": 0.2415, "inf": 0.7585}}, "act": 542, "act_c": 542}
+{"i": 193, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 614, "act_c": 614}
+{"i": 194, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.2725, "inf": 0.729}}, "act": 441, "act_c": 441}
+{"i": 195, "mayer": {"suf": true, "rot": {"sup": 0.801, "inf": 0.199}}, "ctrl": {"suf": true, "rot": {"sup": 0.366, "inf": 0.634}}, "act": 573, "act_c": 573}
+{"i": 196, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.373, "inf": 0.6275}}, "act": 494, "act_c": 494}
+{"i": 197, "mayer": {"suf": true, "rot": {"sup": 0.1315, "inf": 0.8685}}, "ctrl": {"suf": true, "rot": {"sup": 0.7295, "inf": 0.2705}}, "act": 593, "act_c": 593}
+{"i": 198, "mayer": {"suf": true, "rot": {"sup": 0.8115, "inf": 0.1885}}, "ctrl": {"suf": true, "rot": {"sup": 0.1895, "inf": 0.8105}}, "act": 601, "act_c": 601}
+{"i": 199, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 630, "act_c": 630}
+{"i": 200, "mayer": {"suf": true, "rot": {"sup": 0.338, "inf": 0.662}}, "ctrl": {"suf": true, "rot": {"sup": 0.706, "inf": 0.294}}, "act": 529, "act_c": 529}
+{"i": 201, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.4735, "inf": 0.5275}}, "act": 473, "act_c": 473}
+{"i": 202, "mayer": {"suf": true, "rot": {"sup": 0.212, "inf": 0.788}}, "ctrl": {"suf": true, "rot": {"sup": 0.019, "inf": 0.981}}, "act": 668, "act_c": 668}
+{"i": 203, "mayer": {"suf": true, "rot": {"sup": 0.705, "inf": 0.295}}, "ctrl": {"suf": true, "rot": {"sup": 0.747, "inf": 0.253}}, "act": 494, "act_c": 494}
+{"i": 204, "mayer": {"suf": true, "rot": {"sup": 0.665, "inf": 0.335}}, "ctrl": {"suf": true, "rot": {"sup": 0.6525, "inf": 0.3475}}, "act": 471, "act_c": 471}
+{"i": 205, "mayer": {"suf": true, "rot": {"sup": 0.0885, "inf": 0.9115}}, "ctrl": {"suf": true, "rot": {"sup": 0.6135, "inf": 0.3865}}, "act": 478, "act_c": 478}
+{"i": 206, "mayer": {"suf": true, "rot": {"sup": 0.579, "inf": 0.421}}, "ctrl": {"suf": true, "rot": {"sup": 0.7375, "inf": 0.2625}}, "act": 564, "act_c": 564}
+{"i": 207, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.1045, "inf": 0.8955}}, "act": 482, "act_c": 482}
+{"i": 208, "mayer": {"suf": true, "rot": {"sup": 0.8935, "inf": 0.1065}}, "ctrl": {"suf": true, "rot": {"sup": 0.283, "inf": 0.717}}, "act": 603, "act_c": 603}
+{"i": 209, "mayer": {"suf": true, "rot": {"sup": 0.862, "inf": 0.138}}, "ctrl": {"suf": true, "rot": {"sup": 0.771, "inf": 0.229}}, "act": 411, "act_c": 411}
+{"i": 210, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 455, "act_c": 455}
+{"i": 211, "mayer": {"suf": true, "rot": {"sup": 0.6675, "inf": 0.3325}}, "ctrl": {"suf": true, "rot": {"sup": 0.529, "inf": 0.471}}, "act": 628, "act_c": 628}
+{"i": 212, "mayer": {"suf": true, "rot": {"sup": 0.82, "inf": 0.181}}, "ctrl": {"suf": true, "rot": {"sup": 0.6395, "inf": 0.3605}}, "act": 505, "act_c": 505}
+{"i": 213, "mayer": {"suf": true, "rot": {"sup": 0.8345, "inf": 0.1655}}, "ctrl": {"suf": true, "rot": {"sup": 0.313, "inf": 0.687}}, "act": 541, "act_c": 541}
+{"i": 214, "mayer": {"suf": true, "rot": {"sup": 0.3475, "inf": 0.6525}}, "ctrl": {"suf": true, "rot": {"sup": 0.9035, "inf": 0.0965}}, "act": 512, "act_c": 512}
+{"i": 215, "mayer": {"suf": true, "rot": {"sup": 0.83, "inf": 0.17}}, "ctrl": {"suf": true, "rot": {"sup": 0.5865, "inf": 0.4135}}, "act": 345, "act_c": 345}
+{"i": 216, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.6505, "inf": 0.3495}}, "act": 553, "act_c": 553}
+{"i": 217, "mayer": {"suf": true, "rot": {"sup": 0.844, "inf": 0.156}}, "ctrl": {"suf": true, "rot": {"sup": 0.6895, "inf": 0.3105}}, "act": 594, "act_c": 594}
+{"i": 218, "mayer": {"suf": true, "rot": {"sup": 0.847, "inf": 0.1545}}, "ctrl": {"suf": true, "rot": {"sup": 0.198, "inf": 0.802}}, "act": 497, "act_c": 497}
+{"i": 219, "mayer": {"suf": true, "rot": {"sup": 0.9625, "inf": 0.0375}}, "ctrl": {"suf": true, "rot": {"sup": 0.4305, "inf": 0.5695}}, "act": 472, "act_c": 472}
+{"i": 220, "mayer": {"suf": true, "rot": {"sup": 0.205, "inf": 0.795}}, "ctrl": {"suf": true, "rot": {"sup": 0.1445, "inf": 0.8555}}, "act": 559, "act_c": 559}
+{"i": 221, "mayer": {"suf": true, "rot": {"sup": 1.0, "inf": 0.0}}, "ctrl": {"suf": true, "rot": {"sup": 0.746, "inf": 0.254}}, "act": 362, "act_c": 362}
+{"i": 222, "mayer": {"suf": true, "rot": {"sup": 0.4115, "inf": 0.5885}}, "ctrl": {"suf": true, "rot": {"sup": 0.9575, "inf": 0.0425}}, "act": 660, "act_c": 660}
+{"i": 223, "mayer": {"suf": true, "rot": {"sup": 0.274, "inf": 0.726}}, "ctrl": {"suf": true, "rot": {"sup": 0.1795, "inf": 0.8205}}, "act": 520, "act_c": 520}
+{"i": 224, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 421, "act_c": 421}
+{"i": 225, "mayer": {"suf": true, "rot": {"sup": 0.465, "inf": 0.536}}, "ctrl": {"suf": true, "rot": {"sup": 0.9535, "inf": 0.0465}}, "act": 429, "act_c": 429}
+{"i": 226, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 539, "act_c": 539}
+{"i": 227, "mayer": {"suf": true, "rot": {"sup": 0.843, "inf": 0.157}}, "ctrl": {"suf": true, "rot": {"sup": 0.6905, "inf": 0.3095}}, "act": 554, "act_c": 554}
+{"i": 228, "mayer": {"suf": true, "rot": {"sup": 0.4895, "inf": 0.5105}}, "ctrl": {"suf": true, "rot": {"sup": 0.163, "inf": 0.837}}, "act": 418, "act_c": 418}
+{"i": 229, "mayer": {"suf": true, "rot": {"sup": 0.7585, "inf": 0.2415}}, "ctrl": {"suf": true, "rot": {"sup": 0.077, "inf": 0.923}}, "act": 507, "act_c": 507}
+{"i": 230, "mayer": {"suf": true, "rot": {"sup": 0.5425, "inf": 0.4575}}, "ctrl": {"suf": true, "rot": {"sup": 0.336, "inf": 0.664}}, "act": 398, "act_c": 398}
+{"i": 231, "mayer": {"suf": true, "rot": {"sup": 0.987, "inf": 0.013}}, "ctrl": {"suf": true, "rot": {"sup": 0.964, "inf": 0.036}}, "act": 562, "act_c": 562}
+{"i": 232, "mayer": {"suf": true, "rot": {"sup": 0.86, "inf": 0.14}}, "ctrl": {"suf": true, "rot": {"sup": 0.734, "inf": 0.266}}, "act": 371, "act_c": 371}
+{"i": 233, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 578, "act_c": 578}
+{"i": 234, "mayer": {"suf": true, "rot": {"sup": 0.8215, "inf": 0.1795}}, "ctrl": {"suf": true, "rot": {"sup": 0.8845, "inf": 0.1155}}, "act": 473, "act_c": 473}
+{"i": 235, "mayer": {"suf": true, "rot": {"sup": 0.464, "inf": 0.536}}, "ctrl": {"suf": true, "rot": {"sup": 0.588, "inf": 0.4125}}, "act": 619, "act_c": 619}
+{"i": 236, "mayer": {"suf": true, "rot": {"sup": 0.3925, "inf": 0.6075}}, "ctrl": {"suf": true, "rot": {"sup": 0.844, "inf": 0.156}}, "act": 405, "act_c": 405}
+{"i": 237, "mayer": {"suf": true, "rot": {"sup": 0.5645, "inf": 0.4355}}, "ctrl": {"suf": true, "rot": {"sup": 0.572, "inf": 0.428}}, "act": 326, "act_c": 326}
+{"i": 238, "mayer": {"suf": true, "rot": {"sup": 0.63, "inf": 0.37}}, "ctrl": {"suf": true, "rot": {"sup": 0.6045, "inf": 0.3955}}, "act": 488, "act_c": 488}
+{"i": 239, "mayer": {"suf": true, "rot": {"sup": 0.378, "inf": 0.622}}, "ctrl": {"suf": true, "rot": {"sup": 0.893, "inf": 0.107}}, "act": 405, "act_c": 405}
+{"i": 240, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 535, "act_c": 535}
+{"i": 241, "mayer": {"suf": true, "rot": {"sup": 0.7815, "inf": 0.2185}}, "ctrl": {"suf": true, "rot": {"sup": 0.2955, "inf": 0.7045}}, "act": 420, "act_c": 420}
+{"i": 242, "mayer": {"suf": true, "rot": {"sup": 0.723, "inf": 0.277}}, "ctrl": {"suf": true, "rot": {"sup": 0.9335, "inf": 0.0665}}, "act": 590, "act_c": 590}
+{"i": 243, "mayer": {"suf": true, "rot": {"sup": 1.0, "inf": 0.0}}, "ctrl": {"suf": true, "rot": {"sup": 0.121, "inf": 0.879}}, "act": 475, "act_c": 475}
+{"i": 244, "mayer": {"suf": true, "rot": {"sup": 0.7925, "inf": 0.208}}, "ctrl": {"suf": true, "rot": {"sup": 0.191, "inf": 0.809}}, "act": 433, "act_c": 433}
+{"i": 245, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 508, "act_c": 508}
+{"i": 246, "mayer": {"suf": true, "rot": {"sup": 0.157, "inf": 0.843}}, "ctrl": {"suf": true, "rot": {"sup": 0.8585, "inf": 0.1415}}, "act": 407, "act_c": 407}
+{"i": 247, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 581, "act_c": 581}
+{"i": 248, "mayer": {"suf": true, "rot": {"sup": 0.3455, "inf": 0.6545}}, "ctrl": {"suf": true, "rot": {"sup": 0.0975, "inf": 0.9025}}, "act": 483, "act_c": 483}
+{"i": 249, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.7265, "inf": 0.2735}}, "act": 613, "act_c": 613}
+{"i": 250, "mayer": {"suf": true, "rot": {"sup": 0.3445, "inf": 0.6555}}, "ctrl": {"suf": true, "rot": {"sup": 0.13, "inf": 0.87}}, "act": 488, "act_c": 488}
+{"i": 251, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 607, "act_c": 607}
+{"i": 252, "mayer": {"suf": true, "rot": {"sup": 0.487, "inf": 0.513}}, "ctrl": {"suf": true, "rot": {"sup": 0.359, "inf": 0.6425}}, "act": 539, "act_c": 539}
+{"i": 253, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.939, "inf": 0.061}}, "act": 474, "act_c": 474}
+{"i": 254, "mayer": {"suf": true, "rot": {"sup": 0.7985, "inf": 0.2015}}, "ctrl": {"suf": true, "rot": {"sup": 0.0975, "inf": 0.9025}}, "act": 601, "act_c": 601}
+{"i": 255, "mayer": {"suf": true, "rot": {"sup": 0.567, "inf": 0.433}}, "ctrl": {"suf": true, "rot": {"sup": 0.4715, "inf": 0.5285}}, "act": 613, "act_c": 613}
+{"i": 256, "mayer": {"suf": true, "rot": {"sup": 0.7305, "inf": 0.2695}}, "ctrl": {"suf": true, "rot": {"sup": 0.539, "inf": 0.461}}, "act": 478, "act_c": 478}
+{"i": 257, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.8615, "inf": 0.1385}}, "act": 528, "act_c": 528}
+{"i": 258, "mayer": {"suf": true, "rot": {"sup": 0.7155, "inf": 0.2845}}, "ctrl": {"suf": true, "rot": {"sup": 0.0155, "inf": 0.9845}}, "act": 390, "act_c": 390}
+{"i": 259, "mayer": {"suf": true, "rot": {"sup": 0.8295, "inf": 0.1705}}, "ctrl": {"suf": true, "rot": {"sup": 0.2715, "inf": 0.7285}}, "act": 393, "act_c": 393}
+{"i": 260, "mayer": {"suf": true, "rot": {"sup": 0.5595, "inf": 0.4405}}, "ctrl": {"suf": true, "rot": {"sup": 0.2005, "inf": 0.7995}}, "act": 409, "act_c": 409}
+{"i": 261, "mayer": {"suf": true, "rot": {"sup": 0.9485, "inf": 0.0515}}, "ctrl": {"suf": true, "rot": {"sup": 0.2945, "inf": 0.7055}}, "act": 509, "act_c": 509}
+{"i": 262, "mayer": {"suf": true, "rot": {"sup": 0.481, "inf": 0.5205}}, "ctrl": {"suf": true, "rot": {"sup": 0.727, "inf": 0.273}}, "act": 513, "act_c": 513}
+{"i": 263, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 550, "act_c": 550}
+{"i": 264, "mayer": {"suf": true, "rot": {"sup": 0.1615, "inf": 0.8385}}, "ctrl": {"suf": true, "rot": {"sup": 0.868, "inf": 0.132}}, "act": 681, "act_c": 681}
+{"i": 265, "mayer": {"suf": true, "rot": {"sup": 0.915, "inf": 0.085}}, "ctrl": {"suf": true, "rot": {"sup": 0.1205, "inf": 0.8795}}, "act": 436, "act_c": 436}
+{"i": 266, "mayer": {"suf": true, "rot": {"sup": 0.559, "inf": 0.441}}, "ctrl": {"suf": true, "rot": {"sup": 0.4105, "inf": 0.5895}}, "act": 466, "act_c": 466}
+{"i": 267, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.975, "inf": 0.025}}, "act": 415, "act_c": 415}
+{"i": 268, "mayer": {"suf": true, "rot": {"sup": 0.6665, "inf": 0.3335}}, "ctrl": {"suf": true, "rot": {"sup": 0.9885, "inf": 0.0115}}, "act": 551, "act_c": 551}
+{"i": 269, "mayer": {"suf": true, "rot": {"sup": 0.914, "inf": 0.086}}, "ctrl": {"suf": true, "rot": {"sup": 0.571, "inf": 0.429}}, "act": 412, "act_c": 412}
+{"i": 270, "mayer": {"suf": true, "rot": {"sup": 0.7995, "inf": 0.2005}}, "ctrl": {"suf": true, "rot": {"sup": 0.3375, "inf": 0.6625}}, "act": 512, "act_c": 512}
+{"i": 271, "mayer": {"suf": true, "rot": {"sup": 0.513, "inf": 0.487}}, "ctrl": {"suf": true, "rot": {"sup": 0.218, "inf": 0.782}}, "act": 565, "act_c": 565}
+{"i": 272, "mayer": {"suf": true, "rot": {"sup": 0.5535, "inf": 0.4465}}, "ctrl": {"suf": true, "rot": {"sup": 1.0, "inf": 0.0}}, "act": 393, "act_c": 393}
+{"i": 273, "mayer": {"suf": true, "rot": {"sup": 0.7, "inf": 0.3}}, "ctrl": {"suf": true, "rot": {"sup": 0.4005, "inf": 0.5995}}, "act": 380, "act_c": 380}
+{"i": 274, "mayer": {"suf": true, "rot": {"sup": 0.1125, "inf": 0.8875}}, "ctrl": {"suf": true, "rot": {"sup": 0.6005, "inf": 0.3995}}, "act": 555, "act_c": 555}
+{"i": 275, "mayer": {"suf": true, "rot": {"sup": 0.7515, "inf": 0.2485}}, "ctrl": {"suf": true, "rot": {"sup": 0.417, "inf": 0.583}}, "act": 539, "act_c": 539}
+{"i": 276, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.587, "inf": 0.413}}, "act": 413, "act_c": 413}
+{"i": 277, "mayer": {"suf": true, "rot": {"sup": 0.578, "inf": 0.422}}, "ctrl": {"suf": true, "rot": {"sup": 0.843, "inf": 0.157}}, "act": 414, "act_c": 414}
+{"i": 278, "mayer": {"suf": true, "rot": {"sup": 0.5795, "inf": 0.4205}}, "ctrl": {"suf": true, "rot": {"sup": 0.157, "inf": 0.843}}, "act": 531, "act_c": 531}
+{"i": 279, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 563, "act_c": 563}
+{"i": 280, "mayer": {"suf": true, "rot": {"sup": 0.5595, "inf": 0.4405}}, "ctrl": {"suf": true, "rot": {"sup": 0.7885, "inf": 0.2115}}, "act": 491, "act_c": 491}
+{"i": 281, "mayer": {"suf": true, "rot": {"sup": 0.2945, "inf": 0.7055}}, "ctrl": {"suf": true, "rot": {"sup": 0.975, "inf": 0.025}}, "act": 438, "act_c": 438}
+{"i": 282, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.6945, "inf": 0.3055}}, "act": 376, "act_c": 376}
+{"i": 283, "mayer": {"suf": true, "rot": {"sup": 0.832, "inf": 0.168}}, "ctrl": {"suf": true, "rot": {"sup": 0.8445, "inf": 0.1555}}, "act": 683, "act_c": 683}
+{"i": 284, "mayer": {"suf": true, "rot": {"sup": 0.5285, "inf": 0.4715}}, "ctrl": {"suf": true, "rot": {"sup": 0.9645, "inf": 0.0355}}, "act": 497, "act_c": 497}
+{"i": 285, "mayer": {"suf": true, "rot": {"sup": 0.989, "inf": 0.011}}, "ctrl": {"suf": true, "rot": {"sup": 0.137, "inf": 0.863}}, "act": 485, "act_c": 485}
+{"i": 286, "mayer": {"suf": true, "rot": {"sup": 0.882, "inf": 0.118}}, "ctrl": {"suf": true, "rot": {"sup": 0.971, "inf": 0.029}}, "act": 482, "act_c": 482}
+{"i": 287, "mayer": {"suf": true, "rot": {"sup": 0.8115, "inf": 0.1885}}, "ctrl": {"suf": true, "rot": {"sup": 0.7365, "inf": 0.2635}}, "act": 454, "act_c": 454}
+{"i": 288, "mayer": {"suf": true, "rot": {"sup": 0.49, "inf": 0.51}}, "ctrl": {"suf": true, "rot": {"sup": 0.3465, "inf": 0.6535}}, "act": 476, "act_c": 476}
+{"i": 289, "mayer": {"suf": true, "rot": {"sup": 0.931, "inf": 0.069}}, "ctrl": {"suf": true, "rot": {"sup": 0.0665, "inf": 0.9335}}, "act": 399, "act_c": 399}
+{"i": 290, "mayer": {"suf": true, "rot": {"sup": 0.446, "inf": 0.554}}, "ctrl": {"suf": true, "rot": {"sup": 0.4535, "inf": 0.5465}}, "act": 472, "act_c": 472}
+{"i": 291, "mayer": {"suf": true, "rot": {"sup": 0.9675, "inf": 0.0325}}, "ctrl": {"suf": true, "rot": {"sup": 0.461, "inf": 0.539}}, "act": 432, "act_c": 432}
+{"i": 292, "mayer": {"suf": true, "rot": {"sup": 0.8215, "inf": 0.1785}}, "ctrl": {"suf": true, "rot": {"sup": 0.2105, "inf": 0.7895}}, "act": 566, "act_c": 566}
+{"i": 293, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.128, "inf": 0.872}}, "act": 646, "act_c": 646}
+{"i": 294, "mayer": {"suf": true, "rot": {"sup": 0.835, "inf": 0.165}}, "ctrl": {"suf": true, "rot": {"sup": 0.5785, "inf": 0.4215}}, "act": 513, "act_c": 513}
+{"i": 295, "mayer": {"suf": true, "rot": {"sup": 0.627, "inf": 0.373}}, "ctrl": {"suf": true, "rot": {"sup": 0.1775, "inf": 0.8225}}, "act": 386, "act_c": 386}
+{"i": 296, "mayer": {"suf": true, "rot": {"sup": 0.3775, "inf": 0.6225}}, "ctrl": {"suf": true, "rot": {"sup": 0.6375, "inf": 0.3625}}, "act": 603, "act_c": 603}
+{"i": 297, "mayer": {"suf": true, "rot": {"sup": 0.323, "inf": 0.677}}, "ctrl": {"suf": true, "rot": {"sup": 0.752, "inf": 0.248}}, "act": 508, "act_c": 508}
+{"i": 298, "mayer": {"suf": true, "rot": {"sup": 0.2845, "inf": 0.7155}}, "ctrl": {"suf": true, "rot": {"sup": 0.7655, "inf": 0.2345}}, "act": 631, "act_c": 631}
+{"i": 299, "mayer": {"suf": true, "rot": {"sup": 0.0615, "inf": 0.9385}}, "ctrl": {"suf": true, "rot": {"sup": 0.337, "inf": 0.663}}, "act": 478, "act_c": 478}
+{"i": 300, "mayer": {"suf": true, "rot": {"sup": 0.563, "inf": 0.437}}, "ctrl": {"suf": true, "rot": {"sup": 0.8665, "inf": 0.1335}}, "act": 522, "act_c": 522}
+{"i": 301, "mayer": {"suf": true, "rot": {"sup": 0.578, "inf": 0.422}}, "ctrl": {"suf": true, "rot": {"sup": 0.185, "inf": 0.8165}}, "act": 489, "act_c": 489}
+{"i": 302, "mayer": {"suf": true, "rot": {"sup": 0.9345, "inf": 0.0655}}, "ctrl": {"suf": true, "rot": {"sup": 0.8625, "inf": 0.1375}}, "act": 450, "act_c": 450}
+{"i": 303, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 568, "act_c": 568}
+{"i": 304, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.0, "inf": 1.0}}, "act": 495, "act_c": 495}
+{"i": 305, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.4315, "inf": 0.5685}}, "act": 465, "act_c": 465}
+{"i": 306, "mayer": {"suf": true, "rot": {"sup": 0.297, "inf": 0.703}}, "ctrl": {"suf": true, "rot": {"sup": 0.1725, "inf": 0.8275}}, "act": 405, "act_c": 405}
+{"i": 307, "mayer": {"suf": true, "rot": {"sup": 0.881, "inf": 0.119}}, "ctrl": {"suf": true, "rot": {"sup": 0.7395, "inf": 0.2605}}, "act": 466, "act_c": 466}
+{"i": 308, "mayer": {"suf": true, "rot": {"sup": 0.416, "inf": 0.584}}, "ctrl": {"suf": true, "rot": {"sup": 0.9145, "inf": 0.0855}}, "act": 430, "act_c": 430}
+{"i": 309, "mayer": {"suf": true, "rot": {"sup": 0.3885, "inf": 0.6115}}, "ctrl": {"suf": true, "rot": {"sup": 0.454, "inf": 0.546}}, "act": 483, "act_c": 483}
+{"i": 310, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.868, "inf": 0.132}}, "act": 500, "act_c": 500}
+{"i": 311, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.1865, "inf": 0.8135}}, "act": 346, "act_c": 346}
+{"i": 312, "mayer": {"suf": true, "rot": {"sup": 0.2775, "inf": 0.7225}}, "ctrl": {"suf": true, "rot": {"sup": 0.9965, "inf": 0.0035}}, "act": 362, "act_c": 362}
+{"i": 313, "mayer": {"suf": true, "rot": {"sup": 0.3, "inf": 0.7}}, "ctrl": {"suf": true, "rot": {"sup": 0.9525, "inf": 0.0475}}, "act": 640, "act_c": 640}
+{"i": 314, "mayer": {"suf": true, "rot": {"sup": 0.193, "inf": 0.807}}, "ctrl": {"suf": true, "rot": {"sup": 0.463, "inf": 0.5385}}, "act": 445, "act_c": 445}
+{"i": 315, "mayer": {"suf": true, "rot": {"sup": 0.289, "inf": 0.711}}, "ctrl": {"suf": true, "rot": {"sup": 0.741, "inf": 0.259}}, "act": 406, "act_c": 406}
+{"i": 316, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.5005, "inf": 0.4995}}, "act": 502, "act_c": 502}
+{"i": 317, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 640, "act_c": 640}
+{"i": 318, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 540, "act_c": 540}
+{"i": 319, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.5315, "inf": 0.4685}}, "act": 498, "act_c": 498}
+{"i": 320, "mayer": {"suf": true, "rot": {"sup": 0.895, "inf": 0.105}}, "ctrl": {"suf": true, "rot": {"sup": 0.756, "inf": 0.244}}, "act": 399, "act_c": 399}
+{"i": 321, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 559, "act_c": 559}
+{"i": 322, "mayer": {"suf": true, "rot": {"sup": 0.595, "inf": 0.405}}, "ctrl": {"suf": true, "rot": {"sup": 0.97, "inf": 0.03}}, "act": 501, "act_c": 501}
+{"i": 323, "mayer": {"suf": true, "rot": {"sup": 0.9965, "inf": 0.0035}}, "ctrl": {"suf": true, "rot": {"sup": 0.286, "inf": 0.714}}, "act": 462, "act_c": 462}
+{"i": 324, "mayer": {"suf": true, "rot": {"sup": 0.0575, "inf": 0.9425}}, "ctrl": {"suf": true, "rot": {"sup": 0.839, "inf": 0.161}}, "act": 583, "act_c": 583}
+{"i": 325, "mayer": {"suf": true, "rot": {"sup": 0.931, "inf": 0.069}}, "ctrl": {"suf": true, "rot": {"sup": 0.759, "inf": 0.241}}, "act": 600, "act_c": 600}
+{"i": 326, "mayer": {"suf": true, "rot": {"sup": 0.655, "inf": 0.345}}, "ctrl": {"suf": true, "rot": {"sup": 0.513, "inf": 0.487}}, "act": 402, "act_c": 402}
+{"i": 327, "mayer": {"suf": true, "rot": {"sup": 0.6585, "inf": 0.3415}}, "ctrl": {"suf": true, "rot": {"sup": 0.042, "inf": 0.958}}, "act": 540, "act_c": 540}
+{"i": 328, "mayer": {"suf": true, "rot": {"sup": 0.944, "inf": 0.056}}, "ctrl": {"suf": true, "rot": {"sup": 0.4215, "inf": 0.5785}}, "act": 492, "act_c": 492}
+{"i": 329, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.129, "inf": 0.871}}, "act": 530, "act_c": 530}
+{"i": 330, "mayer": {"suf": true, "rot": {"sup": 0.9005, "inf": 0.0995}}, "ctrl": {"suf": true, "rot": {"sup": 0.959, "inf": 0.041}}, "act": 498, "act_c": 498}
+{"i": 331, "mayer": {"suf": true, "rot": {"sup": 0.5765, "inf": 0.4235}}, "ctrl": {"suf": true, "rot": {"sup": 0.7065, "inf": 0.2935}}, "act": 450, "act_c": 450}
+{"i": 332, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 399, "act_c": 399}
+{"i": 333, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.3245, "inf": 0.6755}}, "act": 547, "act_c": 547}
+{"i": 334, "mayer": {"suf": true, "rot": {"sup": 0.26, "inf": 0.74}}, "ctrl": {"suf": true, "rot": {"sup": 0.95, "inf": 0.0515}}, "act": 407, "act_c": 407}
+{"i": 335, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.034, "inf": 0.967}}, "act": 577, "act_c": 577}
+{"i": 336, "mayer": {"suf": true, "rot": {"sup": 0.4865, "inf": 0.5135}}, "ctrl": {"suf": true, "rot": {"sup": 0.149, "inf": 0.851}}, "act": 473, "act_c": 473}
+{"i": 337, "mayer": {"suf": true, "rot": {"sup": 0.7595, "inf": 0.2405}}, "ctrl": {"suf": true, "rot": {"sup": 0.2415, "inf": 0.7585}}, "act": 319, "act_c": 319}
+{"i": 338, "mayer": {"suf": true, "rot": {"sup": 0.3385, "inf": 0.6615}}, "ctrl": {"suf": true, "rot": {"sup": 0.521, "inf": 0.479}}, "act": 566, "act_c": 566}
+{"i": 339, "mayer": {"suf": true, "rot": {"sup": 0.8845, "inf": 0.1155}}, "ctrl": {"suf": true, "rot": {"sup": 0.6695, "inf": 0.331}}, "act": 455, "act_c": 455}
+{"i": 340, "mayer": {"suf": true, "rot": {"sup": 0.9065, "inf": 0.0935}}, "ctrl": {"suf": true, "rot": {"sup": 0.2655, "inf": 0.7345}}, "act": 501, "act_c": 501}
+{"i": 341, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 469, "act_c": 469}
+{"i": 342, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 559, "act_c": 559}
+{"i": 343, "mayer": {"suf": true, "rot": {"sup": 0.6675, "inf": 0.3325}}, "ctrl": {"suf": true, "rot": {"sup": 0.7165, "inf": 0.2835}}, "act": 492, "act_c": 492}
+{"i": 344, "mayer": {"suf": true, "rot": {"sup": 0.8875, "inf": 0.1125}}, "ctrl": {"suf": true, "rot": {"sup": 0.7985, "inf": 0.2015}}, "act": 511, "act_c": 511}
+{"i": 345, "mayer": {"suf": true, "rot": {"sup": 0.671, "inf": 0.329}}, "ctrl": {"suf": true, "rot": {"sup": 0.235, "inf": 0.765}}, "act": 464, "act_c": 464}
+{"i": 346, "mayer": {"suf": true, "rot": {"sup": 0.5325, "inf": 0.4675}}, "ctrl": {"suf": true, "rot": {"sup": 0.0875, "inf": 0.9125}}, "act": 606, "act_c": 606}
+{"i": 347, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.7465, "inf": 0.2535}}, "act": 375, "act_c": 375}
+{"i": 348, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 521, "act_c": 521}
+{"i": 349, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.8565, "inf": 0.1435}}, "act": 513, "act_c": 513}
+{"i": 350, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 459, "act_c": 459}
+{"i": 351, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 569, "act_c": 569}
+{"i": 352, "mayer": {"suf": true, "rot": {"sup": 0.383, "inf": 0.617}}, "ctrl": {"suf": true, "rot": {"sup": 0.806, "inf": 0.194}}, "act": 560, "act_c": 560}
+{"i": 353, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.3235, "inf": 0.6765}}, "act": 572, "act_c": 572}
+{"i": 354, "mayer": {"suf": true, "rot": {"sup": 0.976, "inf": 0.024}}, "ctrl": {"suf": true, "rot": {"sup": 0.4015, "inf": 0.5985}}, "act": 477, "act_c": 477}
+{"i": 355, "mayer": {"suf": true, "rot": {"sup": 0.322, "inf": 0.678}}, "ctrl": {"suf": true, "rot": {"sup": 1.0, "inf": 0.0}}, "act": 461, "act_c": 461}
+{"i": 356, "mayer": {"suf": true, "rot": {"sup": 0.8925, "inf": 0.1075}}, "ctrl": {"suf": true, "rot": {"sup": 0.22, "inf": 0.78}}, "act": 409, "act_c": 409}
+{"i": 357, "mayer": {"suf": true, "rot": {"sup": 0.8355, "inf": 0.1645}}, "ctrl": {"suf": true, "rot": {"sup": 0.138, "inf": 0.862}}, "act": 674, "act_c": 674}
+{"i": 358, "mayer": {"suf": true, "rot": {"sup": 0.2535, "inf": 0.7465}}, "ctrl": {"suf": true, "rot": {"sup": 0.366, "inf": 0.634}}, "act": 418, "act_c": 418}
+{"i": 359, "mayer": {"suf": true, "rot": {"sup": 0.144, "inf": 0.856}}, "ctrl": {"suf": true, "rot": {"sup": 0.3225, "inf": 0.6775}}, "act": 636, "act_c": 636}
+{"i": 360, "mayer": {"suf": true, "rot": {"sup": 0.3665, "inf": 0.6335}}, "ctrl": {"suf": true, "rot": {"sup": 0.1665, "inf": 0.8335}}, "act": 418, "act_c": 418}
+{"i": 361, "mayer": {"suf": true, "rot": {"sup": 0.639, "inf": 0.361}}, "ctrl": {"suf": true, "rot": {"sup": 0.8375, "inf": 0.1625}}, "act": 492, "act_c": 492}
+{"i": 362, "mayer": {"suf": true, "rot": {"sup": 0.9495, "inf": 0.0505}}, "ctrl": {"suf": true, "rot": {"sup": 0.1345, "inf": 0.8655}}, "act": 694, "act_c": 694}
+{"i": 363, "mayer": {"suf": true, "rot": {"sup": 0.435, "inf": 0.565}}, "ctrl": {"suf": true, "rot": {"sup": 0.14, "inf": 0.86}}, "act": 531, "act_c": 531}
+{"i": 364, "mayer": {"suf": true, "rot": {"sup": 0.724, "inf": 0.276}}, "ctrl": {"suf": true, "rot": {"sup": 0.7115, "inf": 0.2885}}, "act": 530, "act_c": 530}
+{"i": 365, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 474, "act_c": 474}
+{"i": 366, "mayer": {"suf": true, "rot": {"sup": 0.804, "inf": 0.196}}, "ctrl": {"suf": true, "rot": {"sup": 0.6485, "inf": 0.3515}}, "act": 379, "act_c": 379}
+{"i": 367, "mayer": {"suf": true, "rot": {"sup": 0.195, "inf": 0.805}}, "ctrl": {"suf": true, "rot": {"sup": 0.082, "inf": 0.918}}, "act": 653, "act_c": 653}
+{"i": 368, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.425, "inf": 0.5755}}, "act": 607, "act_c": 607}
+{"i": 369, "mayer": {"suf": true, "rot": {"sup": 0.327, "inf": 0.673}}, "ctrl": {"suf": true, "rot": {"sup": 0.3935, "inf": 0.6065}}, "act": 526, "act_c": 526}
+{"i": 370, "mayer": {"suf": true, "rot": {"sup": 0.069, "inf": 0.931}}, "ctrl": {"suf": true, "rot": {"sup": 0.6645, "inf": 0.3355}}, "act": 599, "act_c": 599}
+{"i": 371, "mayer": {"suf": true, "rot": {"sup": 0.144, "inf": 0.856}}, "ctrl": {"suf": true, "rot": {"sup": 0.9395, "inf": 0.0605}}, "act": 638, "act_c": 638}
+{"i": 372, "mayer": {"suf": true, "rot": {"sup": 0.6915, "inf": 0.3085}}, "ctrl": {"suf": true, "rot": {"sup": 0.221, "inf": 0.779}}, "act": 520, "act_c": 520}
+{"i": 373, "mayer": {"suf": true, "rot": {"sup": 0.715, "inf": 0.285}}, "ctrl": {"suf": true, "rot": {"sup": 0.8525, "inf": 0.1475}}, "act": 480, "act_c": 480}
+{"i": 374, "mayer": {"suf": true, "rot": {"sup": 0.476, "inf": 0.524}}, "ctrl": {"suf": true, "rot": {"sup": 0.1935, "inf": 0.8065}}, "act": 428, "act_c": 428}
+{"i": 375, "mayer": {"suf": true, "rot": {"sup": 0.536, "inf": 0.464}}, "ctrl": {"suf": true, "rot": {"sup": 0.391, "inf": 0.61}}, "act": 641, "act_c": 641}
+{"i": 376, "mayer": {"suf": true, "rot": {"sup": 0.5355, "inf": 0.4645}}, "ctrl": {"suf": true, "rot": {"sup": 0.8565, "inf": 0.1435}}, "act": 404, "act_c": 404}
+{"i": 377, "mayer": {"suf": true, "rot": {"sup": 0.9865, "inf": 0.0135}}, "ctrl": {"suf": true, "rot": {"sup": 0.092, "inf": 0.908}}, "act": 473, "act_c": 473}
+{"i": 378, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.2945, "inf": 0.7055}}, "act": 521, "act_c": 521}
+{"i": 379, "mayer": {"suf": true, "rot": {"sup": 0.5995, "inf": 0.4005}}, "ctrl": {"suf": true, "rot": {"sup": 0.7915, "inf": 0.2085}}, "act": 643, "act_c": 643}
+{"i": 380, "mayer": {"suf": true, "rot": {"sup": 0.65, "inf": 0.35}}, "ctrl": {"suf": true, "rot": {"sup": 0.6355, "inf": 0.3645}}, "act": 457, "act_c": 457}
+{"i": 381, "mayer": {"suf": true, "rot": {"sup": 0.795, "inf": 0.205}}, "ctrl": {"suf": true, "rot": {"sup": 0.8365, "inf": 0.1635}}, "act": 523, "act_c": 523}
+{"i": 382, "mayer": {"suf": true, "rot": {"sup": 0.951, "inf": 0.049}}, "ctrl": {"suf": true, "rot": {"sup": 0.4955, "inf": 0.5045}}, "act": 363, "act_c": 363}
+{"i": 383, "mayer": {"suf": true, "rot": {"sup": 0.729, "inf": 0.271}}, "ctrl": {"suf": true, "rot": {"sup": 0.5315, "inf": 0.4685}}, "act": 392, "act_c": 392}
+{"i": 384, "mayer": {"suf": true, "rot": {"sup": 0.3345, "inf": 0.6655}}, "ctrl": {"suf": true, "rot": {"sup": 0.0275, "inf": 0.9725}}, "act": 498, "act_c": 498}
+{"i": 385, "mayer": {"suf": true, "rot": {"sup": 0.569, "inf": 0.431}}, "ctrl": {"suf": true, "rot": {"sup": 0.375, "inf": 0.625}}, "act": 547, "act_c": 547}
+{"i": 386, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.5135, "inf": 0.4865}}, "act": 510, "act_c": 510}
+{"i": 387, "mayer": {"suf": true, "rot": {"sup": 0.9175, "inf": 0.0825}}, "ctrl": {"suf": true, "rot": {"sup": 0.674, "inf": 0.326}}, "act": 515, "act_c": 515}
+{"i": 388, "mayer": {"suf": true, "rot": {"sup": 0.9195, "inf": 0.0805}}, "ctrl": {"suf": true, "rot": {"sup": 0.2015, "inf": 0.7985}}, "act": 517, "act_c": 517}
+{"i": 389, "mayer": {"suf": true, "rot": {"sup": 0.5015, "inf": 0.5015}}, "ctrl": {"suf": true, "rot": {"sup": 0.48, "inf": 0.52}}, "act": 573, "act_c": 573}
+{"i": 390, "mayer": {"suf": true, "rot": {"sup": 0.7725, "inf": 0.2275}}, "ctrl": {"suf": true, "rot": {"sup": 0.8795, "inf": 0.1205}}, "act": 430, "act_c": 430}
+{"i": 391, "mayer": {"suf": true, "rot": {"sup": 0.6555, "inf": 0.3445}}, "ctrl": {"suf": true, "rot": {"sup": 0.5755, "inf": 0.4245}}, "act": 489, "act_c": 489}
+{"i": 392, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.229, "inf": 0.771}}, "act": 356, "act_c": 356}
+{"i": 393, "mayer": {"suf": true, "rot": {"sup": 0.7225, "inf": 0.2775}}, "ctrl": {"suf": true, "rot": {"sup": 0.1375, "inf": 0.8625}}, "act": 381, "act_c": 381}
+{"i": 394, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.7315, "inf": 0.2685}}, "act": 431, "act_c": 431}
+{"i": 395, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.2955, "inf": 0.7045}}, "act": 453, "act_c": 453}
+{"i": 396, "mayer": {"suf": true, "rot": {"sup": 0.4475, "inf": 0.5525}}, "ctrl": {"suf": true, "rot": {"sup": 0.8635, "inf": 0.1365}}, "act": 568, "act_c": 568}
+{"i": 397, "mayer": {"suf": true, "rot": {"sup": 0.2745, "inf": 0.7255}}, "ctrl": {"suf": true, "rot": {"sup": 0.1795, "inf": 0.8205}}, "act": 582, "act_c": 582}
+{"i": 398, "mayer": {"suf": true, "rot": {"sup": 0.266, "inf": 0.734}}, "ctrl": {"suf": true, "rot": {"sup": 0.9375, "inf": 0.0625}}, "act": 558, "act_c": 558}
+{"i": 399, "mayer": {"suf": true, "rot": {"sup": 0.565, "inf": 0.435}}, "ctrl": {"suf": true, "rot": {"sup": 0.4985, "inf": 0.5015}}, "act": 542, "act_c": 542}
+{"i": 400, "mayer": {"suf": true, "rot": {"sup": 0.37, "inf": 0.63}}, "ctrl": {"suf": true, "rot": {"sup": 0.242, "inf": 0.758}}, "act": 495, "act_c": 495}
+{"i": 401, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 475, "act_c": 475}
+{"i": 402, "mayer": {"suf": true, "rot": {"sup": 0.9285, "inf": 0.0715}}, "ctrl": {"suf": true, "rot": {"sup": 0.2515, "inf": 0.7485}}, "act": 442, "act_c": 442}
+{"i": 403, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.728, "inf": 0.272}}, "act": 468, "act_c": 468}
+{"i": 404, "mayer": {"suf": true, "rot": {"sup": 0.8765, "inf": 0.1235}}, "ctrl": {"suf": true, "rot": {"sup": 0.7325, "inf": 0.2675}}, "act": 556, "act_c": 556}
+{"i": 405, "mayer": {"suf": true, "rot": {"sup": 0.811, "inf": 0.189}}, "ctrl": {"suf": false}, "act": 656, "act_c": 656}
+{"i": 406, "mayer": {"suf": true, "rot": {"sup": 0.5385, "inf": 0.4615}}, "ctrl": {"suf": true, "rot": {"sup": 0.3455, "inf": 0.6545}}, "act": 465, "act_c": 465}
+{"i": 407, "mayer": {"suf": true, "rot": {"sup": 0.1845, "inf": 0.8155}}, "ctrl": {"suf": true, "rot": {"sup": 0.805, "inf": 0.195}}, "act": 484, "act_c": 484}
+{"i": 408, "mayer": {"suf": true, "rot": {"sup": 0.789, "inf": 0.211}}, "ctrl": {"suf": true, "rot": {"sup": 0.571, "inf": 0.43}}, "act": 623, "act_c": 623}
+{"i": 409, "mayer": {"suf": true, "rot": {"sup": 0.5805, "inf": 0.4195}}, "ctrl": {"suf": true, "rot": {"sup": 0.851, "inf": 0.149}}, "act": 414, "act_c": 414}
+{"i": 410, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.3205, "inf": 0.6795}}, "act": 507, "act_c": 507}
+{"i": 411, "mayer": {"suf": true, "rot": {"sup": 0.215, "inf": 0.785}}, "ctrl": {"suf": true, "rot": {"sup": 0.3805, "inf": 0.6195}}, "act": 695, "act_c": 695}
+{"i": 412, "mayer": {"suf": true, "rot": {"sup": 0.5135, "inf": 0.487}}, "ctrl": {"suf": true, "rot": {"sup": 0.586, "inf": 0.414}}, "act": 560, "act_c": 560}
+{"i": 413, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 380, "act_c": 380}
+{"i": 414, "mayer": {"suf": true, "rot": {"sup": 0.875, "inf": 0.125}}, "ctrl": {"suf": true, "rot": {"sup": 0.1215, "inf": 0.8785}}, "act": 426, "act_c": 426}
+{"i": 415, "mayer": {"suf": true, "rot": {"sup": 0.577, "inf": 0.423}}, "ctrl": {"suf": true, "rot": {"sup": 0.03, "inf": 0.9705}}, "act": 465, "act_c": 465}
+{"i": 416, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 472, "act_c": 472}
+{"i": 417, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.0325, "inf": 0.9675}}, "act": 503, "act_c": 503}
+{"i": 418, "mayer": {"suf": true, "rot": {"sup": 0.996, "inf": 0.004}}, "ctrl": {"suf": true, "rot": {"sup": 0.277, "inf": 0.723}}, "act": 398, "act_c": 398}
+{"i": 419, "mayer": {"suf": true, "rot": {"sup": 0.1165, "inf": 0.8835}}, "ctrl": {"suf": true, "rot": {"sup": 0.948, "inf": 0.052}}, "act": 599, "act_c": 599}
+{"i": 420, "mayer": {"suf": true, "rot": {"sup": 0.8795, "inf": 0.1205}}, "ctrl": {"suf": true, "rot": {"sup": 0.4765, "inf": 0.5235}}, "act": 700, "act_c": 700}
+{"i": 421, "mayer": {"suf": true, "rot": {"sup": 0.4765, "inf": 0.5235}}, "ctrl": {"suf": true, "rot": {"sup": 0.325, "inf": 0.675}}, "act": 490, "act_c": 490}
+{"i": 422, "mayer": {"suf": true, "rot": {"sup": 0.567, "inf": 0.433}}, "ctrl": {"suf": true, "rot": {"sup": 0.823, "inf": 0.177}}, "act": 538, "act_c": 538}
+{"i": 423, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.4615, "inf": 0.5385}}, "act": 498, "act_c": 498}
+{"i": 424, "mayer": {"suf": true, "rot": {"sup": 0.4455, "inf": 0.5545}}, "ctrl": {"suf": true, "rot": {"sup": 0.794, "inf": 0.206}}, "act": 588, "act_c": 588}
+{"i": 425, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 626, "act_c": 626}
+{"i": 426, "mayer": {"suf": true, "rot": {"sup": 0.455, "inf": 0.545}}, "ctrl": {"suf": true, "rot": {"sup": 0.6625, "inf": 0.3375}}, "act": 627, "act_c": 627}
+{"i": 427, "mayer": {"suf": true, "rot": {"sup": 0.227, "inf": 0.773}}, "ctrl": {"suf": true, "rot": {"sup": 0.0145, "inf": 0.9855}}, "act": 493, "act_c": 493}
+{"i": 428, "mayer": {"suf": true, "rot": {"sup": 0.4665, "inf": 0.5335}}, "ctrl": {"suf": true, "rot": {"sup": 0.5795, "inf": 0.422}}, "act": 523, "act_c": 523}
+{"i": 429, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 435, "act_c": 435}
+{"i": 430, "mayer": {"suf": true, "rot": {"sup": 0.714, "inf": 0.286}}, "ctrl": {"suf": true, "rot": {"sup": 0.229, "inf": 0.771}}, "act": 457, "act_c": 457}
+{"i": 431, "mayer": {"suf": true, "rot": {"sup": 0.9825, "inf": 0.0175}}, "ctrl": {"suf": true, "rot": {"sup": 0.6405, "inf": 0.3595}}, "act": 392, "act_c": 392}
+{"i": 432, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 474, "act_c": 474}
+{"i": 433, "mayer": {"suf": true, "rot": {"sup": 0.9445, "inf": 0.0555}}, "ctrl": {"suf": true, "rot": {"sup": 0.3965, "inf": 0.604}}, "act": 371, "act_c": 371}
+{"i": 434, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 405, "act_c": 405}
+{"i": 435, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 522, "act_c": 522}
+{"i": 436, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 387, "act_c": 387}
+{"i": 437, "mayer": {"suf": true, "rot": {"sup": 0.0845, "inf": 0.9155}}, "ctrl": {"suf": true, "rot": {"sup": 0.024, "inf": 0.976}}, "act": 716, "act_c": 716}
+{"i": 438, "mayer": {"suf": true, "rot": {"sup": 0.8425, "inf": 0.1575}}, "ctrl": {"suf": true, "rot": {"sup": 0.661, "inf": 0.339}}, "act": 491, "act_c": 491}
+{"i": 439, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.8785, "inf": 0.1215}}, "act": 475, "act_c": 475}
+{"i": 440, "mayer": {"suf": true, "rot": {"sup": 0.1115, "inf": 0.8885}}, "ctrl": {"suf": true, "rot": {"sup": 0.0295, "inf": 0.9705}}, "act": 509, "act_c": 509}
+{"i": 441, "mayer": {"suf": true, "rot": {"sup": 0.9945, "inf": 0.0055}}, "ctrl": {"suf": true, "rot": {"sup": 0.2435, "inf": 0.7565}}, "act": 501, "act_c": 501}
+{"i": 442, "mayer": {"suf": true, "rot": {"sup": 0.8245, "inf": 0.1755}}, "ctrl": {"suf": true, "rot": {"sup": 0.8595, "inf": 0.1405}}, "act": 530, "act_c": 530}
+{"i": 443, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 587, "act_c": 587}
+{"i": 444, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 698, "act_c": 698}
+{"i": 445, "mayer": {"suf": true, "rot": {"sup": 0.6475, "inf": 0.3525}}, "ctrl": {"suf": true, "rot": {"sup": 0.159, "inf": 0.841}}, "act": 451, "act_c": 451}
+{"i": 446, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.502, "inf": 0.498}}, "act": 508, "act_c": 508}
+{"i": 447, "mayer": {"suf": true, "rot": {"sup": 0.6075, "inf": 0.3925}}, "ctrl": {"suf": true, "rot": {"sup": 0.258, "inf": 0.742}}, "act": 470, "act_c": 470}
+{"i": 448, "mayer": {"suf": true, "rot": {"sup": 0.1945, "inf": 0.8055}}, "ctrl": {"suf": true, "rot": {"sup": 0.55, "inf": 0.45}}, "act": 451, "act_c": 451}
+{"i": 449, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 402, "act_c": 402}
+{"i": 450, "mayer": {"suf": true, "rot": {"sup": 0.396, "inf": 0.604}}, "ctrl": {"suf": true, "rot": {"sup": 0.823, "inf": 0.177}}, "act": 647, "act_c": 647}
+{"i": 451, "mayer": {"suf": true, "rot": {"sup": 0.031, "inf": 0.969}}, "ctrl": {"suf": true, "rot": {"sup": 0.326, "inf": 0.674}}, "act": 491, "act_c": 491}
+{"i": 452, "mayer": {"suf": true, "rot": {"sup": 0.8415, "inf": 0.1585}}, "ctrl": {"suf": true, "rot": {"sup": 0.937, "inf": 0.063}}, "act": 326, "act_c": 326}
+{"i": 453, "mayer": {"suf": true, "rot": {"sup": 0.759, "inf": 0.241}}, "ctrl": {"suf": true, "rot": {"sup": 0.9335, "inf": 0.0665}}, "act": 549, "act_c": 549}
+{"i": 454, "mayer": {"suf": true, "rot": {"sup": 0.6905, "inf": 0.3095}}, "ctrl": {"suf": true, "rot": {"sup": 0.4045, "inf": 0.5955}}, "act": 437, "act_c": 437}
+{"i": 455, "mayer": {"suf": true, "rot": {"sup": 0.6915, "inf": 0.3085}}, "ctrl": {"suf": true, "rot": {"sup": 0.239, "inf": 0.761}}, "act": 538, "act_c": 538}
+{"i": 456, "mayer": {"suf": true, "rot": {"sup": 0.8265, "inf": 0.1735}}, "ctrl": {"suf": true, "rot": {"sup": 0.8585, "inf": 0.1415}}, "act": 502, "act_c": 502}
+{"i": 457, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 601, "act_c": 601}
+{"i": 458, "mayer": {"suf": true, "rot": {"sup": 0.1585, "inf": 0.8415}}, "ctrl": {"suf": true, "rot": {"sup": 0.5035, "inf": 0.4965}}, "act": 468, "act_c": 468}
+{"i": 459, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 681, "act_c": 681}
+{"i": 460, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.302, "inf": 0.698}}, "act": 439, "act_c": 439}
+{"i": 461, "mayer": {"suf": true, "rot": {"sup": 0.56, "inf": 0.4415}}, "ctrl": {"suf": true, "rot": {"sup": 0.3845, "inf": 0.6155}}, "act": 583, "act_c": 583}
+{"i": 462, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 451, "act_c": 451}
+{"i": 463, "mayer": {"suf": true, "rot": {"sup": 0.518, "inf": 0.4825}}, "ctrl": {"suf": true, "rot": {"sup": 0.561, "inf": 0.439}}, "act": 491, "act_c": 491}
+{"i": 464, "mayer": {"suf": true, "rot": {"sup": 0.523, "inf": 0.477}}, "ctrl": {"suf": true, "rot": {"sup": 0.916, "inf": 0.084}}, "act": 494, "act_c": 494}
+{"i": 465, "mayer": {"suf": true, "rot": {"sup": 0.2315, "inf": 0.7685}}, "ctrl": {"suf": true, "rot": {"sup": 0.791, "inf": 0.209}}, "act": 433, "act_c": 433}
+{"i": 466, "mayer": {"suf": true, "rot": {"sup": 0.5245, "inf": 0.4755}}, "ctrl": {"suf": true, "rot": {"sup": 0.1685, "inf": 0.8315}}, "act": 538, "act_c": 538}
+{"i": 467, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 398, "act_c": 398}
+{"i": 468, "mayer": {"suf": true, "rot": {"sup": 0.3675, "inf": 0.6325}}, "ctrl": {"suf": true, "rot": {"sup": 0.3915, "inf": 0.6085}}, "act": 353, "act_c": 353}
+{"i": 469, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 447, "act_c": 447}
+{"i": 470, "mayer": {"suf": true, "rot": {"sup": 0.6855, "inf": 0.3145}}, "ctrl": {"suf": true, "rot": {"sup": 0.952, "inf": 0.048}}, "act": 486, "act_c": 486}
+{"i": 471, "mayer": {"suf": true, "rot": {"sup": 0.5415, "inf": 0.46}}, "ctrl": {"suf": true, "rot": {"sup": 0.075, "inf": 0.925}}, "act": 373, "act_c": 373}
+{"i": 472, "mayer": {"suf": true, "rot": {"sup": 0.906, "inf": 0.094}}, "ctrl": {"suf": true, "rot": {"sup": 0.5575, "inf": 0.4425}}, "act": 436, "act_c": 436}
+{"i": 473, "mayer": {"suf": true, "rot": {"sup": 0.8505, "inf": 0.1495}}, "ctrl": {"suf": true, "rot": {"sup": 0.353, "inf": 0.647}}, "act": 508, "act_c": 508}
+{"i": 474, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.407, "inf": 0.593}}, "act": 456, "act_c": 456}
+{"i": 475, "mayer": {"suf": true, "rot": {"sup": 0.686, "inf": 0.314}}, "ctrl": {"suf": true, "rot": {"sup": 0.465, "inf": 0.535}}, "act": 419, "act_c": 419}
+{"i": 476, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 488, "act_c": 488}
+{"i": 477, "mayer": {"suf": true, "rot": {"sup": 0.723, "inf": 0.277}}, "ctrl": {"suf": true, "rot": {"sup": 0.292, "inf": 0.708}}, "act": 574, "act_c": 574}
+{"i": 478, "mayer": {"suf": true, "rot": {"sup": 0.963, "inf": 0.037}}, "ctrl": {"suf": true, "rot": {"sup": 0.1475, "inf": 0.8525}}, "act": 563, "act_c": 563}
+{"i": 479, "mayer": {"suf": true, "rot": {"sup": 0.105, "inf": 0.895}}, "ctrl": {"suf": true, "rot": {"sup": 0.039, "inf": 0.961}}, "act": 594, "act_c": 594}
+{"i": 480, "mayer": {"suf": true, "rot": {"sup": 1.0, "inf": 0.0}}, "ctrl": {"suf": true, "rot": {"sup": 0.927, "inf": 0.0745}}, "act": 425, "act_c": 425}
+{"i": 481, "mayer": {"suf": true, "rot": {"sup": 0.221, "inf": 0.779}}, "ctrl": {"suf": true, "rot": {"sup": 0.7585, "inf": 0.2415}}, "act": 504, "act_c": 504}
+{"i": 482, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.888, "inf": 0.112}}, "act": 413, "act_c": 413}
+{"i": 483, "mayer": {"suf": true, "rot": {"sup": 0.3975, "inf": 0.6025}}, "ctrl": {"suf": true, "rot": {"sup": 0.051, "inf": 0.949}}, "act": 290, "act_c": 290}
+{"i": 484, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 545, "act_c": 545}
+{"i": 485, "mayer": {"suf": true, "rot": {"sup": 0.327, "inf": 0.673}}, "ctrl": {"suf": true, "rot": {"sup": 0.0, "inf": 1.0}}, "act": 504, "act_c": 504}
+{"i": 486, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 436, "act_c": 436}
+{"i": 487, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.2235, "inf": 0.7765}}, "act": 593, "act_c": 593}
+{"i": 488, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.232, "inf": 0.768}}, "act": 398, "act_c": 398}
+{"i": 489, "mayer": {"suf": true, "rot": {"sup": 0.151, "inf": 0.849}}, "ctrl": {"suf": true, "rot": {"sup": 0.089, "inf": 0.911}}, "act": 582, "act_c": 582}
+{"i": 490, "mayer": {"suf": true, "rot": {"sup": 0.2475, "inf": 0.7525}}, "ctrl": {"suf": true, "rot": {"sup": 0.7435, "inf": 0.2575}}, "act": 437, "act_c": 437}
+{"i": 491, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 435, "act_c": 435}
+{"i": 492, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 569, "act_c": 569}
+{"i": 493, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 467, "act_c": 467}
+{"i": 494, "mayer": {"suf": true, "rot": {"sup": 0.339, "inf": 0.661}}, "ctrl": {"suf": true, "rot": {"sup": 0.4245, "inf": 0.5755}}, "act": 580, "act_c": 580}
+{"i": 495, "mayer": {"suf": true, "rot": {"sup": 0.3405, "inf": 0.6595}}, "ctrl": {"suf": true, "rot": {"sup": 0.5245, "inf": 0.4765}}, "act": 505, "act_c": 505}
+{"i": 496, "mayer": {"suf": true, "rot": {"sup": 0.9545, "inf": 0.0455}}, "ctrl": {"suf": true, "rot": {"sup": 0.3735, "inf": 0.6265}}, "act": 509, "act_c": 509}
+{"i": 497, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.7945, "inf": 0.2055}}, "act": 356, "act_c": 356}
+{"i": 498, "mayer": {"suf": true, "rot": {"sup": 0.565, "inf": 0.435}}, "ctrl": {"suf": true, "rot": {"sup": 0.14, "inf": 0.86}}, "act": 505, "act_c": 505}
+{"i": 499, "mayer": {"suf": true, "rot": {"sup": 0.9005, "inf": 0.0995}}, "ctrl": {"suf": true, "rot": {"sup": 0.0365, "inf": 0.9635}}, "act": 438, "act_c": 438}
+{"i": 500, "mayer": {"suf": true, "rot": {"sup": 0.2735, "inf": 0.7265}}, "ctrl": {"suf": true, "rot": {"sup": 0.826, "inf": 0.174}}, "act": 553, "act_c": 553}
+{"i": 501, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 640, "act_c": 640}
+{"i": 502, "mayer": {"suf": true, "rot": {"sup": 0.341, "inf": 0.659}}, "ctrl": {"suf": true, "rot": {"sup": 0.2015, "inf": 0.7985}}, "act": 551, "act_c": 551}
+{"i": 503, "mayer": {"suf": true, "rot": {"sup": 0.3535, "inf": 0.6465}}, "ctrl": {"suf": true, "rot": {"sup": 0.662, "inf": 0.338}}, "act": 394, "act_c": 394}
+{"i": 504, "mayer": {"suf": true, "rot": {"sup": 0.8655, "inf": 0.1345}}, "ctrl": {"suf": true, "rot": {"sup": 0.2965, "inf": 0.7035}}, "act": 383, "act_c": 383}
+{"i": 505, "mayer": {"suf": true, "rot": {"sup": 0.816, "inf": 0.184}}, "ctrl": {"suf": true, "rot": {"sup": 0.7145, "inf": 0.2855}}, "act": 519, "act_c": 519}
+{"i": 506, "mayer": {"suf": true, "rot": {"sup": 0.501, "inf": 0.499}}, "ctrl": {"suf": true, "rot": {"sup": 0.016, "inf": 0.984}}, "act": 580, "act_c": 580}
+{"i": 507, "mayer": {"suf": true, "rot": {"sup": 0.446, "inf": 0.554}}, "ctrl": {"suf": true, "rot": {"sup": 0.4845, "inf": 0.5155}}, "act": 464, "act_c": 464}
+{"i": 508, "mayer": {"suf": true, "rot": {"sup": 0.3345, "inf": 0.6655}}, "ctrl": {"suf": true, "rot": {"sup": 0.2315, "inf": 0.7685}}, "act": 399, "act_c": 399}
+{"i": 509, "mayer": {"suf": true, "rot": {"sup": 0.643, "inf": 0.357}}, "ctrl": {"suf": true, "rot": {"sup": 0.7375, "inf": 0.2625}}, "act": 455, "act_c": 455}
+{"i": 510, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 524, "act_c": 524}
+{"i": 511, "mayer": {"suf": true, "rot": {"sup": 0.1945, "inf": 0.8055}}, "ctrl": {"suf": true, "rot": {"sup": 0.503, "inf": 0.497}}, "act": 564, "act_c": 564}
+{"i": 512, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.33, "inf": 0.67}}, "act": 531, "act_c": 531}
+{"i": 513, "mayer": {"suf": true, "rot": {"sup": 0.9775, "inf": 0.0225}}, "ctrl": {"suf": true, "rot": {"sup": 0.8995, "inf": 0.1005}}, "act": 541, "act_c": 541}
+{"i": 514, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 528, "act_c": 528}
+{"i": 515, "mayer": {"suf": true, "rot": {"sup": 0.271, "inf": 0.729}}, "ctrl": {"suf": true, "rot": {"sup": 0.556, "inf": 0.444}}, "act": 432, "act_c": 432}
+{"i": 516, "mayer": {"suf": true, "rot": {"sup": 0.9085, "inf": 0.0915}}, "ctrl": {"suf": true, "rot": {"sup": 0.9685, "inf": 0.0315}}, "act": 399, "act_c": 399}
+{"i": 517, "mayer": {"suf": true, "rot": {"sup": 0.6035, "inf": 0.3965}}, "ctrl": {"suf": true, "rot": {"sup": 0.133, "inf": 0.867}}, "act": 487, "act_c": 487}
+{"i": 518, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.9215, "inf": 0.0785}}, "act": 429, "act_c": 429}
+{"i": 519, "mayer": {"suf": true, "rot": {"sup": 0.933, "inf": 0.067}}, "ctrl": {"suf": true, "rot": {"sup": 0.0625, "inf": 0.9375}}, "act": 474, "act_c": 474}
+{"i": 520, "mayer": {"suf": true, "rot": {"sup": 0.398, "inf": 0.602}}, "ctrl": {"suf": true, "rot": {"sup": 0.0715, "inf": 0.9285}}, "act": 489, "act_c": 489}
+{"i": 521, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 518, "act_c": 518}
+{"i": 522, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 524, "act_c": 524}
+{"i": 523, "mayer": {"suf": true, "rot": {"sup": 0.248, "inf": 0.752}}, "ctrl": {"suf": true, "rot": {"sup": 0.361, "inf": 0.639}}, "act": 428, "act_c": 428}
+{"i": 524, "mayer": {"suf": true, "rot": {"sup": 0.281, "inf": 0.719}}, "ctrl": {"suf": true, "rot": {"sup": 0.729, "inf": 0.271}}, "act": 527, "act_c": 527}
+{"i": 525, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 548, "act_c": 548}
+{"i": 526, "mayer": {"suf": true, "rot": {"sup": 0.525, "inf": 0.475}}, "ctrl": {"suf": true, "rot": {"sup": 0.8685, "inf": 0.1315}}, "act": 564, "act_c": 564}
+{"i": 527, "mayer": {"suf": true, "rot": {"sup": 0.755, "inf": 0.245}}, "ctrl": {"suf": true, "rot": {"sup": 0.575, "inf": 0.425}}, "act": 502, "act_c": 502}
+{"i": 528, "mayer": {"suf": true, "rot": {"sup": 0.8655, "inf": 0.1345}}, "ctrl": {"suf": true, "rot": {"sup": 0.0265, "inf": 0.9735}}, "act": 521, "act_c": 521}
+{"i": 529, "mayer": {"suf": true, "rot": {"sup": 0.183, "inf": 0.817}}, "ctrl": {"suf": true, "rot": {"sup": 0.714, "inf": 0.286}}, "act": 405, "act_c": 405}
+{"i": 530, "mayer": {"suf": true, "rot": {"sup": 0.3415, "inf": 0.6585}}, "ctrl": {"suf": true, "rot": {"sup": 0.1095, "inf": 0.8905}}, "act": 567, "act_c": 567}
+{"i": 531, "mayer": {"suf": true, "rot": {"sup": 0.8465, "inf": 0.1535}}, "ctrl": {"suf": true, "rot": {"sup": 0.3745, "inf": 0.6255}}, "act": 392, "act_c": 392}
+{"i": 532, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.073, "inf": 0.927}}, "act": 443, "act_c": 443}
+{"i": 533, "mayer": {"suf": true, "rot": {"sup": 0.5835, "inf": 0.4165}}, "ctrl": {"suf": true, "rot": {"sup": 0.096, "inf": 0.904}}, "act": 632, "act_c": 632}
+{"i": 534, "mayer": {"suf": true, "rot": {"sup": 0.6145, "inf": 0.3855}}, "ctrl": {"suf": true, "rot": {"sup": 0.055, "inf": 0.945}}, "act": 470, "act_c": 470}
+{"i": 535, "mayer": {"suf": true, "rot": {"sup": 0.991, "inf": 0.009}}, "ctrl": {"suf": true, "rot": {"sup": 0.512, "inf": 0.488}}, "act": 537, "act_c": 537}
+{"i": 536, "mayer": {"suf": true, "rot": {"sup": 0.7165, "inf": 0.2835}}, "ctrl": {"suf": true, "rot": {"sup": 0.2195, "inf": 0.7805}}, "act": 425, "act_c": 425}
+{"i": 537, "mayer": {"suf": true, "rot": {"sup": 0.5495, "inf": 0.4505}}, "ctrl": {"suf": true, "rot": {"sup": 0.9755, "inf": 0.0245}}, "act": 488, "act_c": 488}
+{"i": 538, "mayer": {"suf": true, "rot": {"sup": 0.2965, "inf": 0.7035}}, "ctrl": {"suf": true, "rot": {"sup": 0.202, "inf": 0.798}}, "act": 550, "act_c": 550}
+{"i": 539, "mayer": {"suf": true, "rot": {"sup": 0.4655, "inf": 0.5345}}, "ctrl": {"suf": true, "rot": {"sup": 0.3805, "inf": 0.6195}}, "act": 495, "act_c": 495}
+{"i": 540, "mayer": {"suf": true, "rot": {"sup": 0.8085, "inf": 0.1915}}, "ctrl": {"suf": true, "rot": {"sup": 0.3425, "inf": 0.6575}}, "act": 470, "act_c": 470}
+{"i": 541, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 662, "act_c": 662}
+{"i": 542, "mayer": {"suf": true, "rot": {"sup": 0.5855, "inf": 0.4145}}, "ctrl": {"suf": true, "rot": {"sup": 0.9565, "inf": 0.0435}}, "act": 515, "act_c": 515}
+{"i": 543, "mayer": {"suf": true, "rot": {"sup": 0.845, "inf": 0.155}}, "ctrl": {"suf": true, "rot": {"sup": 0.203, "inf": 0.797}}, "act": 602, "act_c": 602}
+{"i": 544, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.081, "inf": 0.919}}, "act": 383, "act_c": 383}
+{"i": 545, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 623, "act_c": 623}
+{"i": 546, "mayer": {"suf": true, "rot": {"sup": 0.1815, "inf": 0.8185}}, "ctrl": {"suf": true, "rot": {"sup": 0.1605, "inf": 0.8395}}, "act": 552, "act_c": 552}
+{"i": 547, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 490, "act_c": 490}
+{"i": 548, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 510, "act_c": 510}
+{"i": 549, "mayer": {"suf": true, "rot": {"sup": 0.886, "inf": 0.114}}, "ctrl": {"suf": true, "rot": {"sup": 0.3455, "inf": 0.6545}}, "act": 640, "act_c": 640}
+{"i": 550, "mayer": {"suf": true, "rot": {"sup": 0.3955, "inf": 0.6045}}, "ctrl": {"suf": true, "rot": {"sup": 0.7135, "inf": 0.2865}}, "act": 485, "act_c": 485}
+{"i": 551, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.6715, "inf": 0.3285}}, "act": 456, "act_c": 456}
+{"i": 552, "mayer": {"suf": true, "rot": {"sup": 0.2485, "inf": 0.7515}}, "ctrl": {"suf": true, "rot": {"sup": 0.277, "inf": 0.723}}, "act": 577, "act_c": 577}
+{"i": 553, "mayer": {"suf": true, "rot": {"sup": 0.072, "inf": 0.928}}, "ctrl": {"suf": true, "rot": {"sup": 0.8275, "inf": 0.1725}}, "act": 615, "act_c": 615}
+{"i": 554, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 552, "act_c": 552}
+{"i": 555, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.0845, "inf": 0.9155}}, "act": 588, "act_c": 588}
+{"i": 556, "mayer": {"suf": true, "rot": {"sup": 0.963, "inf": 0.037}}, "ctrl": {"suf": true, "rot": {"sup": 0.755, "inf": 0.245}}, "act": 462, "act_c": 462}
+{"i": 557, "mayer": {"suf": true, "rot": {"sup": 0.9815, "inf": 0.0185}}, "ctrl": {"suf": true, "rot": {"sup": 0.976, "inf": 0.024}}, "act": 452, "act_c": 452}
+{"i": 558, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.4195, "inf": 0.5805}}, "act": 663, "act_c": 663}
+{"i": 559, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.796, "inf": 0.204}}, "act": 466, "act_c": 466}
+{"i": 560, "mayer": {"suf": true, "rot": {"sup": 0.9775, "inf": 0.0225}}, "ctrl": {"suf": true, "rot": {"sup": 0.0975, "inf": 0.9025}}, "act": 530, "act_c": 530}
+{"i": 561, "mayer": {"suf": true, "rot": {"sup": 0.991, "inf": 0.009}}, "ctrl": {"suf": true, "rot": {"sup": 0.219, "inf": 0.781}}, "act": 456, "act_c": 456}
+{"i": 562, "mayer": {"suf": true, "rot": {"sup": 0.6325, "inf": 0.3675}}, "ctrl": {"suf": true, "rot": {"sup": 0.0275, "inf": 0.9725}}, "act": 413, "act_c": 413}
+{"i": 563, "mayer": {"suf": true, "rot": {"sup": 0.528, "inf": 0.472}}, "ctrl": {"suf": true, "rot": {"sup": 0.994, "inf": 0.006}}, "act": 391, "act_c": 391}
+{"i": 564, "mayer": {"suf": true, "rot": {"sup": 0.5005, "inf": 0.4995}}, "ctrl": {"suf": true, "rot": {"sup": 0.021, "inf": 0.979}}, "act": 450, "act_c": 450}
+{"i": 565, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.215, "inf": 0.785}}, "act": 365, "act_c": 365}
+{"i": 566, "mayer": {"suf": true, "rot": {"sup": 0.8205, "inf": 0.1795}}, "ctrl": {"suf": true, "rot": {"sup": 0.978, "inf": 0.022}}, "act": 395, "act_c": 395}
+{"i": 567, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.9565, "inf": 0.0435}}, "act": 365, "act_c": 365}
+{"i": 568, "mayer": {"suf": true, "rot": {"sup": 0.8505, "inf": 0.1495}}, "ctrl": {"suf": true, "rot": {"sup": 0.8055, "inf": 0.1945}}, "act": 503, "act_c": 503}
+{"i": 569, "mayer": {"suf": true, "rot": {"sup": 0.207, "inf": 0.793}}, "ctrl": {"suf": true, "rot": {"sup": 0.4535, "inf": 0.5465}}, "act": 521, "act_c": 521}
+{"i": 570, "mayer": {"suf": true, "rot": {"sup": 0.151, "inf": 0.849}}, "ctrl": {"suf": true, "rot": {"sup": 0.3485, "inf": 0.6515}}, "act": 600, "act_c": 600}
+{"i": 571, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.4005, "inf": 0.5995}}, "act": 488, "act_c": 488}
+{"i": 572, "mayer": {"suf": true, "rot": {"sup": 0.1365, "inf": 0.8635}}, "ctrl": {"suf": true, "rot": {"sup": 0.7375, "inf": 0.2625}}, "act": 555, "act_c": 555}
+{"i": 573, "mayer": {"suf": true, "rot": {"sup": 0.388, "inf": 0.612}}, "ctrl": {"suf": true, "rot": {"sup": 0.415, "inf": 0.585}}, "act": 507, "act_c": 507}
+{"i": 574, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 427, "act_c": 427}
+{"i": 575, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 345, "act_c": 345}
+{"i": 576, "mayer": {"suf": true, "rot": {"sup": 0.8975, "inf": 0.1025}}, "ctrl": {"suf": true, "rot": {"sup": 0.6955, "inf": 0.3045}}, "act": 416, "act_c": 416}
+{"i": 577, "mayer": {"suf": true, "rot": {"sup": 0.5505, "inf": 0.4495}}, "ctrl": {"suf": true, "rot": {"sup": 0.595, "inf": 0.405}}, "act": 511, "act_c": 511}
+{"i": 578, "mayer": {"suf": true, "rot": {"sup": 0.242, "inf": 0.758}}, "ctrl": {"suf": true, "rot": {"sup": 0.199, "inf": 0.801}}, "act": 531, "act_c": 531}
+{"i": 579, "mayer": {"suf": true, "rot": {"sup": 0.1335, "inf": 0.8665}}, "ctrl": {"suf": true, "rot": {"sup": 0.7005, "inf": 0.2995}}, "act": 675, "act_c": 675}
+{"i": 580, "mayer": {"suf": true, "rot": {"sup": 0.7765, "inf": 0.2235}}, "ctrl": {"suf": true, "rot": {"sup": 0.1455, "inf": 0.8545}}, "act": 522, "act_c": 522}
+{"i": 581, "mayer": {"suf": true, "rot": {"sup": 0.353, "inf": 0.647}}, "ctrl": {"suf": true, "rot": {"sup": 0.6935, "inf": 0.3065}}, "act": 516, "act_c": 516}
+{"i": 582, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.882, "inf": 0.118}}, "act": 657, "act_c": 657}
+{"i": 583, "mayer": {"suf": true, "rot": {"sup": 0.439, "inf": 0.561}}, "ctrl": {"suf": true, "rot": {"sup": 0.5955, "inf": 0.4045}}, "act": 507, "act_c": 507}
+{"i": 584, "mayer": {"suf": true, "rot": {"sup": 0.279, "inf": 0.721}}, "ctrl": {"suf": true, "rot": {"sup": 0.472, "inf": 0.529}}, "act": 471, "act_c": 471}
+{"i": 585, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 564, "act_c": 564}
+{"i": 586, "mayer": {"suf": true, "rot": {"sup": 0.481, "inf": 0.519}}, "ctrl": {"suf": true, "rot": {"sup": 0.0525, "inf": 0.9475}}, "act": 562, "act_c": 562}
+{"i": 587, "mayer": {"suf": true, "rot": {"sup": 0.9925, "inf": 0.0075}}, "ctrl": {"suf": true, "rot": {"sup": 0.671, "inf": 0.329}}, "act": 489, "act_c": 489}
+{"i": 588, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.1405, "inf": 0.8595}}, "act": 437, "act_c": 437}
+{"i": 589, "mayer": {"suf": true, "rot": {"sup": 0.815, "inf": 0.185}}, "ctrl": {"suf": true, "rot": {"sup": 0.17, "inf": 0.83}}, "act": 591, "act_c": 591}
+{"i": 590, "mayer": {"suf": true, "rot": {"sup": 0.8055, "inf": 0.1945}}, "ctrl": {"suf": true, "rot": {"sup": 0.9185, "inf": 0.0815}}, "act": 553, "act_c": 553}
+{"i": 591, "mayer": {"suf": true, "rot": {"sup": 0.766, "inf": 0.234}}, "ctrl": {"suf": true, "rot": {"sup": 0.7725, "inf": 0.2275}}, "act": 420, "act_c": 420}
+{"i": 592, "mayer": {"suf": true, "rot": {"sup": 0.879, "inf": 0.121}}, "ctrl": {"suf": true, "rot": {"sup": 0.94, "inf": 0.06}}, "act": 360, "act_c": 360}
+{"i": 593, "mayer": {"suf": true, "rot": {"sup": 0.843, "inf": 0.157}}, "ctrl": {"suf": true, "rot": {"sup": 0.8025, "inf": 0.1975}}, "act": 628, "act_c": 628}
+{"i": 594, "mayer": {"suf": true, "rot": {"sup": 0.92, "inf": 0.08}}, "ctrl": {"suf": true, "rot": {"sup": 0.2005, "inf": 0.7995}}, "act": 502, "act_c": 502}
+{"i": 595, "mayer": {"suf": true, "rot": {"sup": 0.911, "inf": 0.089}}, "ctrl": {"suf": true, "rot": {"sup": 0.405, "inf": 0.595}}, "act": 512, "act_c": 512}
+{"i": 596, "mayer": {"suf": true, "rot": {"sup": 0.4545, "inf": 0.5455}}, "ctrl": {"suf": true, "rot": {"sup": 0.8825, "inf": 0.118}}, "act": 443, "act_c": 443}
+{"i": 597, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.3795, "inf": 0.6205}}, "act": 481, "act_c": 481}
+{"i": 598, "mayer": {"suf": true, "rot": {"sup": 0.8025, "inf": 0.1975}}, "ctrl": {"suf": true, "rot": {"sup": 0.8225, "inf": 0.1775}}, "act": 311, "act_c": 311}
+{"i": 599, "mayer": {"suf": true, "rot": {"sup": 0.4225, "inf": 0.578}}, "ctrl": {"suf": true, "rot": {"sup": 0.8615, "inf": 0.1385}}, "act": 597, "act_c": 597}
+{"i": 600, "mayer": {"suf": true, "rot": {"sup": 0.4685, "inf": 0.5315}}, "ctrl": {"suf": true, "rot": {"sup": 0.029, "inf": 0.971}}, "act": 611, "act_c": 611}
+{"i": 601, "mayer": {"suf": true, "rot": {"sup": 0.968, "inf": 0.032}}, "ctrl": {"suf": true, "rot": {"sup": 0.02, "inf": 0.98}}, "act": 496, "act_c": 496}
+{"i": 602, "mayer": {"suf": true, "rot": {"sup": 0.061, "inf": 0.939}}, "ctrl": {"suf": true, "rot": {"sup": 0.957, "inf": 0.043}}, "act": 541, "act_c": 541}
+{"i": 603, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.7405, "inf": 0.2595}}, "act": 518, "act_c": 518}
+{"i": 604, "mayer": {"suf": true, "rot": {"sup": 0.3115, "inf": 0.6885}}, "ctrl": {"suf": true, "rot": {"sup": 0.9825, "inf": 0.0175}}, "act": 550, "act_c": 550}
+{"i": 605, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.5655, "inf": 0.4345}}, "act": 379, "act_c": 379}
+{"i": 606, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 452, "act_c": 452}
+{"i": 607, "mayer": {"suf": true, "rot": {"sup": 0.9835, "inf": 0.0165}}, "ctrl": {"suf": true, "rot": {"sup": 0.8755, "inf": 0.1245}}, "act": 404, "act_c": 404}
+{"i": 608, "mayer": {"suf": true, "rot": {"sup": 0.5785, "inf": 0.4215}}, "ctrl": {"suf": true, "rot": {"sup": 0.5625, "inf": 0.4375}}, "act": 568, "act_c": 568}
+{"i": 609, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 475, "act_c": 475}
+{"i": 610, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 554, "act_c": 554}
+{"i": 611, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 456, "act_c": 456}
+{"i": 612, "mayer": {"suf": true, "rot": {"sup": 0.2645, "inf": 0.7355}}, "ctrl": {"suf": true, "rot": {"sup": 0.4005, "inf": 0.5995}}, "act": 614, "act_c": 614}
+{"i": 613, "mayer": {"suf": true, "rot": {"sup": 0.8985, "inf": 0.1015}}, "ctrl": {"suf": true, "rot": {"sup": 0.4905, "inf": 0.5095}}, "act": 498, "act_c": 498}
+{"i": 614, "mayer": {"suf": true, "rot": {"sup": 0.2515, "inf": 0.7485}}, "ctrl": {"suf": true, "rot": {"sup": 0.806, "inf": 0.194}}, "act": 405, "act_c": 405}
+{"i": 615, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.1195, "inf": 0.8805}}, "act": 530, "act_c": 530}
+{"i": 616, "mayer": {"suf": true, "rot": {"sup": 0.8225, "inf": 0.1775}}, "ctrl": {"suf": true, "rot": {"sup": 0.115, "inf": 0.885}}, "act": 504, "act_c": 504}
+{"i": 617, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.6625, "inf": 0.3375}}, "act": 433, "act_c": 433}
+{"i": 618, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 388, "act_c": 388}
+{"i": 619, "mayer": {"suf": true, "rot": {"sup": 0.381, "inf": 0.619}}, "ctrl": {"suf": true, "rot": {"sup": 0.643, "inf": 0.3575}}, "act": 509, "act_c": 509}
+{"i": 620, "mayer": {"suf": true, "rot": {"sup": 0.8445, "inf": 0.1555}}, "ctrl": {"suf": true, "rot": {"sup": 0.579, "inf": 0.421}}, "act": 557, "act_c": 557}
+{"i": 621, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 491, "act_c": 491}
+{"i": 622, "mayer": {"suf": true, "rot": {"sup": 0.469, "inf": 0.531}}, "ctrl": {"suf": true, "rot": {"sup": 0.5435, "inf": 0.4565}}, "act": 484, "act_c": 484}
+{"i": 623, "mayer": {"suf": true, "rot": {"sup": 0.6745, "inf": 0.3255}}, "ctrl": {"suf": true, "rot": {"sup": 0.15, "inf": 0.85}}, "act": 437, "act_c": 437}
+{"i": 624, "mayer": {"suf": true, "rot": {"sup": 0.9545, "inf": 0.0455}}, "ctrl": {"suf": true, "rot": {"sup": 0.9425, "inf": 0.0575}}, "act": 534, "act_c": 534}
+{"i": 625, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.0045, "inf": 0.9955}}, "act": 360, "act_c": 360}
+{"i": 626, "mayer": {"suf": true, "rot": {"sup": 0.3155, "inf": 0.6845}}, "ctrl": {"suf": true, "rot": {"sup": 0.864, "inf": 0.136}}, "act": 627, "act_c": 627}
+{"i": 627, "mayer": {"suf": true, "rot": {"sup": 0.282, "inf": 0.718}}, "ctrl": {"suf": true, "rot": {"sup": 0.628, "inf": 0.372}}, "act": 574, "act_c": 574}
+{"i": 628, "mayer": {"suf": true, "rot": {"sup": 0.401, "inf": 0.599}}, "ctrl": {"suf": true, "rot": {"sup": 0.147, "inf": 0.853}}, "act": 372, "act_c": 372}
+{"i": 629, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 547, "act_c": 547}
+{"i": 630, "mayer": {"suf": true, "rot": {"sup": 0.233, "inf": 0.767}}, "ctrl": {"suf": true, "rot": {"sup": 0.7905, "inf": 0.2095}}, "act": 487, "act_c": 487}
+{"i": 631, "mayer": {"suf": true, "rot": {"sup": 0.338, "inf": 0.662}}, "ctrl": {"suf": true, "rot": {"sup": 0.5265, "inf": 0.4735}}, "act": 482, "act_c": 482}
+{"i": 632, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 363, "act_c": 363}
+{"i": 633, "mayer": {"suf": true, "rot": {"sup": 0.713, "inf": 0.287}}, "ctrl": {"suf": true, "rot": {"sup": 0.796, "inf": 0.204}}, "act": 586, "act_c": 586}
+{"i": 634, "mayer": {"suf": true, "rot": {"sup": 0.983, "inf": 0.017}}, "ctrl": {"suf": true, "rot": {"sup": 0.266, "inf": 0.734}}, "act": 348, "act_c": 348}
+{"i": 635, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 691, "act_c": 691}
+{"i": 636, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 594, "act_c": 594}
+{"i": 637, "mayer": {"suf": true, "rot": {"sup": 0.8975, "inf": 0.103}}, "ctrl": {"suf": true, "rot": {"sup": 0.7705, "inf": 0.2295}}, "act": 512, "act_c": 512}
+{"i": 638, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 616, "act_c": 616}
+{"i": 639, "mayer": {"suf": true, "rot": {"sup": 0.53, "inf": 0.47}}, "ctrl": {"suf": true, "rot": {"sup": 0.1795, "inf": 0.8205}}, "act": 477, "act_c": 477}
+{"i": 640, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.238, "inf": 0.762}}, "act": 692, "act_c": 692}
+{"i": 641, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 339, "act_c": 339}
+{"i": 642, "mayer": {"suf": true, "rot": {"sup": 0.9075, "inf": 0.0925}}, "ctrl": {"suf": true, "rot": {"sup": 0.217, "inf": 0.783}}, "act": 571, "act_c": 571}
+{"i": 643, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 573, "act_c": 573}
+{"i": 644, "mayer": {"suf": true, "rot": {"sup": 0.406, "inf": 0.594}}, "ctrl": {"suf": true, "rot": {"sup": 0.6945, "inf": 0.3055}}, "act": 474, "act_c": 474}
+{"i": 645, "mayer": {"suf": true, "rot": {"sup": 0.934, "inf": 0.066}}, "ctrl": {"suf": true, "rot": {"sup": 0.9145, "inf": 0.0855}}, "act": 611, "act_c": 611}
+{"i": 646, "mayer": {"suf": true, "rot": {"sup": 0.1975, "inf": 0.8025}}, "ctrl": {"suf": true, "rot": {"sup": 0.97, "inf": 0.03}}, "act": 495, "act_c": 495}
+{"i": 647, "mayer": {"suf": true, "rot": {"sup": 0.3165, "inf": 0.6835}}, "ctrl": {"suf": true, "rot": {"sup": 0.309, "inf": 0.691}}, "act": 430, "act_c": 430}
+{"i": 648, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 584, "act_c": 584}
+{"i": 649, "mayer": {"suf": true, "rot": {"sup": 0.163, "inf": 0.837}}, "ctrl": {"suf": true, "rot": {"sup": 0.943, "inf": 0.057}}, "act": 608, "act_c": 608}
+{"i": 650, "mayer": {"suf": true, "rot": {"sup": 0.871, "inf": 0.129}}, "ctrl": {"suf": true, "rot": {"sup": 0.9355, "inf": 0.0645}}, "act": 512, "act_c": 512}
+{"i": 651, "mayer": {"suf": true, "rot": {"sup": 0.7635, "inf": 0.2365}}, "ctrl": {"suf": true, "rot": {"sup": 0.167, "inf": 0.833}}, "act": 506, "act_c": 506}
+{"i": 652, "mayer": {"suf": true, "rot": {"sup": 0.854, "inf": 0.146}}, "ctrl": {"suf": true, "rot": {"sup": 1.0, "inf": 0.0}}, "act": 403, "act_c": 403}
+{"i": 653, "mayer": {"suf": true, "rot": {"sup": 0.886, "inf": 0.114}}, "ctrl": {"suf": true, "rot": {"sup": 0.1255, "inf": 0.8745}}, "act": 512, "act_c": 512}
+{"i": 654, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.11, "inf": 0.89}}, "act": 511, "act_c": 511}
+{"i": 655, "mayer": {"suf": true, "rot": {"sup": 0.126, "inf": 0.874}}, "ctrl": {"suf": true, "rot": {"sup": 0.393, "inf": 0.607}}, "act": 318, "act_c": 318}
+{"i": 656, "mayer": {"suf": true, "rot": {"sup": 0.3125, "inf": 0.6875}}, "ctrl": {"suf": true, "rot": {"sup": 0.8905, "inf": 0.1095}}, "act": 477, "act_c": 477}
+{"i": 657, "mayer": {"suf": true, "rot": {"sup": 0.8815, "inf": 0.1185}}, "ctrl": {"suf": true, "rot": {"sup": 0.241, "inf": 0.759}}, "act": 658, "act_c": 658}
+{"i": 658, "mayer": {"suf": true, "rot": {"sup": 0.437, "inf": 0.563}}, "ctrl": {"suf": true, "rot": {"sup": 0.7755, "inf": 0.2245}}, "act": 514, "act_c": 514}
+{"i": 659, "mayer": {"suf": true, "rot": {"sup": 0.3475, "inf": 0.6525}}, "ctrl": {"suf": true, "rot": {"sup": 0.1075, "inf": 0.8925}}, "act": 518, "act_c": 518}
+{"i": 660, "mayer": {"suf": true, "rot": {"sup": 0.867, "inf": 0.133}}, "ctrl": {"suf": true, "rot": {"sup": 0.189, "inf": 0.811}}, "act": 524, "act_c": 524}
+{"i": 661, "mayer": {"suf": true, "rot": {"sup": 0.439, "inf": 0.562}}, "ctrl": {"suf": true, "rot": {"sup": 0.671, "inf": 0.329}}, "act": 563, "act_c": 563}
+{"i": 662, "mayer": {"suf": true, "rot": {"sup": 0.4085, "inf": 0.5915}}, "ctrl": {"suf": true, "rot": {"sup": 0.6195, "inf": 0.3815}}, "act": 515, "act_c": 515}
+{"i": 663, "mayer": {"suf": true, "rot": {"sup": 0.1745, "inf": 0.8255}}, "ctrl": {"suf": true, "rot": {"sup": 0.79, "inf": 0.21}}, "act": 574, "act_c": 574}
+{"i": 664, "mayer": {"suf": true, "rot": {"sup": 0.6655, "inf": 0.3345}}, "ctrl": {"suf": true, "rot": {"sup": 0.7725, "inf": 0.2275}}, "act": 523, "act_c": 523}
+{"i": 665, "mayer": {"suf": true, "rot": {"sup": 0.6335, "inf": 0.3665}}, "ctrl": {"suf": false}, "act": 634, "act_c": 634}
+{"i": 666, "mayer": {"suf": true, "rot": {"sup": 0.241, "inf": 0.759}}, "ctrl": {"suf": true, "rot": {"sup": 0.187, "inf": 0.813}}, "act": 583, "act_c": 583}
+{"i": 667, "mayer": {"suf": true, "rot": {"sup": 0.649, "inf": 0.351}}, "ctrl": {"suf": true, "rot": {"sup": 0.428, "inf": 0.572}}, "act": 486, "act_c": 486}
+{"i": 668, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.0975, "inf": 0.9025}}, "act": 534, "act_c": 534}
+{"i": 669, "mayer": {"suf": true, "rot": {"sup": 0.847, "inf": 0.153}}, "ctrl": {"suf": true, "rot": {"sup": 0.1345, "inf": 0.8655}}, "act": 431, "act_c": 431}
+{"i": 670, "mayer": {"suf": true, "rot": {"sup": 0.71, "inf": 0.29}}, "ctrl": {"suf": true, "rot": {"sup": 0.331, "inf": 0.669}}, "act": 453, "act_c": 453}
+{"i": 671, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 530, "act_c": 530}
+{"i": 672, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 548, "act_c": 548}
+{"i": 673, "mayer": {"suf": true, "rot": {"sup": 0.6855, "inf": 0.3145}}, "ctrl": {"suf": true, "rot": {"sup": 0.3995, "inf": 0.6005}}, "act": 537, "act_c": 537}
+{"i": 674, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 564, "act_c": 564}
+{"i": 675, "mayer": {"suf": true, "rot": {"sup": 0.9385, "inf": 0.0615}}, "ctrl": {"suf": true, "rot": {"sup": 0.308, "inf": 0.692}}, "act": 424, "act_c": 424}
+{"i": 676, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 736, "act_c": 736}
+{"i": 677, "mayer": {"suf": true, "rot": {"sup": 0.708, "inf": 0.292}}, "ctrl": {"suf": true, "rot": {"sup": 0.098, "inf": 0.902}}, "act": 645, "act_c": 645}
+{"i": 678, "mayer": {"suf": true, "rot": {"sup": 0.99, "inf": 0.01}}, "ctrl": {"suf": true, "rot": {"sup": 0.909, "inf": 0.091}}, "act": 395, "act_c": 395}
+{"i": 679, "mayer": {"suf": true, "rot": {"sup": 0.452, "inf": 0.548}}, "ctrl": {"suf": true, "rot": {"sup": 0.706, "inf": 0.294}}, "act": 618, "act_c": 618}
+{"i": 680, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 401, "act_c": 401}
+{"i": 681, "mayer": {"suf": true, "rot": {"sup": 0.829, "inf": 0.171}}, "ctrl": {"suf": true, "rot": {"sup": 0.916, "inf": 0.084}}, "act": 469, "act_c": 469}
+{"i": 682, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.036, "inf": 0.964}}, "act": 555, "act_c": 555}
+{"i": 683, "mayer": {"suf": true, "rot": {"sup": 0.7225, "inf": 0.2775}}, "ctrl": {"suf": true, "rot": {"sup": 0.078, "inf": 0.922}}, "act": 429, "act_c": 429}
+{"i": 684, "mayer": {"suf": true, "rot": {"sup": 0.8565, "inf": 0.1435}}, "ctrl": {"suf": true, "rot": {"sup": 0.958, "inf": 0.042}}, "act": 486, "act_c": 486}
+{"i": 685, "mayer": {"suf": true, "rot": {"sup": 0.92, "inf": 0.08}}, "ctrl": {"suf": true, "rot": {"sup": 0.475, "inf": 0.5255}}, "act": 480, "act_c": 480}
+{"i": 686, "mayer": {"suf": true, "rot": {"sup": 0.207, "inf": 0.793}}, "ctrl": {"suf": true, "rot": {"sup": 0.7705, "inf": 0.2295}}, "act": 482, "act_c": 482}
+{"i": 687, "mayer": {"suf": true, "rot": {"sup": 0.1535, "inf": 0.8465}}, "ctrl": {"suf": true, "rot": {"sup": 0.8505, "inf": 0.1495}}, "act": 527, "act_c": 527}
+{"i": 688, "mayer": {"suf": true, "rot": {"sup": 0.29, "inf": 0.7105}}, "ctrl": {"suf": true, "rot": {"sup": 0.4495, "inf": 0.5505}}, "act": 339, "act_c": 339}
+{"i": 689, "mayer": {"suf": true, "rot": {"sup": 0.4575, "inf": 0.5425}}, "ctrl": {"suf": true, "rot": {"sup": 0.298, "inf": 0.702}}, "act": 428, "act_c": 428}
+{"i": 690, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.8675, "inf": 0.1325}}, "act": 541, "act_c": 541}
+{"i": 691, "mayer": {"suf": true, "rot": {"sup": 0.137, "inf": 0.863}}, "ctrl": {"suf": true, "rot": {"sup": 0.0745, "inf": 0.9255}}, "act": 276, "act_c": 276}
+{"i": 692, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 476, "act_c": 476}
+{"i": 693, "mayer": {"suf": true, "rot": {"sup": 0.444, "inf": 0.556}}, "ctrl": {"suf": true, "rot": {"sup": 0.9835, "inf": 0.0165}}, "act": 626, "act_c": 626}
+{"i": 694, "mayer": {"suf": true, "rot": {"sup": 0.247, "inf": 0.753}}, "ctrl": {"suf": true, "rot": {"sup": 0.296, "inf": 0.704}}, "act": 478, "act_c": 478}
+{"i": 695, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.089, "inf": 0.911}}, "act": 335, "act_c": 335}
+{"i": 696, "mayer": {"suf": true, "rot": {"sup": 0.4525, "inf": 0.5475}}, "ctrl": {"suf": true, "rot": {"sup": 0.3165, "inf": 0.6835}}, "act": 398, "act_c": 398}
+{"i": 697, "mayer": {"suf": true, "rot": {"sup": 0.1735, "inf": 0.8265}}, "ctrl": {"suf": true, "rot": {"sup": 0.221, "inf": 0.779}}, "act": 433, "act_c": 433}
+{"i": 698, "mayer": {"suf": true, "rot": {"sup": 0.5285, "inf": 0.4715}}, "ctrl": {"suf": true, "rot": {"sup": 0.0525, "inf": 0.9475}}, "act": 487, "act_c": 487}
+{"i": 699, "mayer": {"suf": true, "rot": {"sup": 0.574, "inf": 0.426}}, "ctrl": {"suf": true, "rot": {"sup": 0.197, "inf": 0.803}}, "act": 631, "act_c": 631}
+{"i": 700, "mayer": {"suf": true, "rot": {"sup": 1.0, "inf": 0.0}}, "ctrl": {"suf": true, "rot": {"sup": 0.241, "inf": 0.759}}, "act": 572, "act_c": 572}
+{"i": 701, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 532, "act_c": 532}
+{"i": 702, "mayer": {"suf": true, "rot": {"sup": 0.205, "inf": 0.795}}, "ctrl": {"suf": true, "rot": {"sup": 0.6645, "inf": 0.3355}}, "act": 517, "act_c": 517}
+{"i": 703, "mayer": {"suf": true, "rot": {"sup": 0.4905, "inf": 0.5095}}, "ctrl": {"suf": true, "rot": {"sup": 0.167, "inf": 0.833}}, "act": 565, "act_c": 565}
+{"i": 704, "mayer": {"suf": true, "rot": {"sup": 0.567, "inf": 0.433}}, "ctrl": {"suf": true, "rot": {"sup": 0.9725, "inf": 0.0275}}, "act": 589, "act_c": 589}
+{"i": 705, "mayer": {"suf": true, "rot": {"sup": 0.9825, "inf": 0.0175}}, "ctrl": {"suf": true, "rot": {"sup": 0.825, "inf": 0.175}}, "act": 574, "act_c": 574}
+{"i": 706, "mayer": {"suf": true, "rot": {"sup": 0.8965, "inf": 0.1035}}, "ctrl": {"suf": true, "rot": {"sup": 0.72, "inf": 0.28}}, "act": 570, "act_c": 570}
+{"i": 707, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.476, "inf": 0.524}}, "act": 638, "act_c": 638}
+{"i": 708, "mayer": {"suf": true, "rot": {"sup": 0.4975, "inf": 0.503}}, "ctrl": {"suf": true, "rot": {"sup": 0.3105, "inf": 0.6895}}, "act": 671, "act_c": 671}
+{"i": 709, "mayer": {"suf": true, "rot": {"sup": 0.9925, "inf": 0.0075}}, "ctrl": {"suf": true, "rot": {"sup": 0.0675, "inf": 0.9325}}, "act": 334, "act_c": 334}
+{"i": 710, "mayer": {"suf": true, "rot": {"sup": 0.845, "inf": 0.155}}, "ctrl": {"suf": true, "rot": {"sup": 0.4175, "inf": 0.5825}}, "act": 593, "act_c": 593}
+{"i": 711, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.6245, "inf": 0.3765}}, "act": 535, "act_c": 535}
+{"i": 712, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 657, "act_c": 657}
+{"i": 713, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 394, "act_c": 394}
+{"i": 714, "mayer": {"suf": true, "rot": {"sup": 0.827, "inf": 0.173}}, "ctrl": {"suf": true, "rot": {"sup": 0.2025, "inf": 0.7975}}, "act": 501, "act_c": 501}
+{"i": 715, "mayer": {"suf": true, "rot": {"sup": 0.995, "inf": 0.005}}, "ctrl": {"suf": true, "rot": {"sup": 0.7845, "inf": 0.2155}}, "act": 398, "act_c": 398}
+{"i": 716, "mayer": {"suf": true, "rot": {"sup": 0.157, "inf": 0.843}}, "ctrl": {"suf": true, "rot": {"sup": 0.8615, "inf": 0.1385}}, "act": 415, "act_c": 415}
+{"i": 717, "mayer": {"suf": true, "rot": {"sup": 0.2465, "inf": 0.7535}}, "ctrl": {"suf": true, "rot": {"sup": 0.8825, "inf": 0.1175}}, "act": 513, "act_c": 513}
+{"i": 718, "mayer": {"suf": true, "rot": {"sup": 0.4685, "inf": 0.532}}, "ctrl": {"suf": true, "rot": {"sup": 1.0, "inf": 0.0}}, "act": 599, "act_c": 599}
+{"i": 719, "mayer": {"suf": true, "rot": {"sup": 0.6765, "inf": 0.3245}}, "ctrl": {"suf": true, "rot": {"sup": 0.383, "inf": 0.617}}, "act": 532, "act_c": 532}
+{"i": 720, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.778, "inf": 0.222}}, "act": 389, "act_c": 389}
+{"i": 721, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.9465, "inf": 0.0535}}, "act": 563, "act_c": 563}
+{"i": 722, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 571, "act_c": 571}
+{"i": 723, "mayer": {"suf": true, "rot": {"sup": 0.3455, "inf": 0.655}}, "ctrl": {"suf": true, "rot": {"sup": 0.533, "inf": 0.467}}, "act": 605, "act_c": 605}
+{"i": 724, "mayer": {"suf": true, "rot": {"sup": 0.879, "inf": 0.121}}, "ctrl": {"suf": true, "rot": {"sup": 0.5595, "inf": 0.4405}}, "act": 508, "act_c": 508}
+{"i": 725, "mayer": {"suf": true, "rot": {"sup": 0.184, "inf": 0.816}}, "ctrl": {"suf": true, "rot": {"sup": 0.2585, "inf": 0.742}}, "act": 601, "act_c": 601}
+{"i": 726, "mayer": {"suf": true, "rot": {"sup": 0.933, "inf": 0.067}}, "ctrl": {"suf": true, "rot": {"sup": 0.474, "inf": 0.526}}, "act": 453, "act_c": 453}
+{"i": 727, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 458, "act_c": 458}
+{"i": 728, "mayer": {"suf": true, "rot": {"sup": 0.8305, "inf": 0.1695}}, "ctrl": {"suf": true, "rot": {"sup": 0.4165, "inf": 0.5835}}, "act": 406, "act_c": 406}
+{"i": 729, "mayer": {"suf": true, "rot": {"sup": 0.477, "inf": 0.523}}, "ctrl": {"suf": true, "rot": {"sup": 0.3995, "inf": 0.6015}}, "act": 591, "act_c": 591}
+{"i": 730, "mayer": {"suf": true, "rot": {"sup": 0.228, "inf": 0.772}}, "ctrl": {"suf": true, "rot": {"sup": 0.677, "inf": 0.323}}, "act": 515, "act_c": 515}
+{"i": 731, "mayer": {"suf": true, "rot": {"sup": 0.228, "inf": 0.772}}, "ctrl": {"suf": true, "rot": {"sup": 0.4205, "inf": 0.5795}}, "act": 500, "act_c": 500}
+{"i": 732, "mayer": {"suf": true, "rot": {"sup": 0.086, "inf": 0.914}}, "ctrl": {"suf": true, "rot": {"sup": 0.8205, "inf": 0.1795}}, "act": 509, "act_c": 509}
+{"i": 733, "mayer": {"suf": true, "rot": {"sup": 0.904, "inf": 0.096}}, "ctrl": {"suf": true, "rot": {"sup": 0.385, "inf": 0.615}}, "act": 567, "act_c": 567}
+{"i": 734, "mayer": {"suf": true, "rot": {"sup": 0.791, "inf": 0.209}}, "ctrl": {"suf": true, "rot": {"sup": 0.482, "inf": 0.5195}}, "act": 609, "act_c": 609}
+{"i": 735, "mayer": {"suf": true, "rot": {"sup": 0.313, "inf": 0.687}}, "ctrl": {"suf": true, "rot": {"sup": 0.949, "inf": 0.051}}, "act": 535, "act_c": 535}
+{"i": 736, "mayer": {"suf": true, "rot": {"sup": 0.766, "inf": 0.234}}, "ctrl": {"suf": true, "rot": {"sup": 0.96, "inf": 0.04}}, "act": 520, "act_c": 520}
+{"i": 737, "mayer": {"suf": true, "rot": {"sup": 0.8295, "inf": 0.1715}}, "ctrl": {"suf": true, "rot": {"sup": 0.7305, "inf": 0.2695}}, "act": 514, "act_c": 514}
+{"i": 738, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.962, "inf": 0.038}}, "act": 554, "act_c": 554}
+{"i": 739, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 614, "act_c": 614}
+{"i": 740, "mayer": {"suf": true, "rot": {"sup": 0.7295, "inf": 0.2705}}, "ctrl": {"suf": true, "rot": {"sup": 0.381, "inf": 0.619}}, "act": 431, "act_c": 431}
+{"i": 741, "mayer": {"suf": true, "rot": {"sup": 0.646, "inf": 0.354}}, "ctrl": {"suf": true, "rot": {"sup": 0.4555, "inf": 0.5445}}, "act": 489, "act_c": 489}
+{"i": 742, "mayer": {"suf": true, "rot": {"sup": 0.5495, "inf": 0.4505}}, "ctrl": {"suf": true, "rot": {"sup": 0.548, "inf": 0.452}}, "act": 492, "act_c": 492}
+{"i": 743, "mayer": {"suf": true, "rot": {"sup": 0.8765, "inf": 0.1235}}, "ctrl": {"suf": true, "rot": {"sup": 0.423, "inf": 0.577}}, "act": 542, "act_c": 542}
+{"i": 744, "mayer": {"suf": true, "rot": {"sup": 0.937, "inf": 0.063}}, "ctrl": {"suf": true, "rot": {"sup": 0.8, "inf": 0.2}}, "act": 478, "act_c": 478}
+{"i": 745, "mayer": {"suf": true, "rot": {"sup": 0.2495, "inf": 0.7505}}, "ctrl": {"suf": true, "rot": {"sup": 0.3245, "inf": 0.6765}}, "act": 568, "act_c": 568}
+{"i": 746, "mayer": {"suf": true, "rot": {"sup": 0.5175, "inf": 0.486}}, "ctrl": {"suf": true, "rot": {"sup": 0.687, "inf": 0.313}}, "act": 489, "act_c": 489}
+{"i": 747, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 629, "act_c": 629}
+{"i": 748, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.629, "inf": 0.371}}, "act": 554, "act_c": 554}
+{"i": 749, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.3545, "inf": 0.6455}}, "act": 465, "act_c": 465}
+{"i": 750, "mayer": {"suf": true, "rot": {"sup": 0.962, "inf": 0.038}}, "ctrl": {"suf": true, "rot": {"sup": 0.2835, "inf": 0.7165}}, "act": 464, "act_c": 464}
+{"i": 751, "mayer": {"suf": true, "rot": {"sup": 0.396, "inf": 0.6045}}, "ctrl": {"suf": true, "rot": {"sup": 0.8635, "inf": 0.1365}}, "act": 491, "act_c": 491}
+{"i": 752, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.797, "inf": 0.203}}, "act": 627, "act_c": 627}
+{"i": 753, "mayer": {"suf": true, "rot": {"sup": 0.592, "inf": 0.408}}, "ctrl": {"suf": true, "rot": {"sup": 0.311, "inf": 0.689}}, "act": 451, "act_c": 451}
+{"i": 754, "mayer": {"suf": true, "rot": {"sup": 0.514, "inf": 0.486}}, "ctrl": {"suf": true, "rot": {"sup": 1.0, "inf": 0.0}}, "act": 591, "act_c": 591}
+{"i": 755, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 660, "act_c": 660}
+{"i": 756, "mayer": {"suf": true, "rot": {"sup": 0.1625, "inf": 0.8375}}, "ctrl": {"suf": true, "rot": {"sup": 0.2985, "inf": 0.7015}}, "act": 545, "act_c": 545}
+{"i": 757, "mayer": {"suf": true, "rot": {"sup": 0.4965, "inf": 0.5035}}, "ctrl": {"suf": true, "rot": {"sup": 0.856, "inf": 0.144}}, "act": 477, "act_c": 477}
+{"i": 758, "mayer": {"suf": true, "rot": {"sup": 0.227, "inf": 0.773}}, "ctrl": {"suf": true, "rot": {"sup": 0.9195, "inf": 0.0805}}, "act": 654, "act_c": 654}
+{"i": 759, "mayer": {"suf": true, "rot": {"sup": 1.0, "inf": 0.0}}, "ctrl": {"suf": true, "rot": {"sup": 0.1895, "inf": 0.8105}}, "act": 452, "act_c": 452}
+{"i": 760, "mayer": {"suf": true, "rot": {"sup": 0.294, "inf": 0.706}}, "ctrl": {"suf": true, "rot": {"sup": 0.8915, "inf": 0.1085}}, "act": 610, "act_c": 610}
+{"i": 761, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 652, "act_c": 652}
+{"i": 762, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.385, "inf": 0.615}}, "act": 494, "act_c": 494}
+{"i": 763, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.7525, "inf": 0.2475}}, "act": 523, "act_c": 523}
+{"i": 764, "mayer": {"suf": true, "rot": {"sup": 0.6075, "inf": 0.3925}}, "ctrl": {"suf": true, "rot": {"sup": 0.739, "inf": 0.261}}, "act": 351, "act_c": 351}
+{"i": 765, "mayer": {"suf": true, "rot": {"sup": 0.3745, "inf": 0.6255}}, "ctrl": {"suf": true, "rot": {"sup": 0.9605, "inf": 0.0395}}, "act": 434, "act_c": 434}
+{"i": 766, "mayer": {"suf": true, "rot": {"sup": 0.9735, "inf": 0.0265}}, "ctrl": {"suf": true, "rot": {"sup": 0.8025, "inf": 0.1975}}, "act": 466, "act_c": 466}
+{"i": 767, "mayer": {"suf": true, "rot": {"sup": 0.727, "inf": 0.273}}, "ctrl": {"suf": true, "rot": {"sup": 0.691, "inf": 0.309}}, "act": 590, "act_c": 590}
+{"i": 768, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 539, "act_c": 539}
+{"i": 769, "mayer": {"suf": true, "rot": {"sup": 0.6945, "inf": 0.3055}}, "ctrl": {"suf": true, "rot": {"sup": 0.314, "inf": 0.686}}, "act": 574, "act_c": 574}
+{"i": 770, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.485, "inf": 0.5155}}, "act": 503, "act_c": 503}
+{"i": 771, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 473, "act_c": 473}
+{"i": 772, "mayer": {"suf": true, "rot": {"sup": 0.6275, "inf": 0.3725}}, "ctrl": {"suf": true, "rot": {"sup": 0.2385, "inf": 0.7615}}, "act": 411, "act_c": 411}
+{"i": 773, "mayer": {"suf": true, "rot": {"sup": 0.7725, "inf": 0.2275}}, "ctrl": {"suf": true, "rot": {"sup": 0.0205, "inf": 0.9795}}, "act": 523, "act_c": 523}
+{"i": 774, "mayer": {"suf": true, "rot": {"sup": 0.831, "inf": 0.169}}, "ctrl": {"suf": true, "rot": {"sup": 0.0255, "inf": 0.9745}}, "act": 609, "act_c": 609}
+{"i": 775, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 507, "act_c": 507}
+{"i": 776, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 442, "act_c": 442}
+{"i": 777, "mayer": {"suf": true, "rot": {"sup": 0.659, "inf": 0.3435}}, "ctrl": {"suf": true, "rot": {"sup": 0.3315, "inf": 0.67}}, "act": 483, "act_c": 483}
+{"i": 778, "mayer": {"suf": true, "rot": {"sup": 0.176, "inf": 0.824}}, "ctrl": {"suf": true, "rot": {"sup": 0.213, "inf": 0.787}}, "act": 682, "act_c": 682}
+{"i": 779, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 620, "act_c": 620}
+{"i": 780, "mayer": {"suf": true, "rot": {"sup": 0.8345, "inf": 0.1655}}, "ctrl": {"suf": true, "rot": {"sup": 0.1665, "inf": 0.8335}}, "act": 438, "act_c": 438}
+{"i": 781, "mayer": {"suf": true, "rot": {"sup": 0.9285, "inf": 0.0715}}, "ctrl": {"suf": true, "rot": {"sup": 0.864, "inf": 0.136}}, "act": 485, "act_c": 485}
+{"i": 782, "mayer": {"suf": true, "rot": {"sup": 0.5235, "inf": 0.4765}}, "ctrl": {"suf": true, "rot": {"sup": 0.8745, "inf": 0.1255}}, "act": 592, "act_c": 592}
+{"i": 783, "mayer": {"suf": true, "rot": {"sup": 0.3435, "inf": 0.6565}}, "ctrl": {"suf": true, "rot": {"sup": 0.1565, "inf": 0.8435}}, "act": 352, "act_c": 352}
+{"i": 784, "mayer": {"suf": true, "rot": {"sup": 0.9875, "inf": 0.0125}}, "ctrl": {"suf": true, "rot": {"sup": 0.6315, "inf": 0.3685}}, "act": 348, "act_c": 348}
+{"i": 785, "mayer": {"suf": true, "rot": {"sup": 0.277, "inf": 0.723}}, "ctrl": {"suf": true, "rot": {"sup": 0.622, "inf": 0.378}}, "act": 593, "act_c": 593}
+{"i": 786, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 505, "act_c": 505}
+{"i": 787, "mayer": {"suf": true, "rot": {"sup": 0.5515, "inf": 0.4485}}, "ctrl": {"suf": true, "rot": {"sup": 0.239, "inf": 0.761}}, "act": 522, "act_c": 522}
+{"i": 788, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 508, "act_c": 508}
+{"i": 789, "mayer": {"suf": true, "rot": {"sup": 0.742, "inf": 0.258}}, "ctrl": {"suf": true, "rot": {"sup": 0.364, "inf": 0.636}}, "act": 374, "act_c": 374}
+{"i": 790, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 567, "act_c": 567}
+{"i": 791, "mayer": {"suf": true, "rot": {"sup": 0.483, "inf": 0.518}}, "ctrl": {"suf": true, "rot": {"sup": 0.307, "inf": 0.693}}, "act": 545, "act_c": 545}
+{"i": 792, "mayer": {"suf": true, "rot": {"sup": 0.349, "inf": 0.651}}, "ctrl": {"suf": true, "rot": {"sup": 0.6115, "inf": 0.3885}}, "act": 570, "act_c": 570}
+{"i": 793, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.2565, "inf": 0.744}}, "act": 581, "act_c": 581}
+{"i": 794, "mayer": {"suf": true, "rot": {"sup": 0.773, "inf": 0.227}}, "ctrl": {"suf": true, "rot": {"sup": 0.7545, "inf": 0.2455}}, "act": 559, "act_c": 559}
+{"i": 795, "mayer": {"suf": true, "rot": {"sup": 0.6735, "inf": 0.3265}}, "ctrl": {"suf": true, "rot": {"sup": 0.416, "inf": 0.584}}, "act": 485, "act_c": 485}
+{"i": 796, "mayer": {"suf": true, "rot": {"sup": 0.643, "inf": 0.357}}, "ctrl": {"suf": true, "rot": {"sup": 0.9745, "inf": 0.0255}}, "act": 548, "act_c": 548}
+{"i": 797, "mayer": {"suf": true, "rot": {"sup": 0.5975, "inf": 0.4025}}, "ctrl": {"suf": true, "rot": {"sup": 0.9355, "inf": 0.0645}}, "act": 516, "act_c": 516}
+{"i": 798, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 520, "act_c": 520}
+{"i": 799, "mayer": {"suf": true, "rot": {"sup": 0.2595, "inf": 0.7405}}, "ctrl": {"suf": true, "rot": {"sup": 0.3045, "inf": 0.6955}}, "act": 519, "act_c": 519}
+{"i": 800, "mayer": {"suf": true, "rot": {"sup": 0.746, "inf": 0.254}}, "ctrl": {"suf": true, "rot": {"sup": 0.729, "inf": 0.271}}, "act": 444, "act_c": 444}
+{"i": 801, "mayer": {"suf": true, "rot": {"sup": 0.2795, "inf": 0.7205}}, "ctrl": {"suf": true, "rot": {"sup": 0.32, "inf": 0.68}}, "act": 554, "act_c": 554}
+{"i": 802, "mayer": {"suf": true, "rot": {"sup": 0.89, "inf": 0.11}}, "ctrl": {"suf": true, "rot": {"sup": 0.248, "inf": 0.752}}, "act": 527, "act_c": 527}
+{"i": 803, "mayer": {"suf": true, "rot": {"sup": 0.1575, "inf": 0.8425}}, "ctrl": {"suf": true, "rot": {"sup": 0.947, "inf": 0.053}}, "act": 559, "act_c": 559}
+{"i": 804, "mayer": {"suf": true, "rot": {"sup": 0.3585, "inf": 0.6415}}, "ctrl": {"suf": true, "rot": {"sup": 0.037, "inf": 0.963}}, "act": 492, "act_c": 492}
+{"i": 805, "mayer": {"suf": true, "rot": {"sup": 0.3865, "inf": 0.6135}}, "ctrl": {"suf": true, "rot": {"sup": 0.1585, "inf": 0.8415}}, "act": 446, "act_c": 446}
+{"i": 806, "mayer": {"suf": true, "rot": {"sup": 0.5175, "inf": 0.4825}}, "ctrl": {"suf": true, "rot": {"sup": 0.937, "inf": 0.063}}, "act": 544, "act_c": 544}
+{"i": 807, "mayer": {"suf": true, "rot": {"sup": 0.387, "inf": 0.613}}, "ctrl": {"suf": true, "rot": {"sup": 0.758, "inf": 0.242}}, "act": 460, "act_c": 460}
+{"i": 808, "mayer": {"suf": true, "rot": {"sup": 0.584, "inf": 0.416}}, "ctrl": {"suf": true, "rot": {"sup": 0.982, "inf": 0.018}}, "act": 339, "act_c": 339}
+{"i": 809, "mayer": {"suf": true, "rot": {"sup": 0.8235, "inf": 0.1765}}, "ctrl": {"suf": true, "rot": {"sup": 0.472, "inf": 0.528}}, "act": 370, "act_c": 370}
+{"i": 810, "mayer": {"suf": true, "rot": {"sup": 0.522, "inf": 0.478}}, "ctrl": {"suf": true, "rot": {"sup": 0.407, "inf": 0.593}}, "act": 411, "act_c": 411}
+{"i": 811, "mayer": {"suf": true, "rot": {"sup": 0.104, "inf": 0.896}}, "ctrl": {"suf": true, "rot": {"sup": 0.9135, "inf": 0.0865}}, "act": 620, "act_c": 620}
+{"i": 812, "mayer": {"suf": true, "rot": {"sup": 0.9025, "inf": 0.0975}}, "ctrl": {"suf": true, "rot": {"sup": 0.515, "inf": 0.485}}, "act": 505, "act_c": 505}
+{"i": 813, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.0045, "inf": 0.9955}}, "act": 568, "act_c": 568}
+{"i": 814, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.6465, "inf": 0.3535}}, "act": 490, "act_c": 490}
+{"i": 815, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 616, "act_c": 616}
+{"i": 816, "mayer": {"suf": true, "rot": {"sup": 0.418, "inf": 0.585}}, "ctrl": {"suf": true, "rot": {"sup": 0.898, "inf": 0.102}}, "act": 489, "act_c": 489}
+{"i": 817, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 500, "act_c": 500}
+{"i": 818, "mayer": {"suf": true, "rot": {"sup": 0.2625, "inf": 0.7375}}, "ctrl": {"suf": true, "rot": {"sup": 0.0, "inf": 1.0}}, "act": 640, "act_c": 640}
+{"i": 819, "mayer": {"suf": true, "rot": {"sup": 0.3795, "inf": 0.6205}}, "ctrl": {"suf": true, "rot": {"sup": 0.536, "inf": 0.464}}, "act": 598, "act_c": 598}
+{"i": 820, "mayer": {"suf": true, "rot": {"sup": 0.348, "inf": 0.652}}, "ctrl": {"suf": true, "rot": {"sup": 0.2665, "inf": 0.7335}}, "act": 644, "act_c": 644}
+{"i": 821, "mayer": {"suf": true, "rot": {"sup": 0.863, "inf": 0.137}}, "ctrl": {"suf": true, "rot": {"sup": 0.8915, "inf": 0.1085}}, "act": 413, "act_c": 413}
+{"i": 822, "mayer": {"suf": true, "rot": {"sup": 0.346, "inf": 0.654}}, "ctrl": {"suf": true, "rot": {"sup": 0.3255, "inf": 0.6745}}, "act": 536, "act_c": 536}
+{"i": 823, "mayer": {"suf": true, "rot": {"sup": 0.964, "inf": 0.036}}, "ctrl": {"suf": true, "rot": {"sup": 0.245, "inf": 0.755}}, "act": 420, "act_c": 420}
+{"i": 824, "mayer": {"suf": true, "rot": {"sup": 0.887, "inf": 0.113}}, "ctrl": {"suf": true, "rot": {"sup": 0.3655, "inf": 0.6345}}, "act": 571, "act_c": 571}
+{"i": 825, "mayer": {"suf": true, "rot": {"sup": 0.5095, "inf": 0.4905}}, "ctrl": {"suf": true, "rot": {"sup": 0.026, "inf": 0.974}}, "act": 475, "act_c": 475}
+{"i": 826, "mayer": {"suf": true, "rot": {"sup": 0.7275, "inf": 0.2725}}, "ctrl": {"suf": true, "rot": {"sup": 0.4545, "inf": 0.5455}}, "act": 570, "act_c": 570}
+{"i": 827, "mayer": {"suf": true, "rot": {"sup": 0.1985, "inf": 0.8015}}, "ctrl": {"suf": true, "rot": {"sup": 0.1615, "inf": 0.8385}}, "act": 732, "act_c": 732}
+{"i": 828, "mayer": {"suf": true, "rot": {"sup": 0.922, "inf": 0.078}}, "ctrl": {"suf": true, "rot": {"sup": 0.088, "inf": 0.912}}, "act": 589, "act_c": 589}
+{"i": 829, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.4515, "inf": 0.5485}}, "act": 359, "act_c": 359}
+{"i": 830, "mayer": {"suf": true, "rot": {"sup": 0.4305, "inf": 0.5695}}, "ctrl": {"suf": true, "rot": {"sup": 0.8455, "inf": 0.1545}}, "act": 303, "act_c": 303}
+{"i": 831, "mayer": {"suf": true, "rot": {"sup": 0.9415, "inf": 0.0585}}, "ctrl": {"suf": true, "rot": {"sup": 0.8475, "inf": 0.1525}}, "act": 406, "act_c": 406}
+{"i": 832, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 476, "act_c": 476}
+{"i": 833, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 421, "act_c": 421}
+{"i": 834, "mayer": {"suf": true, "rot": {"sup": 0.4605, "inf": 0.5405}}, "ctrl": {"suf": true, "rot": {"sup": 0.713, "inf": 0.287}}, "act": 523, "act_c": 523}
+{"i": 835, "mayer": {"suf": true, "rot": {"sup": 0.9575, "inf": 0.0425}}, "ctrl": {"suf": true, "rot": {"sup": 0.6005, "inf": 0.3995}}, "act": 449, "act_c": 449}
+{"i": 836, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 641, "act_c": 641}
+{"i": 837, "mayer": {"suf": true, "rot": {"sup": 0.1245, "inf": 0.8755}}, "ctrl": {"suf": true, "rot": {"sup": 0.5085, "inf": 0.493}}, "act": 559, "act_c": 559}
+{"i": 838, "mayer": {"suf": true, "rot": {"sup": 0.7395, "inf": 0.2605}}, "ctrl": {"suf": true, "rot": {"sup": 0.0015, "inf": 0.9985}}, "act": 628, "act_c": 628}
+{"i": 839, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.052, "inf": 0.948}}, "act": 320, "act_c": 320}
+{"i": 840, "mayer": {"suf": true, "rot": {"sup": 0.737, "inf": 0.263}}, "ctrl": {"suf": true, "rot": {"sup": 0.043, "inf": 0.957}}, "act": 489, "act_c": 489}
+{"i": 841, "mayer": {"suf": true, "rot": {"sup": 0.61, "inf": 0.39}}, "ctrl": {"suf": true, "rot": {"sup": 0.4245, "inf": 0.5755}}, "act": 348, "act_c": 348}
+{"i": 842, "mayer": {"suf": true, "rot": {"sup": 0.5785, "inf": 0.4215}}, "ctrl": {"suf": true, "rot": {"sup": 0.241, "inf": 0.759}}, "act": 344, "act_c": 344}
+{"i": 843, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 612, "act_c": 612}
+{"i": 844, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.12, "inf": 0.88}}, "act": 634, "act_c": 634}
+{"i": 845, "mayer": {"suf": true, "rot": {"sup": 0.7465, "inf": 0.2535}}, "ctrl": {"suf": true, "rot": {"sup": 0.6085, "inf": 0.3915}}, "act": 538, "act_c": 538}
+{"i": 846, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 537, "act_c": 537}
+{"i": 847, "mayer": {"suf": true, "rot": {"sup": 0.31, "inf": 0.69}}, "ctrl": {"suf": true, "rot": {"sup": 0.0805, "inf": 0.9195}}, "act": 557, "act_c": 557}
+{"i": 848, "mayer": {"suf": true, "rot": {"sup": 0.9005, "inf": 0.0995}}, "ctrl": {"suf": true, "rot": {"sup": 0.1345, "inf": 0.8655}}, "act": 421, "act_c": 421}
+{"i": 849, "mayer": {"suf": true, "rot": {"sup": 0.053, "inf": 0.947}}, "ctrl": {"suf": true, "rot": {"sup": 0.8755, "inf": 0.1245}}, "act": 530, "act_c": 530}
+{"i": 850, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.3945, "inf": 0.6055}}, "act": 506, "act_c": 506}
+{"i": 851, "mayer": {"suf": true, "rot": {"sup": 0.7825, "inf": 0.2175}}, "ctrl": {"suf": true, "rot": {"sup": 0.2605, "inf": 0.74}}, "act": 549, "act_c": 549}
+{"i": 852, "mayer": {"suf": true, "rot": {"sup": 0.993, "inf": 0.007}}, "ctrl": {"suf": true, "rot": {"sup": 0.0015, "inf": 0.9985}}, "act": 688, "act_c": 688}
+{"i": 853, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.6475, "inf": 0.3525}}, "act": 639, "act_c": 639}
+{"i": 854, "mayer": {"suf": true, "rot": {"sup": 0.3925, "inf": 0.6075}}, "ctrl": {"suf": true, "rot": {"sup": 0.9695, "inf": 0.0305}}, "act": 516, "act_c": 516}
+{"i": 855, "mayer": {"suf": true, "rot": {"sup": 0.138, "inf": 0.862}}, "ctrl": {"suf": true, "rot": {"sup": 0.158, "inf": 0.842}}, "act": 417, "act_c": 417}
+{"i": 856, "mayer": {"suf": true, "rot": {"sup": 0.61, "inf": 0.39}}, "ctrl": {"suf": true, "rot": {"sup": 0.834, "inf": 0.166}}, "act": 401, "act_c": 401}
+{"i": 857, "mayer": {"suf": true, "rot": {"sup": 0.7815, "inf": 0.2185}}, "ctrl": {"suf": true, "rot": {"sup": 0.036, "inf": 0.964}}, "act": 456, "act_c": 456}
+{"i": 858, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.587, "inf": 0.413}}, "act": 603, "act_c": 603}
+{"i": 859, "mayer": {"suf": true, "rot": {"sup": 0.5015, "inf": 0.4985}}, "ctrl": {"suf": true, "rot": {"sup": 0.003, "inf": 0.997}}, "act": 568, "act_c": 568}
+{"i": 860, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 455, "act_c": 455}
+{"i": 861, "mayer": {"suf": true, "rot": {"sup": 0.96, "inf": 0.04}}, "ctrl": {"suf": true, "rot": {"sup": 0.3335, "inf": 0.6665}}, "act": 483, "act_c": 483}
+{"i": 862, "mayer": {"suf": true, "rot": {"sup": 0.3115, "inf": 0.6895}}, "ctrl": {"suf": true, "rot": {"sup": 0.4215, "inf": 0.5785}}, "act": 537, "act_c": 537}
+{"i": 863, "mayer": {"suf": true, "rot": {"sup": 0.5625, "inf": 0.4375}}, "ctrl": {"suf": true, "rot": {"sup": 0.005, "inf": 0.995}}, "act": 470, "act_c": 470}
+{"i": 864, "mayer": {"suf": true, "rot": {"sup": 0.6715, "inf": 0.3285}}, "ctrl": {"suf": true, "rot": {"sup": 0.814, "inf": 0.186}}, "act": 519, "act_c": 519}
+{"i": 865, "mayer": {"suf": true, "rot": {"sup": 0.414, "inf": 0.586}}, "ctrl": {"suf": true, "rot": {"sup": 0.345, "inf": 0.655}}, "act": 492, "act_c": 492}
+{"i": 866, "mayer": {"suf": true, "rot": {"sup": 0.806, "inf": 0.194}}, "ctrl": {"suf": true, "rot": {"sup": 0.643, "inf": 0.357}}, "act": 463, "act_c": 463}
+{"i": 867, "mayer": {"suf": true, "rot": {"sup": 0.515, "inf": 0.4885}}, "ctrl": {"suf": true, "rot": {"sup": 0.782, "inf": 0.218}}, "act": 461, "act_c": 461}
+{"i": 868, "mayer": {"suf": true, "rot": {"sup": 0.8975, "inf": 0.1025}}, "ctrl": {"suf": true, "rot": {"sup": 0.2545, "inf": 0.7455}}, "act": 446, "act_c": 446}
+{"i": 869, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.3065, "inf": 0.6935}}, "act": 516, "act_c": 516}
+{"i": 870, "mayer": {"suf": true, "rot": {"sup": 0.814, "inf": 0.186}}, "ctrl": {"suf": true, "rot": {"sup": 0.497, "inf": 0.504}}, "act": 485, "act_c": 485}
+{"i": 871, "mayer": {"suf": true, "rot": {"sup": 0.9, "inf": 0.1}}, "ctrl": {"suf": true, "rot": {"sup": 0.421, "inf": 0.579}}, "act": 533, "act_c": 533}
+{"i": 872, "mayer": {"suf": true, "rot": {"sup": 0.7755, "inf": 0.2245}}, "ctrl": {"suf": true, "rot": {"sup": 0.693, "inf": 0.307}}, "act": 454, "act_c": 454}
+{"i": 873, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.7155, "inf": 0.2845}}, "act": 513, "act_c": 513}
+{"i": 874, "mayer": {"suf": true, "rot": {"sup": 0.8255, "inf": 0.1745}}, "ctrl": {"suf": true, "rot": {"sup": 0.7835, "inf": 0.2165}}, "act": 449, "act_c": 449}
+{"i": 875, "mayer": {"suf": true, "rot": {"sup": 0.8675, "inf": 0.1325}}, "ctrl": {"suf": true, "rot": {"sup": 0.931, "inf": 0.069}}, "act": 349, "act_c": 349}
+{"i": 876, "mayer": {"suf": true, "rot": {"sup": 0.411, "inf": 0.589}}, "ctrl": {"suf": true, "rot": {"sup": 0.811, "inf": 0.189}}, "act": 467, "act_c": 467}
+{"i": 877, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.607, "inf": 0.393}}, "act": 559, "act_c": 559}
+{"i": 878, "mayer": {"suf": true, "rot": {"sup": 0.6785, "inf": 0.3215}}, "ctrl": {"suf": true, "rot": {"sup": 0.6425, "inf": 0.3575}}, "act": 467, "act_c": 467}
+{"i": 879, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 447, "act_c": 447}
+{"i": 880, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.266, "inf": 0.734}}, "act": 475, "act_c": 475}
+{"i": 881, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 533, "act_c": 533}
+{"i": 882, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 537, "act_c": 537}
+{"i": 883, "mayer": {"suf": true, "rot": {"sup": 0.2685, "inf": 0.7315}}, "ctrl": {"suf": true, "rot": {"sup": 0.7385, "inf": 0.2615}}, "act": 594, "act_c": 594}
+{"i": 884, "mayer": {"suf": true, "rot": {"sup": 0.581, "inf": 0.419}}, "ctrl": {"suf": true, "rot": {"sup": 0.73, "inf": 0.27}}, "act": 550, "act_c": 550}
+{"i": 885, "mayer": {"suf": true, "rot": {"sup": 0.7795, "inf": 0.2205}}, "ctrl": {"suf": true, "rot": {"sup": 0.4065, "inf": 0.5935}}, "act": 476, "act_c": 476}
+{"i": 886, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 603, "act_c": 603}
+{"i": 887, "mayer": {"suf": true, "rot": {"sup": 0.345, "inf": 0.655}}, "ctrl": {"suf": true, "rot": {"sup": 0.0, "inf": 1.0}}, "act": 588, "act_c": 588}
+{"i": 888, "mayer": {"suf": true, "rot": {"sup": 0.581, "inf": 0.419}}, "ctrl": {"suf": true, "rot": {"sup": 0.6935, "inf": 0.3065}}, "act": 470, "act_c": 470}
+{"i": 889, "mayer": {"suf": true, "rot": {"sup": 0.3695, "inf": 0.6305}}, "ctrl": {"suf": true, "rot": {"sup": 0.3315, "inf": 0.6685}}, "act": 547, "act_c": 547}
+{"i": 890, "mayer": {"suf": true, "rot": {"sup": 0.449, "inf": 0.5515}}, "ctrl": {"suf": true, "rot": {"sup": 0.697, "inf": 0.303}}, "act": 600, "act_c": 600}
+{"i": 891, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 563, "act_c": 563}
+{"i": 892, "mayer": {"suf": true, "rot": {"sup": 0.9345, "inf": 0.0655}}, "ctrl": {"suf": true, "rot": {"sup": 0.6525, "inf": 0.3475}}, "act": 488, "act_c": 488}
+{"i": 893, "mayer": {"suf": true, "rot": {"sup": 0.4015, "inf": 0.5985}}, "ctrl": {"suf": true, "rot": {"sup": 0.2265, "inf": 0.7735}}, "act": 405, "act_c": 405}
+{"i": 894, "mayer": {"suf": true, "rot": {"sup": 0.2505, "inf": 0.7495}}, "ctrl": {"suf": true, "rot": {"sup": 0.19, "inf": 0.81}}, "act": 471, "act_c": 471}
+{"i": 895, "mayer": {"suf": true, "rot": {"sup": 0.258, "inf": 0.742}}, "ctrl": {"suf": true, "rot": {"sup": 0.5125, "inf": 0.4875}}, "act": 358, "act_c": 358}
+{"i": 896, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 500, "act_c": 500}
+{"i": 897, "mayer": {"suf": true, "rot": {"sup": 0.579, "inf": 0.421}}, "ctrl": {"suf": true, "rot": {"sup": 0.232, "inf": 0.768}}, "act": 554, "act_c": 554}
+{"i": 898, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.3805, "inf": 0.6195}}, "act": 440, "act_c": 440}
+{"i": 899, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 499, "act_c": 499}
+{"i": 900, "mayer": {"suf": true, "rot": {"sup": 0.514, "inf": 0.486}}, "ctrl": {"suf": true, "rot": {"sup": 0.102, "inf": 0.898}}, "act": 454, "act_c": 454}
+{"i": 901, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 467, "act_c": 467}
+{"i": 902, "mayer": {"suf": true, "rot": {"sup": 0.4815, "inf": 0.519}}, "ctrl": {"suf": true, "rot": {"sup": 0.3535, "inf": 0.6465}}, "act": 569, "act_c": 569}
+{"i": 903, "mayer": {"suf": true, "rot": {"sup": 0.6825, "inf": 0.3175}}, "ctrl": {"suf": true, "rot": {"sup": 0.7435, "inf": 0.2565}}, "act": 494, "act_c": 494}
+{"i": 904, "mayer": {"suf": true, "rot": {"sup": 0.7095, "inf": 0.2905}}, "ctrl": {"suf": true, "rot": {"sup": 0.921, "inf": 0.079}}, "act": 402, "act_c": 402}
+{"i": 905, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.0, "inf": 1.0}}, "act": 588, "act_c": 588}
+{"i": 906, "mayer": {"suf": true, "rot": {"sup": 0.505, "inf": 0.495}}, "ctrl": {"suf": true, "rot": {"sup": 0.7355, "inf": 0.2645}}, "act": 642, "act_c": 642}
+{"i": 907, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 474, "act_c": 474}
+{"i": 908, "mayer": {"suf": true, "rot": {"sup": 0.98, "inf": 0.02}}, "ctrl": {"suf": true, "rot": {"sup": 0.473, "inf": 0.527}}, "act": 380, "act_c": 380}
+{"i": 909, "mayer": {"suf": true, "rot": {"sup": 0.383, "inf": 0.617}}, "ctrl": {"suf": true, "rot": {"sup": 0.8625, "inf": 0.1375}}, "act": 431, "act_c": 431}
+{"i": 910, "mayer": {"suf": true, "rot": {"sup": 0.4365, "inf": 0.5635}}, "ctrl": {"suf": true, "rot": {"sup": 0.771, "inf": 0.229}}, "act": 500, "act_c": 500}
+{"i": 911, "mayer": {"suf": true, "rot": {"sup": 0.188, "inf": 0.812}}, "ctrl": {"suf": true, "rot": {"sup": 0.2805, "inf": 0.7195}}, "act": 586, "act_c": 586}
+{"i": 912, "mayer": {"suf": true, "rot": {"sup": 0.4605, "inf": 0.5395}}, "ctrl": {"suf": true, "rot": {"sup": 0.914, "inf": 0.086}}, "act": 615, "act_c": 615}
+{"i": 913, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 465, "act_c": 465}
+{"i": 914, "mayer": {"suf": true, "rot": {"sup": 0.753, "inf": 0.247}}, "ctrl": {"suf": true, "rot": {"sup": 0.576, "inf": 0.424}}, "act": 402, "act_c": 402}
+{"i": 915, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.169, "inf": 0.831}}, "act": 584, "act_c": 584}
+{"i": 916, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 1.0, "inf": 0.0}}, "act": 648, "act_c": 648}
+{"i": 917, "mayer": {"suf": true, "rot": {"sup": 0.931, "inf": 0.069}}, "ctrl": {"suf": true, "rot": {"sup": 0.534, "inf": 0.466}}, "act": 593, "act_c": 593}
+{"i": 918, "mayer": {"suf": true, "rot": {"sup": 0.5835, "inf": 0.4165}}, "ctrl": {"suf": true, "rot": {"sup": 0.006, "inf": 0.994}}, "act": 570, "act_c": 570}
+{"i": 919, "mayer": {"suf": true, "rot": {"sup": 0.9865, "inf": 0.0135}}, "ctrl": {"suf": true, "rot": {"sup": 0.2125, "inf": 0.7875}}, "act": 496, "act_c": 496}
+{"i": 920, "mayer": {"suf": true, "rot": {"sup": 0.508, "inf": 0.493}}, "ctrl": {"suf": true, "rot": {"sup": 0.1845, "inf": 0.8155}}, "act": 429, "act_c": 429}
+{"i": 921, "mayer": {"suf": true, "rot": {"sup": 0.121, "inf": 0.879}}, "ctrl": {"suf": true, "rot": {"sup": 0.9025, "inf": 0.0975}}, "act": 498, "act_c": 498}
+{"i": 922, "mayer": {"suf": true, "rot": {"sup": 1.0, "inf": 0.0}}, "ctrl": {"suf": true, "rot": {"sup": 0.7945, "inf": 0.2055}}, "act": 475, "act_c": 475}
+{"i": 923, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 570, "act_c": 570}
+{"i": 924, "mayer": {"suf": true, "rot": {"sup": 0.8815, "inf": 0.1185}}, "ctrl": {"suf": true, "rot": {"sup": 0.7165, "inf": 0.2835}}, "act": 568, "act_c": 568}
+{"i": 925, "mayer": {"suf": true, "rot": {"sup": 0.608, "inf": 0.392}}, "ctrl": {"suf": true, "rot": {"sup": 0.306, "inf": 0.694}}, "act": 470, "act_c": 470}
+{"i": 926, "mayer": {"suf": true, "rot": {"sup": 0.1485, "inf": 0.8515}}, "ctrl": {"suf": true, "rot": {"sup": 0.521, "inf": 0.479}}, "act": 648, "act_c": 648}
+{"i": 927, "mayer": {"suf": true, "rot": {"sup": 0.873, "inf": 0.127}}, "ctrl": {"suf": true, "rot": {"sup": 0.7145, "inf": 0.286}}, "act": 411, "act_c": 411}
+{"i": 928, "mayer": {"suf": true, "rot": {"sup": 0.7935, "inf": 0.2065}}, "ctrl": {"suf": true, "rot": {"sup": 0.456, "inf": 0.544}}, "act": 555, "act_c": 555}
+{"i": 929, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.7985, "inf": 0.2015}}, "act": 480, "act_c": 480}
+{"i": 930, "mayer": {"suf": true, "rot": {"sup": 0.501, "inf": 0.499}}, "ctrl": {"suf": true, "rot": {"sup": 0.623, "inf": 0.377}}, "act": 568, "act_c": 568}
+{"i": 931, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.115, "inf": 0.885}}, "act": 573, "act_c": 573}
+{"i": 932, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.684, "inf": 0.316}}, "act": 551, "act_c": 551}
+{"i": 933, "mayer": {"suf": true, "rot": {"sup": 0.8505, "inf": 0.1495}}, "ctrl": {"suf": true, "rot": {"sup": 0.428, "inf": 0.572}}, "act": 598, "act_c": 598}
+{"i": 934, "mayer": {"suf": true, "rot": {"sup": 0.4835, "inf": 0.5165}}, "ctrl": {"suf": true, "rot": {"sup": 0.882, "inf": 0.118}}, "act": 596, "act_c": 596}
+{"i": 935, "mayer": {"suf": true, "rot": {"sup": 0.504, "inf": 0.496}}, "ctrl": {"suf": true, "rot": {"sup": 0.6295, "inf": 0.3705}}, "act": 488, "act_c": 488}
+{"i": 936, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 459, "act_c": 459}
+{"i": 937, "mayer": {"suf": true, "rot": {"sup": 0.195, "inf": 0.805}}, "ctrl": {"suf": true, "rot": {"sup": 0.362, "inf": 0.638}}, "act": 469, "act_c": 469}
+{"i": 938, "mayer": {"suf": true, "rot": {"sup": 0.8125, "inf": 0.1875}}, "ctrl": {"suf": true, "rot": {"sup": 0.989, "inf": 0.011}}, "act": 428, "act_c": 428}
+{"i": 939, "mayer": {"suf": true, "rot": {"sup": 0.5155, "inf": 0.486}}, "ctrl": {"suf": true, "rot": {"sup": 0.9035, "inf": 0.0965}}, "act": 561, "act_c": 561}
+{"i": 940, "mayer": {"suf": true, "rot": {"sup": 0.5415, "inf": 0.4585}}, "ctrl": {"suf": true, "rot": {"sup": 0.9155, "inf": 0.0845}}, "act": 588, "act_c": 588}
+{"i": 941, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 467, "act_c": 467}
+{"i": 942, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 522, "act_c": 522}
+{"i": 943, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.5445, "inf": 0.4555}}, "act": 427, "act_c": 427}
+{"i": 944, "mayer": {"suf": true, "rot": {"sup": 0.5175, "inf": 0.4825}}, "ctrl": {"suf": true, "rot": {"sup": 0.0485, "inf": 0.9515}}, "act": 658, "act_c": 658}
+{"i": 945, "mayer": {"suf": true, "rot": {"sup": 0.9675, "inf": 0.0325}}, "ctrl": {"suf": true, "rot": {"sup": 0.962, "inf": 0.038}}, "act": 479, "act_c": 479}
+{"i": 946, "mayer": {"suf": true, "rot": {"sup": 0.712, "inf": 0.288}}, "ctrl": {"suf": true, "rot": {"sup": 0.995, "inf": 0.005}}, "act": 488, "act_c": 488}
+{"i": 947, "mayer": {"suf": true, "rot": {"sup": 0.6365, "inf": 0.3635}}, "ctrl": {"suf": true, "rot": {"sup": 0.1595, "inf": 0.8405}}, "act": 370, "act_c": 370}
+{"i": 948, "mayer": {"suf": true, "rot": {"sup": 0.6175, "inf": 0.3825}}, "ctrl": {"suf": true, "rot": {"sup": 0.4105, "inf": 0.5895}}, "act": 487, "act_c": 487}
+{"i": 949, "mayer": {"suf": true, "rot": {"sup": 0.7005, "inf": 0.2995}}, "ctrl": {"suf": true, "rot": {"sup": 0.0825, "inf": 0.9175}}, "act": 457, "act_c": 457}
+{"i": 950, "mayer": {"suf": true, "rot": {"sup": 0.536, "inf": 0.464}}, "ctrl": {"suf": true, "rot": {"sup": 0.3855, "inf": 0.6145}}, "act": 638, "act_c": 638}
+{"i": 951, "mayer": {"suf": true, "rot": {"sup": 0.752, "inf": 0.248}}, "ctrl": {"suf": true, "rot": {"sup": 0.1905, "inf": 0.8095}}, "act": 459, "act_c": 459}
+{"i": 952, "mayer": {"suf": true, "rot": {"sup": 0.751, "inf": 0.249}}, "ctrl": {"suf": true, "rot": {"sup": 0.629, "inf": 0.371}}, "act": 450, "act_c": 450}
+{"i": 953, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 368, "act_c": 368}
+{"i": 954, "mayer": {"suf": true, "rot": {"sup": 0.707, "inf": 0.293}}, "ctrl": {"suf": true, "rot": {"sup": 0.6315, "inf": 0.3685}}, "act": 316, "act_c": 316}
+{"i": 955, "mayer": {"suf": true, "rot": {"sup": 0.583, "inf": 0.417}}, "ctrl": {"suf": true, "rot": {"sup": 0.064, "inf": 0.936}}, "act": 551, "act_c": 551}
+{"i": 956, "mayer": {"suf": true, "rot": {"sup": 0.1015, "inf": 0.8985}}, "ctrl": {"suf": true, "rot": {"sup": 0.4055, "inf": 0.5945}}, "act": 390, "act_c": 390}
+{"i": 957, "mayer": {"suf": true, "rot": {"sup": 0.9845, "inf": 0.0155}}, "ctrl": {"suf": true, "rot": {"sup": 0.4885, "inf": 0.5125}}, "act": 518, "act_c": 518}
+{"i": 958, "mayer": {"suf": true, "rot": {"sup": 0.1285, "inf": 0.8715}}, "ctrl": {"suf": true, "rot": {"sup": 0.538, "inf": 0.462}}, "act": 565, "act_c": 565}
+{"i": 959, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.054, "inf": 0.946}}, "act": 527, "act_c": 527}
+{"i": 960, "mayer": {"suf": true, "rot": {"sup": 0.9735, "inf": 0.0265}}, "ctrl": {"suf": true, "rot": {"sup": 0.131, "inf": 0.869}}, "act": 334, "act_c": 334}
+{"i": 961, "mayer": {"suf": true, "rot": {"sup": 0.416, "inf": 0.584}}, "ctrl": {"suf": true, "rot": {"sup": 0.066, "inf": 0.934}}, "act": 282, "act_c": 282}
+{"i": 962, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 524, "act_c": 524}
+{"i": 963, "mayer": {"suf": true, "rot": {"sup": 0.446, "inf": 0.554}}, "ctrl": {"suf": true, "rot": {"sup": 0.0315, "inf": 0.9685}}, "act": 495, "act_c": 495}
+{"i": 964, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.7295, "inf": 0.2705}}, "act": 408, "act_c": 408}
+{"i": 965, "mayer": {"suf": true, "rot": {"sup": 0.6075, "inf": 0.3925}}, "ctrl": {"suf": true, "rot": {"sup": 0.423, "inf": 0.577}}, "act": 520, "act_c": 520}
+{"i": 966, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.923, "inf": 0.077}}, "act": 458, "act_c": 458}
+{"i": 967, "mayer": {"suf": true, "rot": {"sup": 0.5625, "inf": 0.4375}}, "ctrl": {"suf": true, "rot": {"sup": 0.6325, "inf": 0.3675}}, "act": 573, "act_c": 573}
+{"i": 968, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 530, "act_c": 530}
+{"i": 969, "mayer": {"suf": true, "rot": {"sup": 0.9965, "inf": 0.0035}}, "ctrl": {"suf": true, "rot": {"sup": 0.218, "inf": 0.782}}, "act": 368, "act_c": 368}
+{"i": 970, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.7055, "inf": 0.2945}}, "act": 573, "act_c": 573}
+{"i": 971, "mayer": {"suf": true, "rot": {"sup": 0.313, "inf": 0.687}}, "ctrl": {"suf": true, "rot": {"sup": 0.475, "inf": 0.525}}, "act": 589, "act_c": 589}
+{"i": 972, "mayer": {"suf": true, "rot": {"sup": 0.2085, "inf": 0.7915}}, "ctrl": {"suf": true, "rot": {"sup": 0.1245, "inf": 0.8755}}, "act": 505, "act_c": 505}
+{"i": 973, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.9075, "inf": 0.0925}}, "act": 355, "act_c": 355}
+{"i": 974, "mayer": {"suf": true, "rot": {"sup": 0.93, "inf": 0.07}}, "ctrl": {"suf": true, "rot": {"sup": 0.073, "inf": 0.927}}, "act": 442, "act_c": 442}
+{"i": 975, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 566, "act_c": 566}
+{"i": 976, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.442, "inf": 0.558}}, "act": 496, "act_c": 496}
+{"i": 977, "mayer": {"suf": true, "rot": {"sup": 0.7275, "inf": 0.2725}}, "ctrl": {"suf": true, "rot": {"sup": 0.812, "inf": 0.188}}, "act": 584, "act_c": 584}
+{"i": 978, "mayer": {"suf": true, "rot": {"sup": 0.3225, "inf": 0.678}}, "ctrl": {"suf": true, "rot": {"sup": 0.7355, "inf": 0.2645}}, "act": 601, "act_c": 601}
+{"i": 979, "mayer": {"suf": true, "rot": {"sup": 0.9675, "inf": 0.0325}}, "ctrl": {"suf": true, "rot": {"sup": 0.546, "inf": 0.454}}, "act": 407, "act_c": 407}
+{"i": 980, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 461, "act_c": 461}
+{"i": 981, "mayer": {"suf": true, "rot": {"sup": 0.4645, "inf": 0.536}}, "ctrl": {"suf": true, "rot": {"sup": 0.794, "inf": 0.206}}, "act": 396, "act_c": 396}
+{"i": 982, "mayer": {"suf": true, "rot": {"sup": 0.6065, "inf": 0.3935}}, "ctrl": {"suf": true, "rot": {"sup": 0.237, "inf": 0.763}}, "act": 459, "act_c": 459}
+{"i": 983, "mayer": {"suf": true, "rot": {"sup": 0.6795, "inf": 0.3205}}, "ctrl": {"suf": false}, "act": 634, "act_c": 634}
+{"i": 984, "mayer": {"suf": true, "rot": {"sup": 0.965, "inf": 0.035}}, "ctrl": {"suf": true, "rot": {"sup": 0.701, "inf": 0.299}}, "act": 431, "act_c": 431}
+{"i": 985, "mayer": {"suf": true, "rot": {"sup": 0.387, "inf": 0.613}}, "ctrl": {"suf": true, "rot": {"sup": 0.6665, "inf": 0.3335}}, "act": 504, "act_c": 504}
+{"i": 986, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 557, "act_c": 557}
+{"i": 987, "mayer": {"suf": true, "rot": {"sup": 0.2935, "inf": 0.7065}}, "ctrl": {"suf": true, "rot": {"sup": 0.612, "inf": 0.388}}, "act": 526, "act_c": 526}
+{"i": 988, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.9875, "inf": 0.0125}}, "act": 524, "act_c": 524}
+{"i": 989, "mayer": {"suf": true, "rot": {"sup": 0.1095, "inf": 0.8905}}, "ctrl": {"suf": true, "rot": {"sup": 0.2075, "inf": 0.7925}}, "act": 534, "act_c": 534}
+{"i": 990, "mayer": {"suf": true, "rot": {"sup": 0.334, "inf": 0.666}}, "ctrl": {"suf": true, "rot": {"sup": 0.999, "inf": 0.001}}, "act": 490, "act_c": 490}
+{"i": 991, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.0885, "inf": 0.9115}}, "act": 500, "act_c": 500}
+{"i": 992, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 411, "act_c": 411}
+{"i": 993, "mayer": {"suf": true, "rot": {"sup": 0.4765, "inf": 0.5235}}, "ctrl": {"suf": true, "rot": {"sup": 0.867, "inf": 0.133}}, "act": 530, "act_c": 530}
+{"i": 994, "mayer": {"suf": true, "rot": {"sup": 0.6055, "inf": 0.3945}}, "ctrl": {"suf": true, "rot": {"sup": 0.605, "inf": 0.395}}, "act": 526, "act_c": 526}
+{"i": 995, "mayer": {"suf": false}, "ctrl": {"suf": false}, "act": 371, "act_c": 371}
+{"i": 996, "mayer": {"suf": true, "rot": {"sup": 0.675, "inf": 0.325}}, "ctrl": {"suf": true, "rot": {"sup": 0.0295, "inf": 0.9705}}, "act": 429, "act_c": 429}
+{"i": 997, "mayer": {"suf": true, "rot": {"sup": 0.7545, "inf": 0.2455}}, "ctrl": {"suf": true, "rot": {"sup": 0.233, "inf": 0.767}}, "act": 421, "act_c": 421}
+{"i": 998, "mayer": {"suf": true, "rot": {"sup": 0.708, "inf": 0.292}}, "ctrl": {"suf": true, "rot": {"sup": 0.7875, "inf": 0.2125}}, "act": 512, "act_c": 512}
+{"i": 999, "mayer": {"suf": false}, "ctrl": {"suf": true, "rot": {"sup": 0.8255, "inf": 0.1745}}, "act": 438, "act_c": 438}
