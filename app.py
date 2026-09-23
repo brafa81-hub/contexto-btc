@@ -23,6 +23,7 @@ from data_loader import load_price_csv
 from contexto_btc import calcular_situacion, calcular_valoracion, calcular_ciclo, calcular_riesgo, calcular_caidas_historicas
 from niveles import analizar_niveles
 from rango import calcular_rango_esperado, dimensionar
+from regimen_6a import calcular_regimen_6a
 import diario as dj
 from regimen import informe as informe_regimen
 from correlacion import cargar_macro, calcular_correlacion, texto_lectura
@@ -223,6 +224,7 @@ c = calcular_ciclo(df)
 # bloque 06 reutiliza estas mismas variables, no las vuelve a calcular.
 rg = calcular_rango_esperado(df)
 _aud = informe_regimen(df)
+_r6a = calcular_regimen_6a(df)
 
 # ---------------------------------------------------------------
 # Cabecera
@@ -277,7 +279,7 @@ st.plotly_chart(fig, use_container_width=True)
 # recomendación disfrazada de resumen. No lo es — ver resumen.py para el
 # porqué de esa frontera y por qué esta frase no usa la API.
 # ---------------------------------------------------------------
-st.markdown(f"#### {generar_resumen(s, v, rg, _aud['avisos'])}")
+st.markdown(f"#### {generar_resumen(s, v, rg, _aud['avisos'], regimen_6a=_r6a)}")
 st.caption(generar_subtexto())
 
 # ---------------------------------------------------------------
@@ -488,17 +490,27 @@ for _a in _aud["avisos"]:
 
 col1, col2 = st.columns([1, 2])
 with col1:
-    st.metric(
-        f"Volatilidad {rg['cuartil']}",
-        f"{rg['vol']*100:.0f}%",
-        f"percentil {rg['vol_pct']:.0f}",
-        delta_color="off",
-    )
+    if _r6a["disponible"]:
+        st.metric(
+            f"Volatilidad frente a los últimos {6} años",
+            _r6a["etiqueta"],
+            f"{rg['vol']*100:.0f}%",
+            delta_color="off",
+        )
+        st.caption(
+            f"Umbrales vigentes: Bajo < {_r6a['umbral_bajo_normal']*100:.0f}% · "
+            f"Elevado > {_r6a['umbral_normal_elevado']*100:.0f}%"
+        )
+    else:
+        st.metric("Volatilidad 30d", f"{rg['vol']*100:.0f}%", delta_color="off")
 with col2:
     st.caption(
-        f"Con volatilidad **{rg['cuartil']}**, esto es cuánto osciló el precio "
-        f"en un mes a lo largo de {rg['n_historico']} meses históricos comparables. "
-        "No indica dirección — solo cuánto terreno suele cubrir el precio."
+        f"Las bandas de abajo se calculan con volatilidad **{rg['cuartil']}** "
+        f"sobre el histórico completo (2011-2026), no con la etiqueta de la "
+        f"izquierda: esta solo compara con los últimos 6 años, no determina "
+        f"las bandas. Bandas basadas en {rg['n_historico']} meses históricos "
+        "comparables. No indica dirección — solo cuánto terreno suele cubrir "
+        "el precio."
     )
 
 tabla_rango = pd.DataFrame([

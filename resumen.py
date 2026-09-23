@@ -47,13 +47,15 @@ def _describir_valoracion(percentil: float) -> str:
         return "está barato según su propia historia"
 
 
-def _describir_volatilidad(cuartil: str) -> str:
+def _describir_volatilidad(etiqueta_6a: str) -> str:
+    # etiqueta_6a viene de regimen_6a.py (terciles, ventana móvil 6 años),
+    # no del cuartil de 4 grupos de rango.py (ese sigue existiendo, pero
+    # solo para elegir la fila de bandas de precio, no para esta frase).
     return {
-        "muy baja": "se mueve muy poco últimamente",
-        "baja": "se mueve menos de lo habitual",
-        "alta": "se mueve más de lo habitual",
-        "muy alta": "se está moviendo mucho",
-    }.get(cuartil, "tiene una volatilidad difícil de clasificar ahora mismo")
+        "Bajo": "se mueve poco frente a los últimos 6 años",
+        "Normal": "se mueve dentro de lo habitual de los últimos 6 años",
+        "Elevado": "se mueve más de lo habitual de los últimos 6 años",
+    }.get(etiqueta_6a, "tiene una volatilidad difícil de clasificar ahora mismo")
 
 
 def _aviso_mas_urgente(avisos_regimen: list, texto_calendario: str,
@@ -77,14 +79,22 @@ def _aviso_mas_urgente(avisos_regimen: list, texto_calendario: str,
 
 def generar_resumen(situacion: dict, valoracion: dict, rango: dict,
                     avisos_regimen: list, correlacion: dict = None,
-                    texto_calendario: str = "", texto_halving: str = "") -> str:
+                    texto_calendario: str = "", texto_halving: str = "",
+                    regimen_6a: dict = None) -> str:
     """
     Construye la frase de síntesis a partir de resultados ya calculados
     por el resto del panel. No vuelve a calcular nada.
+
+    regimen_6a: salida de regimen_6a.calcular_regimen_6a(df). Si no se
+    pasa (compatibilidad con llamadas antiguas) o la ventana es
+    insuficiente, se usa el cuartil de 4 grupos de rango.py como reserva.
     """
     precio = situacion.get("precio")
     desc_valor = _describir_valoracion(valoracion.get("percentil", 50))
-    desc_vol = _describir_volatilidad(rango.get("cuartil", ""))
+    if regimen_6a and regimen_6a.get("disponible"):
+        desc_vol = _describir_volatilidad(regimen_6a["etiqueta"])
+    else:
+        desc_vol = _describir_volatilidad(rango.get("cuartil", ""))
 
     frase = f"Ahora mismo, BTC {desc_valor} y {desc_vol}"
 
@@ -121,13 +131,15 @@ if __name__ == "__main__":
     from contexto_btc import calcular_situacion, calcular_valoracion
     from rango import calcular_rango_esperado
     from regimen import informe as informe_regimen
+    from regimen_6a import calcular_regimen_6a
 
     df = load_price_csv(sys.argv[1] if len(sys.argv) > 1 else "btc_long.csv")
     s = calcular_situacion(df)
     v = calcular_valoracion(df)
     rg = calcular_rango_esperado(df)
     aud = informe_regimen(df)
+    r6a = calcular_regimen_6a(df)
 
-    print(generar_resumen(s, v, rg, aud["avisos"]))
+    print(generar_resumen(s, v, rg, aud["avisos"], regimen_6a=r6a))
     print()
     print(generar_subtexto())

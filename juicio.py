@@ -132,7 +132,7 @@ poco informativo esta semana" es una conclusión válida y útil."""
 def construir_contexto(situacion: dict, valoracion: dict, ciclo: dict,
                        rango: dict, avisos_regimen: list,
                        correlacion: dict = None, texto_halving: str = "",
-                       eventos: list = None) -> str:
+                       eventos: list = None, regimen_6a: dict = None) -> str:
     """Serializa el estado de los bloques en texto para el modelo."""
     L = []
     L.append("ESTADO ACTUAL DEL PANEL\n")
@@ -149,9 +149,15 @@ def construir_contexto(situacion: dict, valoracion: dict, ciclo: dict,
              "hasta 2020, pero ese orden se rompió desde 2021.")
     L.append("")
 
-    L.append(f"Volatilidad 30d: {rango.get('vol', 0)*100:.0f}% "
-             f"(cuartil {rango.get('cuartil', '?')}, "
-             f"percentil {rango.get('vol_pct', 0):.0f})")
+    if regimen_6a and regimen_6a.get("disponible"):
+        L.append(f"Volatilidad 30d: {rango.get('vol', 0)*100:.0f}% "
+                 f"— frente a los últimos 6 años: {regimen_6a['etiqueta']} "
+                 f"(usa SOLO esta etiqueta en el juicio para describir la "
+                 f"volatilidad frente al usuario, no digas 'cuartil')")
+    else:
+        L.append(f"Volatilidad 30d: {rango.get('vol', 0)*100:.0f}% "
+                 f"(cuartil {rango.get('cuartil', '?')}, "
+                 f"percentil {rango.get('vol_pct', 0):.0f})")
     b = rango.get("bandas", {})
     if b:
         L.append(f"Oscilación esperada en 30 días: "
@@ -275,6 +281,7 @@ if __name__ == "__main__":
     from contexto_btc import calcular_situacion, calcular_valoracion, calcular_ciclo
     from rango import calcular_rango_esperado
     from regimen import informe as informe_regimen
+    from regimen_6a import calcular_regimen_6a
     from calendario import eventos_proximos
     from halving import texto_aviso as texto_halving
 
@@ -282,6 +289,7 @@ if __name__ == "__main__":
     s, v, c = calcular_situacion(df), calcular_valoracion(df), calcular_ciclo(df)
     rg = calcular_rango_esperado(df)
     aud = informe_regimen(df)
+    r6a = calcular_regimen_6a(df)
 
     corr = None
     if os.path.exists("macro.csv"):
@@ -289,7 +297,8 @@ if __name__ == "__main__":
         corr = calcular_correlacion(df, cargar_macro("macro.csv"))
 
     ctx = construir_contexto(s, v, c, rg, aud["avisos"], corr,
-                             texto_halving(), eventos_proximos(dias=45))
+                             texto_halving(), eventos_proximos(dias=45),
+                             regimen_6a=r6a)
     print(ctx)
     print("\nLlamando a la API...")
     j = llamar_api(ctx)
