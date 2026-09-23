@@ -527,6 +527,18 @@ tabla_rango = pd.DataFrame([
 ])
 st.table(tabla_rango.set_index("Frecuencia"))
 
+# Nota fijada por la prueba prerregistrada del 2026-09-23 (prueba_bandas.py):
+# ningun metodo alternativo mejoro la tabla actual, por lo que se mantiene y
+# se avisa del sesgo conservador observado desde 2021.
+st.info(
+    "**Sesgo conservador desde 2021.** Con la misma volatilidad, el precio ha "
+    "recorrido menos terreno que antes. La banda del 75% acertó entre el 84% y "
+    "el 92% de las veces, y la del 95% casi siempre. Las bandas probablemente "
+    "exageran el rango y los tamaños del bloque 07 quedan del lado prudente. "
+    "Se probaron alternativas y ninguna fue mejor de forma consistente.",
+    icon="⚠️",
+)
+
 st.caption(
     "Por qué 30 días y no 90: la volatilidad se predice a sí misma de forma "
     "estable a un mes en las tres épocas medidas. A 90 días la relación es muy "
