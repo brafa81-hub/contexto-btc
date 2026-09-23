@@ -1,0 +1,54 @@
+name: Registro diario de umbrales (régimen de volatilidad)
+
+# Una vez al día, después del cierre de la vela diaria (algo después de
+# medianoche UTC, para que btc_long.csv ya tenga el cierre del día
+# anterior). Independiente de vigilancia.yml y digest_semanal.yml: solo
+# escribe umbrales_vol.csv, no toca noticias.json, juicio.json ni eventos.json.
+#
+# Por qué existe: la etiqueta de régimen (regimen_6a.py) usa una ventana
+# móvil de 6 años que cambia cada día. Para poder reconstruir la etiqueta
+# de cualquier fecha pasada hace falta el umbral vigente ESE día, no solo
+# el valor de vol30 — y Streamlit Cloud no persiste ficheros entre
+# ejecuciones del panel, así que este registro tiene que vivir aquí.
+on:
+  schedule:
+    - cron: "30 1 * * *"
+  workflow_dispatch:  # para lanzarlo a mano y probarlo
+
+jobs:
+  registrar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Instalar dependencias
+        run: pip install pandas numpy requests
+
+      - name: Actualizar precio
+        run: python fetch_long_history.py --source bitstamp --out btc_long.csv
+        continue-on-error: true
+        # Si Bitstamp falla, se registra igualmente con el precio ya
+        # existente en el repo (mismo criterio que digest_semanal.yml):
+        # un registro con el dato de ayer es mejor que ningún registro.
+
+      - name: Registrar umbrales del día
+        run: |
+          python -c "
+          from data_loader import load_price_csv
+          from regimen_6a import registrar_umbrales_dia
+          df = load_price_csv('btc_long.csv')
+          fila = registrar_umbrales_dia(df, 'umbrales_vol.csv')
+          print(fila)
+          "
+
+      - name: Guardar cambios si los hay
+        run: |
+          git config user.name "contexto-btc-bot"
+          git config user.email "actions@github.com"
+          git add umbrales_vol.csv btc_long.csv
+          git diff --staged --quiet || git commit -m "Registro diario de umbrales de régimen"
+          git push
