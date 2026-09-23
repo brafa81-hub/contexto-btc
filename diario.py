@@ -54,6 +54,10 @@ COLUMNAS = [
     "invalidacion_precio", "invalidacion_condicion", "estado_animo",
     "confianza", "vol_30d", "percentil_valoracion", "drawdown", "vs_sma200",
     "revisada", "resultado", "notas_revision",
+    # 2026-09-24: referencia de salida mostrada (media de 200 días congelada)
+    # y si el usuario la usó. Los diarios antiguos cargan igual: cargar()
+    # rellena las columnas que falten.
+    "salida_referencia", "salida_referencia_usada",
 ]
 
 TIPOS = ["Entrar", "Ampliar", "Reducir", "Salir", "No hacer nada"]

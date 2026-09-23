@@ -302,14 +302,52 @@ if _j:
 st.divider()
 
 # ---------------------------------------------------------------
-# Calendario — lo único del panel que no necesita demostrar poder
-# predictivo, porque no predice: solo dice qué está programado.
-# BTC correlaciona 0,33 con el Nasdaq, así que lo que mueve la bolsa
-# estadounidense lo mueve con ella.
+# Tablero de decisión (diseño aprobado 2026-09-23/24).
+# Dos semáforos independientes + una línea descriptiva. NO hay semáforo de
+# dirección: las mediciones P1-P4 concluyeron que "la dirección a 30 días
+# no es estimable con estos datos". Ninguna lógica combina los dos
+# semáforos en una recomendación: cada uno se lee por separado.
+# Iconos neutros a propósito (sin verde/rojo, que se leen como compra/venta).
 # ---------------------------------------------------------------
 _cal = estado_calendario()
 if not _cal["ok"]:
     st.warning(_cal["mensaje"], icon="📅")
+
+# N días del semáforo de Ruido. Supuesto de diseño, no medido (no hay
+# histórico de fechas de eventos): coincide con la revisión semanal.
+TABLERO_N_DIAS_RUIDO = 7
+_ICONO_NIVEL = {"Bajo": "○", "Normal": "◐", "Elevado": "●"}
+
+st.markdown("### Tablero")
+_col_r, _col_n = st.columns(2)
+with _col_r:
+    if _r6a["disponible"]:
+        st.metric("Riesgo · volatilidad frente a 6 años",
+                  f"{_ICONO_NIVEL.get(_r6a['etiqueta'], '')} {_r6a['etiqueta']}")
+    else:
+        st.metric("Riesgo · volatilidad frente a 6 años", "Sin datos")
+    st.caption("Cuánto se agita el precio comparado con los últimos 6 años. "
+               "No indica dirección.")
+with _col_n:
+    _ev_alta = [e for e in eventos_proximos(dias=TABLERO_N_DIAS_RUIDO, limite=10)
+                if e["relevancia"] == "alta"]
+    if _ev_alta and _ev_alta[0]["dias"] <= 2:
+        _ruido = "● Evento inminente"
+    elif _ev_alta:
+        _ruido = "◐ Evento esta semana"
+    else:
+        _ruido = "○ Sin eventos"
+    st.metric(f"Ruido · agenda próximos {TABLERO_N_DIAS_RUIDO} días", _ruido)
+    st.caption("Dato de inflación de EEUU y reuniones de la Fed con proyecciones. "
+               "Esos días suele haber más movimiento. No indica dirección.")
+
+_sigma_mes = rg["vol"] * np.sqrt(30 / 365) * 100
+st.markdown(
+    f"**Movimiento reciente:** últimos 30 días {c['ret_30d']:+.1f}%. "
+    f"Oscilación típica de un mes con la volatilidad actual: ±{_sigma_mes:.0f}%."
+)
+st.caption("Solo describe lo que ya pasó. Comparar el último mes con la "
+           "oscilación típica no anticipa el mes siguiente.")
 
 _ev = eventos_proximos(dias=45, limite=4)
 if _ev:
@@ -319,12 +357,7 @@ if _ev:
                    "mañana" if _e["dias"] == 1 else f"en {_e['dias']} días")
         _marca = "**" if _e["relevancia"] == "alta" else ""
         _lineas.append(f"{_marca}{_e['nombre']}{_marca} · {_cuando} ({_e['fecha']:%d/%m})")
-    st.info("📅 " + "  ·  ".join(_lineas), icon=None)
-    st.caption(
-        "Eventos programados que mueven la bolsa estadounidense, y con ella a BTC "
-        "(correlación 0,33). No indica dirección ni magnitud: solo que ese día "
-        "suele haber más movimiento del habitual."
-    )
+    st.caption("📅 Próximos eventos: " + "  ·  ".join(_lineas))
 
 _hv = texto_halving()
 if _hv:
@@ -659,7 +692,7 @@ with tab_nueva:
         confianza = st.slider("Confianza en la decisión", 1, 5, 3)
 
     hipotesis = st.text_area(
-        "Por qué haces esto",
+        "Por qué haces esto (opcional)",
         placeholder="La razón concreta, hoy. Sin adornos — nadie más lo va a leer.",
         height=80,
     )
@@ -669,39 +702,65 @@ with tab_nueva:
         "Escribirlo ahora es lo que después distingue «me equivoqué» de "
         "«todavía no ha pasado». Sin esto, una pérdida no tiene final."
     )
+    # Referencia de salida (diseño aprobado 2026-09-24, consulta externa 6/6):
+    # media de 200 días del día de la decisión, CONGELADA al guardar. No
+    # validada como salida. Si el precio ya está por debajo, no aplica.
+    # El campo de precio va vacío por defecto (se elimina el antiguo ×0,75).
+    _ref_salida = int(round(s["sma200"])) if s["precio"] > s["sma200"] else None
+
     col1, col2 = st.columns(2)
     with col1:
         inval_precio = st.number_input(
             "Por debajo de este precio ($)", min_value=0,
-            value=int(s["precio"] * 0.75), step=500,
+            value=None, step=500, placeholder="Vacío si no quieres fijarlo",
         )
+        if _ref_salida:
+            st.caption(
+                f"Referencia **no validada**: media de 200 días hoy, "
+                f"${_ref_salida:,.0f}. Valor congelado; la media real seguirá moviéndose."
+            )
+        else:
+            st.caption("Referencia no aplica: el precio ya está por debajo "
+                       "de la media de 200 días.")
     with col2:
         inval_cond = st.text_input(
             "O si ocurre esto",
-            placeholder="ej. seis meses sin recuperar la media de 200 días",
+            placeholder="ej. cierre diario por debajo de la media de 200 días",
         )
 
     if st.button("Guardar en el diario", type="primary"):
-        if not hipotesis.strip():
-            st.error("Falta el porqué. Es el campo que da sentido al registro.")
-        else:
-            st.session_state.diario = dj.anadir(d, {
-                "fecha": datetime.now().strftime("%Y-%m-%d"),
-                "tipo": tipo,
-                "precio": s["precio"],
-                "importe": importe if tipo != "No hacer nada" else 0,
-                "hipotesis": hipotesis.strip(),
-                "invalidacion_precio": inval_precio or None,
-                "invalidacion_condicion": inval_cond.strip() or None,
-                "estado_animo": estado,
-                "confianza": confianza,
-                **ctx,
-            })
-            st.success("Guardado. Descarga el CSV en la pestaña Historial para no perderlo.")
-            st.rerun()
+        # Se considera "usada" si el precio escrito coincide con la
+        # referencia redondeada al paso del campo (500 $).
+        _usada = (None if _ref_salida is None else
+                  bool(inval_precio) and abs(inval_precio - _ref_salida) <= 250)
+        st.session_state.diario = dj.anadir(d, {
+            "fecha": datetime.now().strftime("%Y-%m-%d"),
+            "tipo": tipo,
+            "precio": s["precio"],
+            "importe": importe if tipo != "No hacer nada" else 0,
+            "hipotesis": hipotesis.strip() or None,
+            "invalidacion_precio": inval_precio or None,
+            "invalidacion_condicion": inval_cond.strip() or None,
+            "estado_animo": estado,
+            "confianza": confianza,
+            "salida_referencia": _ref_salida,
+            "salida_referencia_usada": _usada,
+            **ctx,
+        })
+        st.success("Guardado. Descarga el CSV en la pestaña Historial para no perderlo.")
+        st.rerun()
 
 with tab_revision:
     rev = dj.revisar(d, precio_actual=s["precio"])
+
+    # La hipótesis es opcional desde 2026-09-24: se avisa aquí si falta.
+    _sin_hip = int(d["hipotesis"].fillna("").astype(str).str.strip().eq("").sum()) if len(d) else 0
+    if _sin_hip:
+        st.warning(
+            f"{_sin_hip} de {len(d)} registros sin el porqué. Sin él, la revisión "
+            "no puede distinguir una buena decisión con mala suerte de una mala decisión.",
+            icon="✍️",
+        )
 
     if not rev["suficientes"]:
         st.info(
