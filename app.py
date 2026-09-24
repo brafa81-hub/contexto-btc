@@ -32,6 +32,7 @@ from halving import texto_aviso as texto_halving
 from resumen import generar_resumen, generar_subtexto
 import noticias as nt
 from juicio import cargar_juicio
+import exportar as ex
 
 st.set_page_config(
     page_title="Contexto BTC",
@@ -226,6 +227,10 @@ rg = calcular_rango_esperado(df)
 _aud = informe_regimen(df)
 _r6a = calcular_regimen_6a(df)
 
+# Datos de los bloques 01-08 para los botones de descarga (ver exportar.py).
+# Solo recoge valores ya calculados; no añade cálculo.
+_exp_bloques = {}
+
 # ---------------------------------------------------------------
 # Cabecera
 # ---------------------------------------------------------------
@@ -383,6 +388,25 @@ if pd.notna(s["posicion_rango_365d"]):
         delta_color="off",
     )
 
+_exp_bloques["01"] = {
+    "titulo": "Respecto a sus medias",
+    "datos": {
+        "sma50_usd": s["sma50"], "dist_sma50_pct": s["vs_sma50"],
+        "sma200_usd": s["sma200"], "dist_sma200_pct": s["vs_sma200"],
+        "sma1000_usd": s["sma1000"], "dist_sma1000_pct": s["vs_sma1000"],
+        "min_365d_usd": s["min_365d"], "max_365d_usd": s["max_365d"],
+        "posicion_rango_365d_pct": s["posicion_rango_365d"],
+    },
+    "filas": [
+        f"Media 50 días: ${s['sma50']:,.0f} (precio {s['vs_sma50']:+.1f}%)",
+        f"Media 200 días: ${s['sma200']:,.0f} (precio {s['vs_sma200']:+.1f}%)",
+    ] + ([f"Media 1000 días: ${s['sma1000']:,.0f} (precio {s['vs_sma1000']:+.1f}%)"]
+         if pd.notna(s["vs_sma1000"]) else []) + (
+        [f"Posición en rango 365 días: {s['posicion_rango_365d']:.0f}% "
+         f"(mínimo ${s['min_365d']:,.0f} · máximo ${s['max_365d']:,.0f})"]
+        if pd.notna(s["posicion_rango_365d"]) else []),
+}
+
 st.divider()
 
 # ---------------------------------------------------------------
@@ -411,6 +435,24 @@ st.caption(
     "que ya no son representativos del rango actual."
 )
 
+_exp_bloques["02"] = {
+    "titulo": "¿Caro o barato?",
+    "datos": {
+        "percentil_historico": v["percentil"], "etiqueta": v["etiqueta"],
+        "mayer_multiple": v["mayer_multiple"], "nota": v["nota"],
+    },
+    "filas": [
+        f"{v['etiqueta'].title()} · percentil {v['percentil']:.0f} de su historia",
+        f"Ratio precio/SMA200 (Mayer Multiple): {v['mayer_multiple']:.2f}",
+        v["nota"],
+    ],
+    "notas": [
+        "Aviso del panel: este percentil ordenaba bien el retorno del año siguiente "
+        "hasta 2020; desde 2021 ese orden se rompió. Solo se mantiene que el 20% "
+        "más caro va seguido de peores retornos. Contexto histórico, no señal actual.",
+    ],
+}
+
 st.divider()
 
 # ---------------------------------------------------------------
@@ -430,6 +472,26 @@ if pd.notna(s["vol_percentil"]):
         "la volatilidad tiende a la baja desde 2021, así que un percentil bajo es "
         "cada vez más habitual, no necesariamente excepcional."
     )
+
+_exp_bloques["03"] = {
+    "titulo": "Momento del ciclo",
+    "datos": {
+        "caida_desde_maximo_pct": c["drawdown_actual"], "maximo_usd": s["ath"],
+        "fecha_maximo": s["fecha_ath"], "dias_desde_maximo": c["dias_desde_ath"],
+        "volatilidad_90d_pct": s["vol_actual"],
+        "volatilidad_90d_percentil_5a": s["vol_percentil"],
+        "rentabilidad_90d_pct": c["ret_90d"],
+    },
+    "filas": [
+        f"Caída desde máximos: {c['drawdown_actual']:+.1f}% (hace {c['dias_desde_ath']:.0f} días)",
+        f"Volatilidad 90 días: {s['vol_actual']:.0f}%" + (
+            f" (percentil {s['vol_percentil']:.0f}, últimos 5 años)"
+            if pd.notna(s["vol_percentil"]) else ""),
+        f"Rentabilidad 90 días: {c['ret_90d']:+.1f}%",
+    ],
+    "notas": ["El percentil de volatilidad se calcula sobre los últimos 5 años; "
+              "la volatilidad tiende a la baja desde 2021."],
+}
 
 st.divider()
 
@@ -463,6 +525,27 @@ st.caption(
     "Que haya reaccionado ahí antes no significa que vuelva a hacerlo."
 )
 
+def _zonas_exp(zonas):
+    return [{"minimo_usd": z["minimo"], "maximo_usd": z["maximo"], "centro_usd": z["centro"],
+             "toques": z["toques"], "distancia_pct": (z["centro"] / s["precio"] - 1) * 100}
+            for z in zonas]
+_exp_bloques["04"] = {
+    "titulo": "Dónde ha reaccionado el precio",
+    "datos": {"atr_usd": niv["atr"], "meses_analizados": 12,
+              "zonas_por_encima": _zonas_exp(niv["resistencias"]),
+              "zonas_por_debajo": _zonas_exp(niv["soportes"])},
+    "tablas": [
+        {"titulo": nombre, "cabecera": ["Zona", "Distancia", "Toques"],
+         "filas": [[f"${z['minimo']:,.0f} - ${z['maximo']:,.0f}",
+                    f"{(z['centro'] / s['precio'] - 1) * 100:+.1f}%", str(z["toques"])]
+                   for z in zonas] or [["Sin zonas con 2+ toques", "", ""]]}
+        for nombre, zonas in [("Zonas por encima", niv["resistencias"]),
+                              ("Zonas por debajo", niv["soportes"])]
+    ],
+    "notas": ["Zonas donde el precio ya giró antes; ancho según ATR. "
+              "Que reaccionara ahí no significa que vuelva a hacerlo."],
+}
+
 st.divider()
 
 # ---------------------------------------------------------------
@@ -492,8 +575,22 @@ if df_onchain is not None:
         f"fijos de un proveedor. Referencia externa citada: Glassnode marca extremos en "
         f"<{g['extreme_lows']} y >{g['extremely_high']}; CryptoQuant en <{cq['posible_fondo']} y >{cq['posible_techo']}."
     )
+    _exp_bloques["05"] = {
+        "titulo": "Fundamental de la red",
+        "datos": {"disponible": True, "fecha_dato": dfo.index[-1], "mvrv": mvrv,
+                  "mvrv_percentil": pct_mvrv, "mvrv_zscore": z,
+                  "precio_realizado_usd": rp, "etiqueta": etiq, "nota": nota},
+        "filas": [f"MVRV: {mvrv:.2f} (percentil {pct_mvrv:.0f}%) · Dato del {dfo.index[-1]:%d/%m/%Y}",
+                  f"MVRV Z-Score: {z:.2f}", f"Precio realizado: ${rp:,.0f}",
+                  f"**{etiq}** — {nota}"],
+        "notas": ["Etiqueta según percentil sobre la serie de BGeometrics, "
+                  "no umbrales fijos de un proveedor."],
+    }
     st.divider()
 else:
+    _exp_bloques["05"] = {"titulo": "Fundamental de la red",
+        "datos": {"disponible": False},
+        "filas": ["Sin datos on-chain disponibles."]}
     st.info(
         f"No se encontró **{archivo_onchain}**. Este bloque se activa descargando datos con "
         f"`python fetch_onchain.py --out {archivo_onchain}`.",
@@ -579,6 +676,43 @@ st.caption(
     "según la época, así que no se usa."
 )
 
+_exp_bloques["06"] = {
+    "titulo": "Cuánto puede moverse (30 días)",
+    "datos": {
+        "validado": "Único bloque apoyado en una relación validada por épocas "
+                    "(persistencia de la volatilidad a 30 días, 2011-2026).",
+        "horizonte_dias": 30,
+        "volatilidad_30d_anualizada_pct": rg["vol"] * 100,
+        "regimen_6a": {"etiqueta": _r6a.get("etiqueta"),
+                       "umbral_bajo_normal_pct": (_r6a["umbral_bajo_normal"] * 100
+                                                  if _r6a["disponible"] else None),
+                       "umbral_normal_elevado_pct": (_r6a["umbral_normal_elevado"] * 100
+                                                     if _r6a["disponible"] else None)},
+        "cuartil_para_bandas": rg["cuartil"], "meses_historicos_comparables": rg["n_historico"],
+        "bandas": {k: {"oscilacion_max_pct": rg["bandas"][k]["amplitud"] * 100,
+                       "suelo_usd": rg["bandas"][k]["suelo"],
+                       "techo_usd": rg["bandas"][k]["techo"]}
+                   for k in ("p50", "p75", "p95")},
+        "avisos_auditoria": [a["texto"] for a in _aud["avisos"]],
+    },
+    "filas": [
+        f"Volatilidad 30 días: {rg['vol']*100:.0f}%" + (
+            f" · régimen {_r6a['etiqueta']} frente a los últimos 6 años"
+            if _r6a["disponible"] else ""),
+        f"Bandas con volatilidad {rg['cuartil']} sobre 2011-2026 "
+        f"({rg['n_historico']} meses comparables). No indica dirección.",
+    ],
+    "tablas": [{"cabecera": ["Frecuencia", "Oscilación", "Banda de precio"],
+                "filas": [[nombre, f"menos de {rg['bandas'][k]['amplitud']*100:.0f}%",
+                           f"${rg['bandas'][k]['suelo']:,.0f} - ${rg['bandas'][k]['techo']:,.0f}"]
+                          for k, nombre in [("p50", "La mitad de los meses"),
+                                            ("p75", "3 de cada 4 meses"),
+                                            ("p95", "1 de cada 20 meses")]]}],
+    "notas": [a["texto"] for a in _aud["avisos"]] + [
+        "Sesgo conservador desde 2021: con la misma volatilidad el precio ha recorrido "
+        "menos terreno; las bandas probablemente exageran el rango."],
+}
+
 st.divider()
 
 # ---------------------------------------------------------------
@@ -631,6 +765,28 @@ if df_macro is not None:
             "riesgo parecido en vez de compensarlo."
         )
 
+_corr_exp = _corr if (df_macro is not None and _corr.get("disponible")) else None
+_exp_bloques["07"] = {
+    "titulo": "Cuánto exponer",
+    "datos": {
+        "perdida_tolerable_eur": perdida_tol,
+        "escenarios": {n: {"caida_asumida_pct": e["caida_pct"], "capital_a_exponer_eur": e["capital_max"],
+                           "supera_disponible": e["supera_disponible"]} for n, e in dim.items()},
+        "correlacion_bolsa": (None if _corr_exp is None else
+                              {"correlacion": _corr_exp["correlacion"], "etiqueta": _corr_exp["etiqueta"],
+                               "percentil": _corr_exp["percentil"], "fecha_dato": _corr_exp["fecha_dato"],
+                               "lectura": texto_lectura(_corr_exp)}),
+    },
+    "filas": [f"Pérdida tolerable indicada: {perdida_tol:,.0f} €"],
+    "tablas": [{"cabecera": ["Escenario", "Caída asumida", "Capital a exponer"],
+                "filas": [[n.capitalize(), f"-{e['caida_pct']:.0f}%",
+                           f"{e['capital_max']:,.0f} €" + (" (todo el disponible)" if e["supera_disponible"] else "")]
+                          for n, e in dim.items()]}],
+    "notas": ["El escenario adverso usa el percentil 95 de oscilación histórica: el peor caso "
+              "habitual, no el peor imaginable."] + (
+        [f"Diversificación frente a bolsa: {texto_lectura(_corr_exp)}"] if _corr_exp else []),
+}
+
 st.divider()
 
 # ---------------------------------------------------------------
@@ -656,6 +812,62 @@ tabla_hist = pd.DataFrame([
 st.table(tabla_hist.set_index("Periodo"))
 
 st.warning("¿Podrías ver esos números durante uno o dos años sin vender? Si la respuesta es no, la cantidad es demasiado alta.", icon="⚠️")
+
+_exp_bloques["08"] = {
+    "titulo": "Tu riesgo real",
+    "datos": {
+        "capital_eur": capital,
+        "escenarios": [{"caida_pct": e["caida_pct"], "precio_btc_usd": e["precio_btc"],
+                        "te_quedan_eur": e["valor_restante"], "pierdes_eur": e["perdida"]}
+                       for e in r["escenarios"]],
+        "caidas_historicas": [{"periodo": p, "caida_pct": pct,
+                               "te_habrian_quedado_eur": capital * (1 + pct / 100)}
+                              for p, pct in caidas],
+    },
+    "tablas": [
+        {"titulo": f"Si inviertes {capital:,.0f} € hoy",
+         "cabecera": ["Si BTC cae", "Precio", "Te quedan", "Pierdes"],
+         "filas": [[f"{e['caida_pct']}%", f"${e['precio_btc']:,.0f}",
+                    f"{e['valor_restante']:,.0f} €", f"-{e['perdida']:,.0f} €"]
+                   for e in r["escenarios"]]},
+        {"titulo": "Caídas que BTC ya ha tenido",
+         "cabecera": ["Periodo", "Caída", "Te habrían quedado"],
+         "filas": [[p, f"{pct}%", f"{capital * (1 + pct/100):,.0f} €"] for p, pct in caidas]},
+    ],
+}
+
+# ---------------------------------------------------------------
+# Descargas (aprobado 2026-09-23): solo bloques 01-08. No incluyen el
+# tablero, el diario (09) ni el digest (10). Ver exportar.py.
+# ---------------------------------------------------------------
+_exp = {
+    "meta": {
+        "fecha_datos": df.index[-1], "precio": s["precio"],
+        "generado": datetime.now().strftime("%Y-%m-%d %H:%M"),
+        "capital_eur": capital, "perdida_tolerable_eur": perdida_tol,
+        "fuentes": {"precio": "Bitstamp", "on_chain": "BGeometrics (bitcoin-data.com)"},
+        "excluye": ["tablero de decisión", "09 diario de decisiones", "10 digest semanal"],
+    },
+    "bloques": _exp_bloques,
+}
+_fecha_arch = df.index[-1].strftime("%Y-%m-%d")
+st.markdown("**Descargar los bloques 01 a 08**")
+_col_pdf, _col_json = st.columns(2)
+try:
+    _pdf = ex.construir_pdf(_exp)
+except Exception as _e:
+    _pdf = None
+    st.caption(f"No se pudo generar el PDF: {type(_e).__name__}")
+_col_pdf.download_button(
+    "Descargar PDF", _pdf or b"", f"contexto-btc_{_fecha_arch}.pdf",
+    "application/pdf", disabled=_pdf is None, width="stretch",
+)
+_col_json.download_button(
+    "Descargar JSON", ex.construir_json(ex.quitar_presentacion(_exp)),
+    f"contexto-btc_{_fecha_arch}.json", "application/json", width="stretch",
+)
+st.caption("PDF para leer o archivar; JSON con los datos en bruto para pasárselos a otra IA. "
+           "No incluyen el tablero, el diario ni el digest semanal.")
 
 st.divider()
 
